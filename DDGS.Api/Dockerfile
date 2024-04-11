@@ -10,6 +10,8 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["DDGS.Api/DDGS.Api.csproj", "DDGS.Api/"]
+COPY ["DDGS.Core/DDGS.Core.csproj", "DDGS.Core/"]
+COPY ["DDGS.Infrastructure/DDGS.Infrastructure.csproj", "DDGS.Infrastructure/"]
 RUN dotnet restore "./DDGS.Api/DDGS.Api.csproj"
 COPY . .
 WORKDIR "/src/DDGS.Api"

@@ -6,9 +6,26 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=80
       - ASPNETCORE_HTTPS_PORTS=443
+      - MONGODB_URL=mongodb://defaultuser:Pa%24%24w0rd@mongodb:27017/ddgs/?authSource=DynamicDataGridSystemDb
+      - MONGODB_NAME=DynamicDataGridSystemDb
     ports:
       - "8080:80"
       - "8081:443"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    networks:
+      - ddgs-network
+
+  mongodb:
+    environment:
+        MONGO_INITDB_ROOT_USERNAME: superadmin
+        MONGO_INITDB_ROOT_PASSWORD: Pa%24%24w0rd
+        MONGO_INITDB_DATABASE: DynamicDataGridSystemDb
+    ports:
+      - "27017:27017"
+    volumes:
+      - ddgs-volume:/data/db
+      - ./DDGS.Infrastructure/Initialization/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - ddgs-network

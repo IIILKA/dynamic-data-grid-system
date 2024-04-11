@@ -3,6 +3,23 @@ version: '3.4'
 services:
   api:
     image: ${DOCKER_REGISTRY-}ddgsapi
+    container_name: ddgs.api
     build:
-      context: ./DDGS.Api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: DDGS.Api/Dockerfile
+      
+    depends_on:
+      - mongodb
+    
+  mongodb:
+    image: mongo:latest
+    container_name: ddgs.db
+    restart: always
+     
+
+networks:
+  ddgs-network:
+    driver: bridge
+
+volumes:
+  ddgs-volume:

@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DDGS.Api", "DDGS.Api\DDGS.A
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{12AF8D27-776A-4D9A-A73D-BF676DB37D13}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDGS.Core", "DDGS.Core\DDGS.Core.csproj", "{5E1EAECC-FBDE-4259-8CCA-10C7B62CBCD4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDGS.Infrastructure", "DDGS.Infrastructure\DDGS.Infrastructure.csproj", "{099C49F9-0404-4453-B981-A94CDCA1CA3F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{12AF8D27-776A-4D9A-A73D-BF676DB37D13}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12AF8D27-776A-4D9A-A73D-BF676DB37D13}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12AF8D27-776A-4D9A-A73D-BF676DB37D13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E1EAECC-FBDE-4259-8CCA-10C7B62CBCD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E1EAECC-FBDE-4259-8CCA-10C7B62CBCD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E1EAECC-FBDE-4259-8CCA-10C7B62CBCD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E1EAECC-FBDE-4259-8CCA-10C7B62CBCD4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{099C49F9-0404-4453-B981-A94CDCA1CA3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{099C49F9-0404-4453-B981-A94CDCA1CA3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{099C49F9-0404-4453-B981-A94CDCA1CA3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{099C49F9-0404-4453-B981-A94CDCA1CA3F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
