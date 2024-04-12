@@ -1,4 +1,4 @@
-using DDGS.Core.Test;
+using DDGS.Infrastructure.TestFeature;
 using Microsoft.EntityFrameworkCore;
 
 namespace DDGS.Infrastructure
@@ -7,9 +7,6 @@ namespace DDGS.Infrastructure
     {
         public DdgsDbContext(DbContextOptions<DdgsDbContext> options) : base(options) { }
 
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //    => optionsBuilder.UseMongoDB(_client, "DynamicDataGridSystemDb");
-
-        public DbSet<Test> Tests => Set<Test>();
+        public DbSet<TestDbEntity> Tests => Set<TestDbEntity>();
     }
 }

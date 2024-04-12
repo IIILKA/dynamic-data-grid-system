@@ -1,12 +1,9 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace DDGS.Api.Test.Dto
+namespace DDGS.Api.TestFeature.Dto
 {
-    public record TestIndexDto
+    public record TestEditDto
     {
-        [JsonPropertyName("id")]
-        public Guid Id { get; init; }
-
         [JsonPropertyName("name")]
         public string Name { get; init; }
     }

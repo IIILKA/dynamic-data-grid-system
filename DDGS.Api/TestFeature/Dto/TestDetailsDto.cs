@@ -1,6 +1,7 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Text.Json.Serialization;
 
-namespace DDGS.Api.Test.Dto
+namespace DDGS.Api.TestFeature.Dto
 {
     public record TestDetailsDto
     {

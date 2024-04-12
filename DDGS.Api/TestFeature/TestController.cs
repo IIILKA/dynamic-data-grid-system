@@ -1,8 +1,9 @@
-﻿using DDGS.Api.Test.Dto;
-using DDGS.Core.Test.Interfaces;
+﻿using DDGS.Api.TestFeature.Dto;
+using DDGS.Core.TestFeature.Interfaces;
+using DDGS.Core.TestFeature.Payloads;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DDGS.Api.Test
+namespace DDGS.Api.TestFeature
 {
     [Route("api/test")]
     [ApiController]
@@ -26,13 +27,13 @@ namespace DDGS.Api.Test
         {
             var entity = await _testService.GetAsync(testId);
 
-            return Ok(new TestDetailsDto { Id = entity.Id, Name = entity.Name });
+            return Ok(entity != null ? new TestDetailsDto { Id = entity.Id, Name = entity.Name } : null);
         }
 
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] TestCreateDto dto)
         {
-            var entity = await _testService.CreateAsync(new Core.Test.Test { Name = dto.Name });
+            var entity = await _testService.CreateAsync(new TestCreatePayload(dto.Name));
 
             return Ok(entity.Id);
         }
@@ -40,7 +41,7 @@ namespace DDGS.Api.Test
         [HttpPut("{testId}")]
         public async Task<IActionResult> Put(Guid testId, [FromBody] TestEditDto dto)
         {
-            await _testService.UpdateAsync(new Core.Test.Test { Id = testId, Name = dto.Name });
+            await _testService.UpdateAsync(new TestEditPayload(testId, dto.Name ));
 
             return Ok();
         }

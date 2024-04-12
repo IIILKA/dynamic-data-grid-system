@@ -1,7 +1,7 @@
-using DDGS.Core.Test;
-using DDGS.Core.Test.Interfaces;
+using DDGS.Core.TestFeature;
+using DDGS.Core.TestFeature.Interfaces;
 using DDGS.Infrastructure.Configuration;
-using DDGS.Infrastructure.Repositories;
+using DDGS.Infrastructure.TestFeature;
 
 var builder = WebApplication.CreateBuilder(args);
 
