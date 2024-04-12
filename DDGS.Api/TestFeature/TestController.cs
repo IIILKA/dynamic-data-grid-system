@@ -1,6 +1,7 @@
 ﻿using DDGS.Api.TestFeature.Dto;
 using DDGS.Core.TestFeature.Interfaces;
 using DDGS.Core.TestFeature.Payloads;
+using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DDGS.Api.TestFeature
@@ -11,29 +12,34 @@ namespace DDGS.Api.TestFeature
     {
         private readonly ITestService _testService;
 
-        public TestController(ITestService testService)
+        private readonly IMapper _mapper;
+
+        public TestController(ITestService testService, IMapper mapper)
         {
             _testService = testService;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
-            return Ok((await _testService.GetManyAsync()).Select(_ => new TestIndexDto { Id =_.Id, Name = _.Name }));
+            var dtoList = _mapper.Map<List<TestIndexDto>>(await _testService.GetManyAsync());
+
+            return Ok(dtoList);
         }
 
         [HttpGet("{testId}")]
         public async Task<IActionResult> GetAsync(Guid testId)
         {
-            var entity = await _testService.GetAsync(testId);
+            var dto = _mapper.Map<TestDetailsDto>((await _testService.GetAsync(testId))!);
 
-            return Ok(entity != null ? new TestDetailsDto { Id = entity.Id, Name = entity.Name } : null);
+            return Ok(dto);
         }
 
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] TestCreateDto dto)
         {
-            var entity = await _testService.CreateAsync(new TestCreatePayload(dto.Name));
+            var entity = await _testService.CreateAsync(_mapper.Map<TestCreatePayload>(dto));
 
             return Ok(entity.Id);
         }
@@ -41,7 +47,7 @@ namespace DDGS.Api.TestFeature
         [HttpPut("{testId}")]
         public async Task<IActionResult> Put(Guid testId, [FromBody] TestEditDto dto)
         {
-            await _testService.UpdateAsync(new TestEditPayload(testId, dto.Name ));
+            await _testService.UpdateAsync(testId, _mapper.Map<TestEditPayload>(dto));
 
             return Ok();
         }

@@ -1,14 +1,16 @@
-﻿using System;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
+using DDGS.Core.TestFeature;
+using Mapster;
 
 namespace DDGS.Api.TestFeature.Dto
 {
+    [AdaptFrom(typeof(Test))]
     public record TestDetailsDto
     {
         [JsonPropertyName("id")]
-        public Guid Id { get; init; }
+        public required Guid Id { get; init; }
 
         [JsonPropertyName("name")]
-        public string Name { get; init; }
+        public required string Name { get; init; }
     }
 }

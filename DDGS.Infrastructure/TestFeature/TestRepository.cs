@@ -1,6 +1,7 @@
 using DDGS.Core.TestFeature.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using DDGS.Core.TestFeature;
+using MapsterMapper;
 
 namespace DDGS.Infrastructure.TestFeature
 {
@@ -8,41 +9,42 @@ namespace DDGS.Infrastructure.TestFeature
     {
         private readonly DdgsDbContext _dbContext;
 
-        public TestRepository(DdgsDbContext dbContext)
+        private readonly IMapper _mapper;
+
+        public TestRepository(DdgsDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
+            _mapper = mapper;
         }
 
         public async Task<List<Test>> GetManyAsync()
         {
-            return (await _dbContext.Tests.ToListAsync()).Select(_ => new Test { Id = _.Id, Name = _.Name }).ToList();
+            return _mapper.Map<List<Test>>(await _dbContext.Tests.ToListAsync());
         }
 
         public async Task<Test?> GetAsync(Guid id)
         {
-            var dbEntity = await _dbContext.Tests.FirstOrDefaultAsync(_ => _.Id == id);
-
-            return dbEntity != null ? new Test { Id = dbEntity.Id, Name = dbEntity.Name } : null;
+            return _mapper.Map<Test>((await _dbContext.Tests.FirstOrDefaultAsync(_ => _.Id == id))!);
         }
 
         public async Task<Test> CreateAsync(Test entity)
         {
             var dbEntity =
-                (await _dbContext.Tests.AddAsync(new TestDbEntity { Id = entity.Id, Name = entity.Name }))
+                (await _dbContext.Tests.AddAsync(_mapper.Map<TestDbEntity>(entity)))
                 .Entity;
 
             await _dbContext.SaveChangesAsync();
 
-            return new Test { Id = dbEntity.Id, Name = dbEntity.Name };
+            return _mapper.Map<Test>(dbEntity);
         }
 
         public async Task<Test?> UpdateAsync(Test entity)
         {
-            var dbEntity = _dbContext.Tests.Update(new TestDbEntity { Id = entity.Id, Name = entity.Name }).Entity;
+            var dbEntity = _dbContext.Tests.Update(_mapper.Map<TestDbEntity>(entity)).Entity;
 
             await _dbContext.SaveChangesAsync();
 
-            return new Test { Id = dbEntity.Id, Name = dbEntity.Name };
+            return _mapper.Map<Test>(dbEntity);
         }
 
         public async Task DeleteAsync(Guid id)

@@ -1,5 +1,7 @@
 using DDGS.Core.TestFeature.Interfaces;
 using DDGS.Core.TestFeature.Payloads;
+using Mapster;
+using MapsterMapper;
 
 namespace DDGS.Core.TestFeature
 {
@@ -7,9 +9,12 @@ namespace DDGS.Core.TestFeature
     {
         private readonly ITestRepository _testRepository;
 
-        public TestService(ITestRepository testRepository)
+        private readonly IMapper _mapper;
+
+        public TestService(ITestRepository testRepository, IMapper mapper)
         {
             _testRepository = testRepository;
+            _mapper = mapper;
         }
 
         public async Task<List<Test>> GetManyAsync()
@@ -24,14 +29,14 @@ namespace DDGS.Core.TestFeature
 
         public async Task<Test> CreateAsync(TestCreatePayload payload)
         {
-            var entity = new Test { Id = Guid.NewGuid(), Name = payload.Name };
-
-            return await _testRepository.CreateAsync(entity);
+            return await _testRepository.CreateAsync(_mapper.Map<Test>(payload));
         }
 
-        public async Task<Test?> UpdateAsync(TestEditPayload payload)
+        public async Task<Test?> UpdateAsync(Guid id, TestEditPayload payload)
         {
-            var entity = new Test { Id = payload.Id, Name = payload.Name };
+            var entity = _mapper.Map<Test>(payload);
+
+            entity.Id = id;
 
             return await _testRepository.UpdateAsync(entity);
         }

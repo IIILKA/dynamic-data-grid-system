@@ -10,7 +10,7 @@ namespace DDGS.Core.TestFeature.Interfaces
 
         Task<Test> CreateAsync(TestCreatePayload payload);
 
-        Task<Test?> UpdateAsync(TestEditPayload payload);
+        Task<Test?> UpdateAsync(Guid id, TestEditPayload payload);
 
         Task DeleteAsync(Guid id);
     }
