@@ -1,6 +1,8 @@
 using DDGS.Core.TestFeature;
 using DDGS.Core.TestFeature.Interfaces;
 using DDGS.Infrastructure.Configuration;
+using DDGS.Infrastructure.Core;
+using DDGS.Infrastructure.Core.Interfaces;
 using DDGS.Infrastructure.TestFeature;
 using Mapster;
 
@@ -9,12 +11,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddDbServices();
 
+//Core
+builder.Services.AddScoped<IEntityIdGenerator, EntityIdGenerator>();
+
+//FeatureServices
 builder.Services.AddScoped<ITestRepository, TestRepository>();
 builder.Services.AddScoped<ITestService, TestService>();
 
 builder.Services.AddMapster();
 
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

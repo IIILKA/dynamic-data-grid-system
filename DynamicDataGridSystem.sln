@@ -7,9 +7,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DDGS.Api", "DDGS.Api\DDGS.A
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{12AF8D27-776A-4D9A-A73D-BF676DB37D13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDGS.Core", "DDGS.Core\DDGS.Core.csproj", "{5E1EAECC-FBDE-4259-8CCA-10C7B62CBCD4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DDGS.Core", "DDGS.Core\DDGS.Core.csproj", "{5E1EAECC-FBDE-4259-8CCA-10C7B62CBCD4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDGS.Infrastructure", "DDGS.Infrastructure\DDGS.Infrastructure.csproj", "{099C49F9-0404-4453-B981-A94CDCA1CA3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DDGS.Infrastructure", "DDGS.Infrastructure\DDGS.Infrastructure.csproj", "{099C49F9-0404-4453-B981-A94CDCA1CA3F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{BC41CD72-7C1E-4E89-9130-51D020F8547C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DDGS.Core.Tests", "Tests\DDGS.Core.Tests\DDGS.Core.Tests.csproj", "{3BF957F0-D829-428F-8643-8B91DEF7C39B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DDGS.Api.Tests", "Tests\DDGS.Api.Tests\DDGS.Api.Tests.csproj", "{1645AC58-6671-4A5F-A50D-E3A09662CA4F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DDGS.UnitTesting.Core", "Tests\DDGS.UnitTesting.Core\DDGS.UnitTesting.Core.csproj", "{7C32DB05-FA0F-40CB-9820-235A6A319892}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,9 +41,26 @@ Global
 		{099C49F9-0404-4453-B981-A94CDCA1CA3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{099C49F9-0404-4453-B981-A94CDCA1CA3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{099C49F9-0404-4453-B981-A94CDCA1CA3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BF957F0-D829-428F-8643-8B91DEF7C39B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BF957F0-D829-428F-8643-8B91DEF7C39B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BF957F0-D829-428F-8643-8B91DEF7C39B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BF957F0-D829-428F-8643-8B91DEF7C39B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1645AC58-6671-4A5F-A50D-E3A09662CA4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1645AC58-6671-4A5F-A50D-E3A09662CA4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1645AC58-6671-4A5F-A50D-E3A09662CA4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1645AC58-6671-4A5F-A50D-E3A09662CA4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C32DB05-FA0F-40CB-9820-235A6A319892}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C32DB05-FA0F-40CB-9820-235A6A319892}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C32DB05-FA0F-40CB-9820-235A6A319892}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C32DB05-FA0F-40CB-9820-235A6A319892}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3BF957F0-D829-428F-8643-8B91DEF7C39B} = {BC41CD72-7C1E-4E89-9130-51D020F8547C}
+		{1645AC58-6671-4A5F-A50D-E3A09662CA4F} = {BC41CD72-7C1E-4E89-9130-51D020F8547C}
+		{7C32DB05-FA0F-40CB-9820-235A6A319892} = {BC41CD72-7C1E-4E89-9130-51D020F8547C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5650D786-174F-4721-BC4B-8BEEB05CDC89}

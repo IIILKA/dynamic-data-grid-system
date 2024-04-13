@@ -19,17 +19,23 @@ namespace DDGS.Core.TestFeature
 
         public async Task<List<Test>> GetManyAsync()
         {
-            return await _testRepository.GetManyAsync();
+            var entityList = await _testRepository.GetManyAsync();
+
+            return entityList;
         }
 
         public async Task<Test?> GetAsync(Guid id)
         {
-            return await _testRepository.GetAsync(id);
+            var entity = await _testRepository.GetAsync(id);
+
+            return entity;
         }
 
         public async Task<Test> CreateAsync(TestCreatePayload payload)
         {
-            return await _testRepository.CreateAsync(_mapper.Map<Test>(payload));
+            var entity = _mapper.Map<Test>(payload);
+
+            return await _testRepository.CreateAsync(entity);
         }
 
         public async Task<Test?> UpdateAsync(Guid id, TestEditPayload payload)

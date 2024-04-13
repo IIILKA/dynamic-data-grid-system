@@ -23,7 +23,9 @@ namespace DDGS.Api.TestFeature
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
-            var dtoList = _mapper.Map<List<TestIndexDto>>(await _testService.GetManyAsync());
+            var entityList = await _testService.GetManyAsync();
+
+            var dtoList = _mapper.Map<List<TestIndexDto>>(entityList);
 
             return Ok(dtoList);
         }
@@ -39,21 +41,25 @@ namespace DDGS.Api.TestFeature
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] TestCreateDto dto)
         {
-            var entity = await _testService.CreateAsync(_mapper.Map<TestCreatePayload>(dto));
+            var payload = _mapper.Map<TestCreatePayload>(dto);
+
+            var entity = await _testService.CreateAsync(payload);
 
             return Ok(entity.Id);
         }
 
         [HttpPut("{testId}")]
-        public async Task<IActionResult> Put(Guid testId, [FromBody] TestEditDto dto)
+        public async Task<IActionResult> PutAsync(Guid testId, [FromBody] TestEditDto dto)
         {
-            await _testService.UpdateAsync(testId, _mapper.Map<TestEditPayload>(dto));
+            var payload = _mapper.Map<TestEditPayload>(dto);
+
+            await _testService.UpdateAsync(testId, payload);
 
             return Ok();
         }
 
         [HttpDelete("{testId}")]
-        public async Task<IActionResult> Delete(Guid testId)
+        public async Task<IActionResult> DeleteAsync(Guid testId)
         {
             await _testService.DeleteAsync(testId);
 

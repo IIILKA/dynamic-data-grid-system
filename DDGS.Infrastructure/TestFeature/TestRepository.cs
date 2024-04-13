@@ -1,6 +1,7 @@
 using DDGS.Core.TestFeature.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using DDGS.Core.TestFeature;
+using DDGS.Infrastructure.Core.Interfaces;
 using MapsterMapper;
 
 namespace DDGS.Infrastructure.TestFeature
@@ -11,10 +12,13 @@ namespace DDGS.Infrastructure.TestFeature
 
         private readonly IMapper _mapper;
 
-        public TestRepository(DdgsDbContext dbContext, IMapper mapper)
+        private readonly IEntityIdGenerator _entityIdGenerator;
+
+        public TestRepository(DdgsDbContext dbContext, IMapper mapper, IEntityIdGenerator entityIdGenerator)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _entityIdGenerator = entityIdGenerator;
         }
 
         public async Task<List<Test>> GetManyAsync()
@@ -29,6 +33,8 @@ namespace DDGS.Infrastructure.TestFeature
 
         public async Task<Test> CreateAsync(Test entity)
         {
+            entity.Id = _entityIdGenerator.GenerateId();
+
             var dbEntity =
                 (await _dbContext.Tests.AddAsync(_mapper.Map<TestDbEntity>(entity)))
                 .Entity;
