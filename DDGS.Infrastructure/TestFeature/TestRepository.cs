@@ -23,12 +23,12 @@ namespace DDGS.Infrastructure.TestFeature
 
         public async Task<List<Test>> GetManyAsync()
         {
-            return _mapper.Map<List<Test>>(await _dbContext.Tests.ToListAsync());
+            return _mapper.Map<List<Test>>(await _dbContext.Tests.AsNoTracking().ToListAsync());
         }
 
         public async Task<Test?> GetAsync(Guid id)
         {
-            return _mapper.Map<Test>((await _dbContext.Tests.FirstOrDefaultAsync(_ => _.Id == id))!);
+            return _mapper.Map<Test>((await _dbContext.Tests.AsNoTracking().FirstOrDefaultAsync(_ => _.Id == id))!);
         }
 
         public async Task<Test> CreateAsync(Test entity)
