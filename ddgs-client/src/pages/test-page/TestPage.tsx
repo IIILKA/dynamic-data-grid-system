@@ -14,31 +14,31 @@ export function TestPage() {
             id: '30558184-2def-4a67-8d84-78c2d31d9305',
             index: 1,
             name: 'First test',
-            password: 'qwerty1',
+            password: 'qwerty1'
         },
         {
             id: '804b675f-2788-4aba-9b93-fdb6bfbcc6af',
             index: 2,
             name: 'Second test',
-            password: 'qwerty2',
+            password: 'qwerty2'
         },
         {
             id: 'ec6e04a4-d314-45c1-a564-1d0985abf70a',
             index: 5,
             name: 'Fifth test',
-            password: 'qwerty5',
+            password: 'qwerty5'
         },
         {
             id: 'ec6e04a4-d314-45c1-a564-1d0985abf701',
             index: 4,
             name: 'Forth test',
-            password: 'qwerty4',
+            password: 'qwerty4'
         },
         {
             id: 'ec6e04a4-d314-45c1-a564-1d0985abf702',
             index: 3,
             name: 'Third test',
-            password: 'qwerty3',
+            password: 'qwerty3'
         }
     ]);
 
