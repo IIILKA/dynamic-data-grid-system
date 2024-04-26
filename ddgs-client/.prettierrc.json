@@ -4,7 +4,7 @@
   "embeddedLanguageFormatting": "auto",
   "htmlWhitespaceSensitivity": "css",
   "insertPragma": false,
-  "jsxBracketSameLine": false,
+  "jsxBracketSameLine": true,
   "jsxSingleQuote": true,
   "proseWrap": "preserve",
   "quoteProps": "as-needed",
@@ -16,5 +16,6 @@
   "vueIndentScriptAndStyle": false,
   "printWidth": 140,
   "tabWidth": 4,
-  "rangeStart": 0
+  "rangeStart": 0,
+  "bracketSameLine": true
 }

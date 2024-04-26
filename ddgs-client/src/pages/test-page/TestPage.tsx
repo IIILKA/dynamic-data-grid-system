@@ -1,52 +1,62 @@
 import { useImmer } from 'use-immer';
 import DataGrid from '../../modules/data-grid/DataGrid';
 import { resetObject } from '../../utils/ResetObjectHelper';
+import { TableCellType } from '../../modules/seed-data/TableCellType';
+import TableEntity from '../../modules/seed-data/TableEntity';
 
 export interface TestInputChangedObject {
     rowId: string;
     collName: string;
-    newValue: string;
+    newValue: TableCellType;
 }
 
 export function TestPage() {
-    const [tableData, setTableData] = useImmer([
+    const [tableData, setTableData] = useImmer<TableEntity[]>([
         {
             id: '30558184-2def-4a67-8d84-78c2d31d9305',
             index: 1,
-            name: 'First test',
-            password: 'qwerty1'
+            login: 'First test',
+            password: 'qwerty1',
+            age: 23,
+            isStudent: true
         },
         {
             id: '804b675f-2788-4aba-9b93-fdb6bfbcc6af',
             index: 2,
-            name: 'Second test',
-            password: 'qwerty2'
+            login: 'Second test',
+            password: 'qwerty2',
+            age: 21,
+            isStudent: true
         },
         {
             id: 'ec6e04a4-d314-45c1-a564-1d0985abf70a',
             index: 5,
-            name: 'Fifth test',
-            password: 'qwerty5'
+            login: 'Fifth test',
+            password: 'qwerty5',
+            age: 28,
+            isStudent: false
         },
         {
             id: 'ec6e04a4-d314-45c1-a564-1d0985abf701',
             index: 4,
-            name: 'Forth test',
-            password: 'qwerty4'
+            login: 'Forth test',
+            password: 'qwerty4',
+            age: 24,
+            isStudent: true
         },
         {
             id: 'ec6e04a4-d314-45c1-a564-1d0985abf702',
             index: 3,
-            name: 'Third test',
-            password: 'qwerty3'
+            login: 'Third test',
+            password: 'qwerty3',
+            age: 31,
+            isStudent: false
         }
     ]);
 
-    function handleChangeCellInput(testInputChangedObject: TestInputChangedObject) {
+    function handleChangeCell(testInputChangedObject: TestInputChangedObject) {
         setTableData((draft) => {
             const cell = draft.find((_) => _.id === testInputChangedObject.rowId);
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
             cell![testInputChangedObject.collName] = testInputChangedObject.newValue;
         });
     }
@@ -97,7 +107,7 @@ export function TestPage() {
         <DataGrid
             tableData={tableData}
             onDeleteRow={handleDeleteRow}
-            onChangeCellInput={handleChangeCellInput}
+            onChangeCell={handleChangeCell}
             onAddRow={handleAddRow}
             onDuplicateRow={handleDuplicateRow}
         />

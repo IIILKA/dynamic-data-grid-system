@@ -1,66 +1,111 @@
-import { Table, TextInput } from '@mantine/core';
+import { NumberInput, Table, TextInput, Checkbox, Center } from '@mantine/core';
 import { TestInputChangedObject } from '../../pages/test-page/TestPage';
 import { styled } from 'styled-components';
+import { SelectedRow } from './DataGridBody';
 
 const DataGridCellContainer = styled.div`
     cursor: default;
     border: 1px solid transparent;
 
-    .mantine-TextInput-root {
-        & {
-            input {
-                cursor: default;
-                padding-left: 0.5rem;
+    & {
+        input {
+            cursor: default;
+            padding-left: 0.5rem;
+
+            &[type='checkbox'] {
+                cursor: pointer;
             }
         }
     }
 
     &.active {
-        cursor: pointer;
+        input {
+            cursor: text;
+
+            &[type='checkbox'] {
+                cursor: pointer;
+            }
+        }
+
         border: 1px solid dodgerblue;
         background-color: var(--mantine-color-default);
     }
 `;
 
-const DataGridTd = styled(Table.Td)`
-    padding: 0;
-`;
-
 interface DataGridBodyCellProps {
-    value: string;
+    value: string | number | boolean;
     rowId: string;
     colName: string;
     isActive: boolean;
-    onChangeCellInput: (arg: TestInputChangedObject) => void;
-    setSelectedCell: (args: { rowId: string; colName: string }) => void;
+
+    onChangeCell(testInputChangedObject: TestInputChangedObject): void;
+
+    setSelectedCell(selectedRow: SelectedRow): void;
 }
 
-export default function DataGridBodyCell({
-    value,
-    rowId,
-    colName,
-    isActive,
-    onChangeCellInput,
-    setSelectedCell
-}: DataGridBodyCellProps) {
+export default function DataGridBodyCell({ value, rowId, colName, isActive, onChangeCell, setSelectedCell }: DataGridBodyCellProps) {
+    function getCellControl() {
+        switch (typeof value) {
+            case 'string':
+                return (
+                    <DataGridCellContainer className={isActive ? 'active' : ''}>
+                        <TextInput
+                            variant='unstyled'
+                            value={value}
+                            onChange={(e) =>
+                                onChangeCell({
+                                    rowId: rowId,
+                                    collName: colName,
+                                    newValue: e.currentTarget.value
+                                })
+                            }
+                        />
+                    </DataGridCellContainer>
+                );
+            case 'number':
+                return (
+                    <DataGridCellContainer className={isActive ? 'active' : ''}>
+                        <NumberInput
+                            variant='unstyled'
+                            value={value}
+                            defaultValue={0}
+                            onChange={(value) =>
+                                onChangeCell({
+                                    rowId: rowId,
+                                    collName: colName,
+                                    newValue: typeof value === 'number' ? value : 0
+                                })
+                            }
+                        />
+                    </DataGridCellContainer>
+                );
+            case 'boolean':
+                return (
+                    <DataGridCellContainer className={isActive ? 'active' : ''}>
+                        <Center style={{ padding: '0.5rem' }}>
+                            <Checkbox
+                                color='teal'
+                                checked={value}
+                                onChange={(e) =>
+                                    onChangeCell({
+                                        rowId: rowId,
+                                        collName: colName,
+                                        newValue: e.currentTarget.checked
+                                    })
+                                }
+                            />
+                        </Center>
+                    </DataGridCellContainer>
+                );
+        }
+    }
+
     return (
-        <DataGridTd
+        <Table.Td
+            style={{ padding: 0 }}
             onClick={() => setSelectedCell({ rowId: rowId, colName: colName })}
-            onContextMenu={() => setSelectedCell({ rowId: rowId, colName: colName })}
-        >
-            <DataGridCellContainer className={isActive ? 'active' : ''}>
-                <TextInput
-                    variant='unstyled'
-                    value={value}
-                    onChange={(e) =>
-                        onChangeCellInput({
-                            rowId: rowId,
-                            collName: colName,
-                            newValue: e.currentTarget.value
-                        })
-                    }
-                />
-            </DataGridCellContainer>
-        </DataGridTd>
+            onContextMenu={() => setSelectedCell({ rowId: rowId, colName: colName })}>
+            {getCellControl()}
+        </Table.Td>
     );
 }

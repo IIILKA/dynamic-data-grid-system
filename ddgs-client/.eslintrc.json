@@ -18,6 +18,11 @@
   "rules": {
     "react/react-in-jsx-scope": "off",
     "semi": [2, "always"],
-    "indent": ["error", 4]
+    "indent": ["error", 4,
+      {
+      "SwitchCase": 1,
+      "ignoredNodes": ["ConditionalExpression"]
+    }
+    ]
   }
 }

@@ -12,18 +12,20 @@ const TableStyledTr = styled(Table.Tr)`
     }
 `;
 
-interface DadaGridBodyRowProps<T> {
+interface DadaGridBodyRowProps<T extends TableEntity> {
     rowData: T;
     selectedCell: { rowId: string; colName: string } | null;
-    setSelectedCell: (args: { rowId: string; colName: string }) => void;
-    onChangeCellInput: (arg: TestInputChangedObject) => void;
+
+    setSelectedCell(cell: { rowId: string; colName: string }): void;
+
+    onChangeCell(cell: TestInputChangedObject): void;
 }
 
 export default function DadaGridBodyRow<T extends TableEntity>({
     rowData,
     selectedCell,
     setSelectedCell,
-    onChangeCellInput
+    onChangeCell
 }: DadaGridBodyRowProps<T>) {
     function getBodyCells<T extends TableEntity>(row: T): ReactNode[] {
         const dtoPropertyNames = Object.getOwnPropertyNames(row);
@@ -32,23 +34,15 @@ export default function DadaGridBodyRow<T extends TableEntity>({
             .map((colName) => (
                 <DataGridBodyCell
                     key={colName}
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-ignore
                     value={row[colName]}
                     rowId={row.id}
                     colName={colName}
-                    isActive={
-                        rowData.id === selectedCell?.rowId && colName === selectedCell.colName
-                    }
-                    onChangeCellInput={onChangeCellInput}
+                    isActive={rowData.id === selectedCell?.rowId && colName === selectedCell.colName}
+                    onChangeCell={onChangeCell}
                     setSelectedCell={setSelectedCell}
                 />
             ));
     }
 
-    return (
-        <TableStyledTr className={rowData.id === selectedCell?.rowId ? 'active' : ''}>
-            {getBodyCells(rowData)}
-        </TableStyledTr>
-    );
+    return <TableStyledTr className={rowData.id === selectedCell?.rowId ? 'active' : ''}>{getBodyCells(rowData)}</TableStyledTr>;
 }
