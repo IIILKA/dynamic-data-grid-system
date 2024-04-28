@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { Footer } from './Footer';
 import { Header } from './Header';
 import { styled } from 'styled-components';
+import { MantineProvider, createTheme } from '@mantine/core';
 
 const StyledContainer = styled.div`
     padding: 0 3rem;
@@ -16,15 +17,21 @@ const StyledContainer = styled.div`
     }
 `;
 
+const theme = createTheme({
+    fontFamily: 'Roboto, sans-serif'
+});
+
 function AppLayout(): ReactElement {
     return (
-        <StyledContainer>
-            <Header />
-            <div className='content'>
-                <Outlet />
-            </div>
-            <Footer />
-        </StyledContainer>
+        <MantineProvider theme={theme} defaultColorScheme='dark'>
+            <StyledContainer>
+                <Header />
+                <div className='content'>
+                    <Outlet />
+                </div>
+                <Footer />
+            </StyledContainer>
+        </MantineProvider>
     );
 }
 
