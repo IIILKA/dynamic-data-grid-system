@@ -1,7 +1,7 @@
 import { NumberInput, Table, TextInput, Checkbox, Center } from '@mantine/core';
-import { TestInputChangedObject } from '../../pages/test-page/TestPage';
 import { styled } from 'styled-components';
-import { SelectedRow } from './DataGridBody';
+import { changeCellValue, selectCell } from './dataGridSlice';
+import { useDispatch } from 'react-redux';
 
 const DataGridCellContainer = styled.div`
     cursor: default;
@@ -37,13 +37,11 @@ interface DataGridBodyCellProps {
     rowId: string;
     colName: string;
     isActive: boolean;
-
-    onChangeCell(testInputChangedObject: TestInputChangedObject): void;
-
-    setSelectedCell(selectedRow: SelectedRow): void;
 }
 
-export default function DataGridBodyCell({ value, rowId, colName, isActive, onChangeCell, setSelectedCell }: DataGridBodyCellProps) {
+export default function DataGridBodyCell({ value, rowId, colName, isActive }: DataGridBodyCellProps) {
+    const dispatch = useDispatch();
+
     function getCellControl() {
         switch (typeof value) {
             case 'string':
@@ -53,11 +51,13 @@ export default function DataGridBodyCell({ value, rowId, colName, isActive, onCh
                             variant='unstyled'
                             value={value}
                             onChange={(e) =>
-                                onChangeCell({
-                                    rowId: rowId,
-                                    collName: colName,
-                                    newValue: e.currentTarget.value
-                                })
+                                dispatch(
+                                    changeCellValue({
+                                        rowId: rowId,
+                                        collName: colName,
+                                        newValue: e.currentTarget.value
+                                    })
+                                )
                             }
                         />
                     </DataGridCellContainer>
@@ -70,11 +70,13 @@ export default function DataGridBodyCell({ value, rowId, colName, isActive, onCh
                             value={value}
                             defaultValue={0}
                             onChange={(value) =>
-                                onChangeCell({
-                                    rowId: rowId,
-                                    collName: colName,
-                                    newValue: typeof value === 'number' ? value : 0
-                                })
+                                dispatch(
+                                    changeCellValue({
+                                        rowId: rowId,
+                                        collName: colName,
+                                        newValue: typeof value === 'number' ? value : 0
+                                    })
+                                )
                             }
                         />
                     </DataGridCellContainer>
@@ -87,11 +89,13 @@ export default function DataGridBodyCell({ value, rowId, colName, isActive, onCh
                                 color='teal'
                                 checked={value}
                                 onChange={(e) =>
-                                    onChangeCell({
-                                        rowId: rowId,
-                                        collName: colName,
-                                        newValue: e.currentTarget.checked
-                                    })
+                                    dispatch(
+                                        changeCellValue({
+                                            rowId: rowId,
+                                            collName: colName,
+                                            newValue: e.currentTarget.checked
+                                        })
+                                    )
                                 }
                             />
                         </Center>
@@ -103,8 +107,8 @@ export default function DataGridBodyCell({ value, rowId, colName, isActive, onCh
     return (
         <Table.Td
             style={{ padding: 0 }}
-            onClick={() => setSelectedCell({ rowId: rowId, colName: colName })}
-            onContextMenu={() => setSelectedCell({ rowId: rowId, colName: colName })}>
+            onClick={() => dispatch(selectCell({ rowId: rowId, colName: colName }))}
+            onContextMenu={() => dispatch(selectCell({ rowId: rowId, colName: colName }))}>
             {getCellControl()}
         </Table.Td>
     );

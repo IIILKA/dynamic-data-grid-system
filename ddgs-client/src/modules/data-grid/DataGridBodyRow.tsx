@@ -2,7 +2,6 @@ import TableEntity from '../seed-data/TableEntity';
 import { Table } from '@mantine/core';
 import { ReactNode } from 'react';
 import DataGridBodyCell from './DataGridBodyCell';
-import { TestInputChangedObject } from '../../pages/test-page/TestPage';
 import { styled } from 'styled-components';
 import { nameOf } from '../../utils/NameOfHelper';
 
@@ -15,18 +14,9 @@ const TableStyledTr = styled(Table.Tr)`
 interface DadaGridBodyRowProps<T extends TableEntity> {
     rowData: T;
     selectedCell: { rowId: string; colName: string } | null;
-
-    setSelectedCell(cell: { rowId: string; colName: string }): void;
-
-    onChangeCell(cell: TestInputChangedObject): void;
 }
 
-export default function DadaGridBodyRow<T extends TableEntity>({
-    rowData,
-    selectedCell,
-    setSelectedCell,
-    onChangeCell
-}: DadaGridBodyRowProps<T>) {
+export default function DadaGridBodyRow<T extends TableEntity>({ rowData, selectedCell }: DadaGridBodyRowProps<T>) {
     function getBodyCells<T extends TableEntity>(row: T): ReactNode[] {
         const dtoPropertyNames = Object.getOwnPropertyNames(row);
         return dtoPropertyNames
@@ -38,8 +28,6 @@ export default function DadaGridBodyRow<T extends TableEntity>({
                     rowId={row.id}
                     colName={colName}
                     isActive={rowData.id === selectedCell?.rowId && colName === selectedCell.colName}
-                    onChangeCell={onChangeCell}
-                    setSelectedCell={setSelectedCell}
                 />
             ));
     }

@@ -5,11 +5,15 @@ import { createRoot } from 'react-dom/client';
 import { StrictMode } from 'react';
 import { RouterProvider } from 'react-router-dom';
 import { appRouter } from './AppRouter';
+import { Provider } from 'react-redux';
+import store from './app/store';
 
 const root = createRoot(document.getElementById('root') as HTMLElement);
 
 root.render(
-    <StrictMode>
-        <RouterProvider router={appRouter} />
-    </StrictMode>
+    <Provider store={store}>
+        <StrictMode>
+            <RouterProvider router={appRouter} />
+        </StrictMode>
+    </Provider>
 );
