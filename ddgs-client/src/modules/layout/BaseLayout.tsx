@@ -23,7 +23,7 @@ const theme = createTheme({
 
 function AppLayout(): ReactElement {
     return (
-        <MantineProvider theme={theme} defaultColorScheme='dark'>
+        <MantineProvider theme={theme} defaultColorScheme='auto'>
             <StyledContainer>
                 <Header />
                 <div className='content'>

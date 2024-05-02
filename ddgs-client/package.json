@@ -37,7 +37,7 @@
     "build": "npm-run-all build:css build-js",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "lint": "eslint src/**/* --ext .ts --ext .tsx"
+    "lint": "eslint src/**/* --ext .ts --ext .tsx --fix"
   },
   "eslintConfig": {
     "extends": [
