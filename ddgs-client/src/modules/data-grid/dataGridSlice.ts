@@ -15,11 +15,13 @@ interface SelectedCell {
 }
 
 interface DataGridState {
+    fetchingQueriesCount: number;
     selectedCell: SelectedCell | null;
     rows: TableEntity[];
 }
 
 const initialState: DataGridState = {
+    fetchingQueriesCount: 0,
     selectedCell: null,
     rows: [
         {
@@ -69,6 +71,12 @@ export const dataGridSlice = createSlice({
     name: 'dataGrid',
     initialState,
     reducers: {
+        queryStarted: (state) => {
+            state.fetchingQueriesCount++;
+        },
+        queryFinished: (state) => {
+            state.fetchingQueriesCount--;
+        },
         selectCell: (state, action: PayloadAction<SelectedCell | null>) => {
             state.selectedCell = action.payload;
         },
@@ -77,42 +85,10 @@ export const dataGridSlice = createSlice({
             if (changedCell) {
                 changedCell[action.payload.collName] = action.payload.newValue;
             }
-        },
-        addRow: (state) => {
-            const newRow = resetObject({ ...state.rows[0] });
-            newRow.index = state.rows.length;
-            state.rows.push(newRow);
-        },
-        duplicateRow: (state, action: PayloadAction<string>) => {
-            const originalRow = state.rows.find((_) => _.id === action.payload);
-            if (originalRow) {
-                const duplicatedRow = { ...originalRow };
-                duplicatedRow.id = '';
-                duplicatedRow.index = originalRow.index + 1;
-
-                state.rows.forEach((_) => {
-                    _.index++;
-                });
-
-                state.rows.push(duplicatedRow);
-            }
-        },
-        deleteRow: (state, action: PayloadAction<string>) => {
-            const deletedRow = state.rows.find((_) => _.id === action.payload);
-
-            if (deletedRow) {
-                state.rows.forEach((_) => {
-                    if (_.index > deletedRow.index) {
-                        _.index--;
-                    }
-                });
-            }
-
-            state.rows = state.rows.filter((_) => _.id !== action.payload);
         }
     }
 });
 
-export const { selectCell, changeCellValue, addRow, duplicateRow, deleteRow } = dataGridSlice.actions;
+export const { queryStarted, queryFinished, selectCell, changeCellValue } = dataGridSlice.actions;
 
 export default dataGridSlice.reducer;

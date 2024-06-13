@@ -3,8 +3,8 @@ import { IconArrowDown, IconArrowUp, IconCopy, IconTrash } from '@tabler/icons-r
 import { useClickOutside } from '@mantine/hooks';
 import { ForwardedRef, forwardRef, ReactElement, SetStateAction, useImperativeHandle, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteRow, duplicateRow } from './dataGridSlice';
 import { RootState } from '../../app/store';
+import { useDeleteTestMutation } from '../api/apiSlice';
 
 interface DaraGridBodyMenuProps {
     children: ReactElement;
@@ -36,6 +36,13 @@ export default forwardRef(function DaraGridBodyMenu(
 
     const menuRef = useClickOutside(() => setMenu({ isOpened: false }));
 
+    const [deleteRow] = useDeleteTestMutation();
+
+    const onDeleteTestClicked = async () => {
+        setMenu({ isOpened: false });
+        await deleteRow(selectedCell!.rowId);
+    };
+
     return (
         <Menu opened={menu.isOpened}>
             <Menu.Target>{children}</Menu.Target>
@@ -52,23 +59,14 @@ export default forwardRef(function DaraGridBodyMenu(
                     Insert test above
                 </Menu.Item>
                 <Menu.Divider />
-                <Menu.Item
-                    leftSection={<IconCopy style={{ width: rem(14), height: rem(14) }} />}
-                    onClick={() => {
-                        setMenu({ isOpened: false });
-                        dispatch(duplicateRow(selectedCell!.rowId));
-                    }}
-                    disabled={disableAddNewItemButtons}>
+                <Menu.Item leftSection={<IconCopy style={{ width: rem(14), height: rem(14) }} />} disabled={disableAddNewItemButtons}>
                     Duplicate test
                 </Menu.Item>
                 <Menu.Divider />
                 <Menu.Item
                     color='red'
                     leftSection={<IconTrash style={{ width: rem(14), height: rem(14) }} />}
-                    onClick={() => {
-                        setMenu({ isOpened: false });
-                        dispatch(deleteRow(selectedCell!.rowId));
-                    }}>
+                    onClick={onDeleteTestClicked}>
                     Delete test
                 </Menu.Item>
             </Menu.Dropdown>

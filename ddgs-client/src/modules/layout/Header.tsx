@@ -1,7 +1,8 @@
 import { ReactElement } from 'react';
 import { styled } from 'styled-components';
-import { ActionIcon, useMantineColorScheme } from '@mantine/core';
+import { ActionIcon, useMantineColorScheme, Center } from '@mantine/core';
 import { IconSunFilled, IconMoonFilled } from '@tabler/icons-react';
+import DataGridLoader from '../data-grid/DataGridLoader';
 
 const HeaderContainer = styled.div`
     display: flex;
@@ -15,24 +16,27 @@ const StyledLogo = styled.h1`
 
 export function Header(): ReactElement {
     const { colorScheme, toggleColorScheme } = useMantineColorScheme();
-    const dark = colorScheme === 'dark';
+    const isDarkTheme = colorScheme === 'dark';
 
     return (
         <HeaderContainer>
             <StyledLogo>DDGS</StyledLogo>
             <div style={{ display: 'flex', gap: '4px' }}>
-                <ActionIcon
-                    variant='subtle'
-                    size='lg'
-                    color={dark ? 'yellow' : 'blue'}
-                    onClick={() => toggleColorScheme()}
-                    title='Toggle color scheme'>
-                    {dark ? (
-                        <IconSunFilled style={{ width: '70%', height: '70%' }} />
-                    ) : (
-                        <IconMoonFilled style={{ width: '70%', height: '70%' }} />
-                    )}
-                </ActionIcon>
+                <DataGridLoader isDarkTheme={isDarkTheme} />
+                <Center>
+                    <ActionIcon
+                        variant='subtle'
+                        size='lg'
+                        color={isDarkTheme ? 'yellow' : 'blue'}
+                        onClick={() => toggleColorScheme()}
+                        title='Toggle color scheme'>
+                        {isDarkTheme ? (
+                            <IconSunFilled style={{ width: '70%', height: '70%' }} />
+                        ) : (
+                            <IconMoonFilled style={{ width: '70%', height: '70%' }} />
+                        )}
+                    </ActionIcon>
+                </Center>
             </div>
         </HeaderContainer>
     );

@@ -1,7 +1,12 @@
 import { NumberInput, Table, TextInput, Checkbox, Center } from '@mantine/core';
 import { styled } from 'styled-components';
-import { changeCellValue, selectCell } from './dataGridSlice';
-import { useDispatch } from 'react-redux';
+import { changeCellValue, dataGridSlice, selectCell } from './dataGridSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { apiSlice, selectTestById, tableEntityAdapter, useGetTestsQuery, useUpdateTestMutation } from '../api/apiSlice';
+import { TableCellType } from '../seed-data/TableCellType';
+import { RootState, useAppDispatch } from '../../app/store';
+import { useEffect, useLayoutEffect, useState } from 'react';
+import { useDebounce } from '../hooks/debounce';
 
 const DataGridCellContainer = styled.div`
     cursor: default;
@@ -33,33 +38,43 @@ const DataGridCellContainer = styled.div`
 `;
 
 interface DataGridBodyCellProps {
-    value: string | number | boolean;
     rowId: string;
     colName: string;
     isActive: boolean;
 }
 
-export default function DataGridBodyCell({ value, rowId, colName, isActive }: DataGridBodyCellProps) {
+export default function DataGridBodyCell({ rowId, colName, isActive }: DataGridBodyCellProps) {
     const dispatch = useDispatch();
+    const appDispatch = useAppDispatch();
+    const [updateRow] = useUpdateTestMutation();
+    const entity = useSelector((state: RootState) => selectTestById(state, rowId));
+    const debounce = useDebounce(entity[colName]);
+    const [changeValueServerHandled, setChangeValueServerHandled] = useState(true);
 
-    function getCellControl() {
+    useEffect(() => {
+        if (!changeValueServerHandled) {
+            const { id, ...entityUpdatePayload } = entity;
+            updateRow({ id: rowId, entityUpdatePayload }).then(() => setChangeValueServerHandled(true));
+        }
+    }, [debounce]);
+
+    async function handleChangeValue(newValue: TableCellType) {
+        setChangeValueServerHandled(false);
+        const { id, ...entityUpdatePayload } = entity;
+        entityUpdatePayload[colName] = newValue;
+        appDispatch(
+            apiSlice.util?.updateQueryData('getTests', undefined, (draft) => {
+                tableEntityAdapter.updateOne(draft, { id, changes: entityUpdatePayload });
+            })
+        );
+    }
+
+    function getCellControl(value: TableCellType) {
         switch (typeof value) {
             case 'string':
                 return (
                     <DataGridCellContainer className={isActive ? 'active' : ''}>
-                        <TextInput
-                            variant='unstyled'
-                            value={value}
-                            onChange={(e) =>
-                                dispatch(
-                                    changeCellValue({
-                                        rowId: rowId,
-                                        collName: colName,
-                                        newValue: e.currentTarget.value
-                                    })
-                                )
-                            }
-                        />
+                        <TextInput variant='unstyled' value={value} onChange={(e) => handleChangeValue(e.currentTarget.value)} />
                     </DataGridCellContainer>
                 );
             case 'number':
@@ -69,15 +84,7 @@ export default function DataGridBodyCell({ value, rowId, colName, isActive }: Da
                             variant='unstyled'
                             value={value}
                             defaultValue={0}
-                            onChange={(value) =>
-                                dispatch(
-                                    changeCellValue({
-                                        rowId: rowId,
-                                        collName: colName,
-                                        newValue: typeof value === 'number' ? value : 0
-                                    })
-                                )
-                            }
+                            onChange={(value) => handleChangeValue(typeof value === 'number' ? value : 0)}
                         />
                     </DataGridCellContainer>
                 );
@@ -85,19 +92,7 @@ export default function DataGridBodyCell({ value, rowId, colName, isActive }: Da
                 return (
                     <DataGridCellContainer className={isActive ? 'active' : ''}>
                         <Center style={{ padding: '0.5rem' }}>
-                            <Checkbox
-                                color='teal'
-                                checked={value}
-                                onChange={(e) =>
-                                    dispatch(
-                                        changeCellValue({
-                                            rowId: rowId,
-                                            collName: colName,
-                                            newValue: e.currentTarget.checked
-                                        })
-                                    )
-                                }
-                            />
+                            <Checkbox color='teal' checked={value} onChange={(e) => handleChangeValue(e.currentTarget.checked)} />
                         </Center>
                     </DataGridCellContainer>
                 );
@@ -109,7 +104,7 @@ export default function DataGridBodyCell({ value, rowId, colName, isActive }: Da
             style={{ padding: 0 }}
             onClick={() => dispatch(selectCell({ rowId: rowId, colName: colName }))}
             onContextMenu={() => dispatch(selectCell({ rowId: rowId, colName: colName }))}>
-            {getCellControl()}
+            {getCellControl(entity[colName])}
         </Table.Td>
     );
 }

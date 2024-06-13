@@ -4,6 +4,8 @@ import { ReactNode } from 'react';
 import DataGridBodyCell from './DataGridBodyCell';
 import { styled } from 'styled-components';
 import { nameOf } from '../../utils/NameOfHelper';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../app/store';
 
 const TableStyledTr = styled(Table.Tr)`
     &.active {
@@ -13,10 +15,11 @@ const TableStyledTr = styled(Table.Tr)`
 
 interface DadaGridBodyRowProps<T extends TableEntity> {
     rowData: T;
-    selectedCell: { rowId: string; colName: string } | null;
 }
 
-export default function DadaGridBodyRow<T extends TableEntity>({ rowData, selectedCell }: DadaGridBodyRowProps<T>) {
+export default function DadaGridBodyRow<T extends TableEntity>({ rowData }: DadaGridBodyRowProps<T>) {
+    const selectedCell = useSelector((_: RootState) => _.dataGrid.selectedCell);
+
     function getBodyCells<T extends TableEntity>(row: T): ReactNode[] {
         const dtoPropertyNames = Object.getOwnPropertyNames(row);
         return dtoPropertyNames
@@ -24,7 +27,7 @@ export default function DadaGridBodyRow<T extends TableEntity>({ rowData, select
             .map((colName) => (
                 <DataGridBodyCell
                     key={colName}
-                    value={row[colName]}
+                    //value={row[colName]}
                     rowId={row.id}
                     colName={colName}
                     isActive={rowData.id === selectedCell?.rowId && colName === selectedCell.colName}

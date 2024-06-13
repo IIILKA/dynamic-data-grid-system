@@ -2,28 +2,34 @@ import { Table, Button } from '@mantine/core';
 import TableEntity from '../seed-data/TableEntity';
 import DataGridHead from './DataGridHead';
 import DataGridBody from './DataGridBody';
-import { useDispatch } from 'react-redux';
-import { addRow } from './dataGridSlice';
+import { useCreateTestMutation } from '../api/apiSlice';
+import { resetObject } from '../../utils/ResetObjectHelper';
+import { useEffect, useState } from 'react';
+import { TableCellType } from '../seed-data/TableCellType';
+import { useDebounce } from '../hooks/debounce';
 
 interface DataGridProps<T extends TableEntity> {
-    dataGridRows: T[];
+    sortedIds: string[];
+    dataGridRows: { [key: string]: T };
 }
 
-export default function DataGrid<T extends TableEntity>({ dataGridRows }: DataGridProps<T>) {
-    const dispatch = useDispatch();
+export default function DataGrid<T extends TableEntity>({ sortedIds, dataGridRows }: DataGridProps<T>) {
+    const [createRow] = useCreateTestMutation();
+
+    async function handleAddEntityClicked() {
+        const resetedRow = resetObject({ ...dataGridRows[sortedIds[0]] });
+        const { id, ...entityCreatePayload } = resetedRow;
+        entityCreatePayload.index = sortedIds.length + 1;
+        await createRow(entityCreatePayload);
+    }
 
     return (
         <>
             <Table highlightOnHover withColumnBorders withRowBorders withTableBorder style={{ marginBottom: '0.5rem' }}>
-                <DataGridHead propNames={Object.getOwnPropertyNames(dataGridRows[0])} />
-                <DataGridBody tableData={dataGridRows} />
+                <DataGridHead propNames={Object.getOwnPropertyNames(dataGridRows[sortedIds[0]])} />
+                <DataGridBody sortedIds={sortedIds} dataGridRows={dataGridRows} />
             </Table>
-            <Button
-                variant='filled'
-                color='teal'
-                style={{ width: '100%' }}
-                onClick={() => dispatch(addRow())}
-                disabled={dataGridRows.some((_) => _.id === '')}>
+            <Button variant='filled' color='teal' style={{ width: '100%' }} onClick={handleAddEntityClicked}>
                 Add test
             </Button>
         </>

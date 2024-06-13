@@ -7,6 +7,14 @@ namespace DDGS.Infrastructure.TestFeature
     [AdaptTwoWays(typeof(Test))]
     public class TestDbEntity : DbEntity
     {
-        public required string Name { get; set; }
+        public required int Index { get; set; }
+
+        public string? Login { get; set; }
+
+        public string? Password { get; set; }
+
+        public int Age { get; set; }
+
+        public bool IsStudent { get; set; }
     }
 }

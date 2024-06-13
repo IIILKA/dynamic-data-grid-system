@@ -48,6 +48,7 @@ namespace DDGS.Api.TestFeature
             return Ok(entity.Id);
         }
 
+        //TODO: use patch
         [HttpPut("{testId}")]
         public async Task<IActionResult> PutAsync(Guid testId, [FromBody] TestEditDto dto)
         {

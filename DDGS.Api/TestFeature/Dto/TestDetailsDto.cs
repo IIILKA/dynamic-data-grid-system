@@ -10,7 +10,19 @@ namespace DDGS.Api.TestFeature.Dto
         [JsonPropertyName("id")]
         public required Guid Id { get; init; }
 
-        [JsonPropertyName("name")]
-        public required string Name { get; init; }
+        [JsonPropertyName("index")]
+        public required int Index { get; init; }
+
+        [JsonPropertyName("login")]
+        public string? Login { get; init; }
+
+        [JsonPropertyName("password")]
+        public string? Password { get; init; }
+
+        [JsonPropertyName("age")]
+        public int Age { get; init; }
+
+        [JsonPropertyName("isStudent")]
+        public bool IsStudent { get; init; }
     }
 }

@@ -5,6 +5,7 @@ using DDGS.Infrastructure.Core;
 using DDGS.Infrastructure.Core.Interfaces;
 using DDGS.Infrastructure.TestFeature;
 using Mapster;
+using Microsoft.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,14 +22,23 @@ builder.Services.AddScoped<ITestService, TestService>();
 builder.Services.AddMapster();
 
 builder.Services.AddControllers();
+//TODO: Configure cors
+builder.Services.AddCors(opts =>
+{
+    opts.AddDefaultPolicy(policy =>
+    {
+        policy
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .WithOrigins("http://localhost:3000");
+    });
+});
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -38,6 +48,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseCors();
 
 app.MapControllers();
 
