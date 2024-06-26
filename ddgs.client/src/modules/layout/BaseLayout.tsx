@@ -3,7 +3,8 @@ import { Outlet } from 'react-router-dom';
 import { Footer } from './Footer';
 import { Header } from './Header';
 import { styled } from 'styled-components';
-import { MantineProvider, createTheme } from '@mantine/core';
+import { MantineProvider } from '@mantine/core';
+import {theme} from "../../theme.ts";
 
 const StyledContainer = styled.div`
     padding: 0 3rem;
@@ -16,10 +17,6 @@ const StyledContainer = styled.div`
         flex: 1 0 auto;
     }
 `;
-
-const theme = createTheme({
-    fontFamily: 'Roboto, sans-serif'
-});
 
 function AppLayout(): ReactElement {
     return (
