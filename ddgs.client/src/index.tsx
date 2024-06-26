@@ -11,9 +11,9 @@ import store from './app/store';
 const root = createRoot(document.getElementById('root') as HTMLElement);
 
 root.render(
-    <Provider store={store}>
-        <StrictMode>
-            <RouterProvider router={appRouter} />
-        </StrictMode>
-    </Provider>
+  <Provider store={store}>
+    <StrictMode>
+      <RouterProvider router={appRouter} />
+    </StrictMode>
+  </Provider>
 );

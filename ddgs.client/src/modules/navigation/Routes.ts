@@ -1,3 +1,3 @@
 export enum Routes {
-    Test = '/test'
+  Test = '/test'
 }
