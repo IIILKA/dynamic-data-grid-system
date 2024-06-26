@@ -8,32 +8,38 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
 
 const TableStyledTr = styled(Table.Tr)`
-    &.active {
-        background-color: var(--mantine-color-default-hover);
-    }
+  &.active {
+    background-color: var(--mantine-color-default-hover);
+  }
 `;
 
 interface DadaGridBodyRowProps<T extends TableEntity> {
-    rowData: T;
+  rowData: T;
 }
 
-export default function DadaGridBodyRow<T extends TableEntity>({ rowData }: DadaGridBodyRowProps<T>) {
-    const selectedCell = useSelector((_: RootState) => _.dataGrid.selectedCell);
+export default function DadaGridBodyRow<T extends TableEntity>({
+  rowData
+}: DadaGridBodyRowProps<T>) {
+  const selectedCell = useSelector((_: RootState) => _.dataGrid.selectedCell);
 
-    function getBodyCells<T extends TableEntity>(row: T): ReactNode[] {
-        const dtoPropertyNames = Object.getOwnPropertyNames(row);
-        return dtoPropertyNames
-            .filter((propName) => propName !== nameOf<T>('id') && propName !== nameOf<T>('index'))
-            .map((colName) => (
-                <DataGridBodyCell
-                    key={colName}
-                    //value={row[colName]}
-                    rowId={row.id}
-                    colName={colName}
-                    isActive={rowData.id === selectedCell?.rowId && colName === selectedCell.colName}
-                />
-            ));
-    }
+  function getBodyCells<T extends TableEntity>(row: T): ReactNode[] {
+    const dtoPropertyNames = Object.getOwnPropertyNames(row);
+    return dtoPropertyNames
+      .filter((propName) => propName !== nameOf<T>('id') && propName !== nameOf<T>('index'))
+      .map((colName) => (
+        <DataGridBodyCell
+          key={colName}
+          //value={row[colName]}
+          rowId={row.id}
+          colName={colName}
+          isActive={rowData.id === selectedCell?.rowId && colName === selectedCell.colName}
+        />
+      ));
+  }
 
-    return <TableStyledTr className={rowData.id === selectedCell?.rowId ? 'active' : ''}>{getBodyCells(rowData)}</TableStyledTr>;
+  return (
+    <TableStyledTr className={rowData.id === selectedCell?.rowId ? 'active' : ''}>
+      {getBodyCells(rowData)}
+    </TableStyledTr>
+  );
 }

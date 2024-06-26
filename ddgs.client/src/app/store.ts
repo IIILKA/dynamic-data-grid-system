@@ -4,11 +4,11 @@ import { apiSlice } from '../modules/api/apiSlice';
 import { useDispatch } from 'react-redux';
 
 const store = configureStore({
-    reducer: {
-        dataGrid: dataGridReducer,
-        [apiSlice.reducerPath]: apiSlice.reducer
-    },
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(apiSlice.middleware)
+  reducer: {
+    dataGrid: dataGridReducer,
+    [apiSlice.reducerPath]: apiSlice.reducer
+  },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(apiSlice.middleware)
 });
 
 export default store;

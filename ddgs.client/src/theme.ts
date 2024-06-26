@@ -1,5 +1,5 @@
-import {createTheme} from "@mantine/core";
+import { createTheme } from '@mantine/core';
 
 export const theme = createTheme({
-    fontFamily: 'Roboto, sans-serif'
+  fontFamily: 'Roboto, sans-serif'
 });

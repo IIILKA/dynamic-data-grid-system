@@ -3,16 +3,18 @@ import { useGetTestsQuery } from '../../modules/api/apiSlice';
 import { Center, Loader } from '@mantine/core';
 
 export function TestPage() {
-    const { data: normalizedTests, isLoading, isSuccess } = useGetTestsQuery();
+  const { data: normalizedTests, isLoading, isSuccess } = useGetTestsQuery();
 
-    return (
-        <>
-            {isLoading && (
-                <Center>
-                    <Loader color='teal' />
-                </Center>
-            )}
-            {isSuccess && <DataGrid sortedIds={normalizedTests.ids} dataGridRows={normalizedTests.entities} />}
-        </>
-    );
+  return (
+    <>
+      {isLoading && (
+        <Center>
+          <Loader color='teal' />
+        </Center>
+      )}
+      {isSuccess && (
+        <DataGrid sortedIds={normalizedTests.ids} dataGridRows={normalizedTests.entities} />
+      )}
+    </>
+  );
 }
