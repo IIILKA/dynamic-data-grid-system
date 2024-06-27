@@ -3,6 +3,8 @@ import { styled } from 'styled-components';
 import { ActionIcon, useMantineColorScheme, Center } from '@mantine/core';
 import { IconSunFilled, IconMoonFilled } from '@tabler/icons-react';
 import DataGridLoader from '../data-grid/DataGridLoader';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import Logo from '../../../public/ddgs-logo.svg?react';
 
 const HeaderContainer = styled.div`

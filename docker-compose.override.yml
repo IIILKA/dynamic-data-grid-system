@@ -29,3 +29,17 @@ services:
       - ./DDGS.Infrastructure/Initialization/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     networks:
       - ddgs-network
+
+  web-client:
+    # environment:
+    #   - ASPNETCORE_ENVIRONMENT=Development
+    #   - ASPNETCORE_HTTP_PORTS=80
+    #   - ASPNETCORE_HTTPS_PORTS=443
+    ports:
+      - "8180:80"
+      - "8181:3000"
+    # volumes:
+    #   - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+    #   - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    networks:
+      - ddgs-network

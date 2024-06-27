@@ -15,6 +15,17 @@ services:
     image: mongo:latest
     container_name: ddgs.db
     restart: always
+
+  web-client:
+    image: ${DOCKER_REGISTRY-}ddgsclient
+    container_name: ddgs.client
+    build:
+      context: .
+      dockerfile: ddgs.client/Dockerfile
+    
+    depends_on:
+      - api
+      
      
 
 networks:
