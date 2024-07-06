@@ -29,7 +29,7 @@ const dataGridInitialState = tableEntityAdapter.getInitialState();
 
 export const apiSlice = createApi({
   reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl: 'https://localhost:8081/api' }),
+  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_URL }),
   tagTypes: ['Tests'],
   endpoints: (builder) => ({
     getTests: builder.query<NormalizedDataGridEntitiesCache, void>({
