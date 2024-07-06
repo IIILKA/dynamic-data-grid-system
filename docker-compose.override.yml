@@ -3,29 +3,66 @@ version: '3.4'
 services:
   api:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=80
-      - ASPNETCORE_HTTPS_PORTS=443
-      - MONGODB_URL=mongodb://defaultuser:Pa%24%24w0rd@mongodb:27017/ddgs/?authSource=DynamicDataGridSystemDb
-      - MONGODB_NAME=DynamicDataGridSystemDb
+      - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT_NAME}
+      - ASPNETCORE_HTTP_PORTS=${API_HTTP_INTERNAL_PORT}
+      - ASPNETCORE_HTTPS_PORTS=${API_HTTPS_INTERNAL_PORT}
+      - MONGODB_URL=mongodb://defaultuser:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:${MONGO_EXTERNAL_PORT}/ddgs/?authSource=${MONGO_INITDB_DATABASE}
+      - MONGODB_NAME=${MONGO_INITDB_DATABASE}
+      - CLIENT_HTTP_URL=http://localhost:${CLIENT_HTTP_EXTERNAL_PORT}
+      - CLIENT_HTTPS_URL=https://localhost:${CLIENT_HTTPS_EXTERNAL_PORT}
     ports:
-      - "8080:80"
-      - "8081:443"
+      - "${API_HTTP_EXTERNAL_PORT}:${API_HTTP_INTERNAL_PORT}"
+      - "${API_HTTPS_EXTERNAL_PORT}:${API_HTTPS_INTERNAL_PORT}"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
     networks:
       - ddgs-network
 
+
   mongodb:
     environment:
         MONGO_INITDB_ROOT_USERNAME: superadmin
-        MONGO_INITDB_ROOT_PASSWORD: Pa%24%24w0rd
-        MONGO_INITDB_DATABASE: DynamicDataGridSystemDb
+        MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+        MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
     ports:
-      - "27017:27017"
+      - "${MONGO_EXTERNAL_PORT}:${MONGO_INTERNAL_PORT}"
     volumes:
       - ddgs-volume:/data/db
       - ./DDGS.Infrastructure/Initialization/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - ddgs-network
+
+
+  web-client-http:
+    environment:
+      - VITE_PORT=${CLIENT_HTTP_INTERNAL_PORT}
+      - VITE_API_URL=http://localhost:${API_HTTP_EXTERNAL_PORT}/api
+    ports:
+      - "${CLIENT_HTTP_EXTERNAL_PORT}:${CLIENT_HTTP_INTERNAL_PORT}"
+    networks:
+      - ddgs-network
+
+
+  web-client-https:
+    environment:
+        - VITE_PORT=${CLIENT_HTTPS_INTERNAL_PORT}
+        - VITE_API_URL=https://localhost:${API_HTTPS_EXTERNAL_PORT}/api
+        - VITE_SSL_CERTIFICATE_CRYPTIC_PASSWORD=${CLIENT_SSL_CERTIFICATE_CRYPTIC_PASSWORD} 
+    ports:
+        - "${CLIENT_HTTPS_EXTERNAL_PORT}:${CLIENT_HTTPS_INTERNAL_PORT}"
+    networks:
+        - ddgs-network
+
+
+  api-witout-https:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT_NAME}
+      - ASPNETCORE_HTTP_PORTS=${API_HTTP_INTERNAL_PORT}
+      - MONGODB_URL=mongodb://defaultuser:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:${MONGO_EXTERNAL_PORT}/ddgs/?authSource=${MONGO_INITDB_DATABASE}
+      - MONGODB_NAME=${MONGO_INITDB_DATABASE}
+      - CLIENT_HTTP_URL=http://localhost:${CLIENT_HTTP_EXTERNAL_PORT}
+    ports:
+      - "${API_HTTP_EXTERNAL_PORT}:${API_HTTP_INTERNAL_PORT}"
     networks:
       - ddgs-network

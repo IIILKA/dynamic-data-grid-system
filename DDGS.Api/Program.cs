@@ -5,7 +5,6 @@ using DDGS.Infrastructure.Core;
 using DDGS.Infrastructure.Core.Interfaces;
 using DDGS.Infrastructure.TestFeature;
 using Mapster;
-using Microsoft.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,10 +26,22 @@ builder.Services.AddCors(opts =>
 {
     opts.AddDefaultPolicy(policy =>
     {
+        var allowedOrigins = new List<string>();
+
+        if (Environment.GetEnvironmentVariable("CLIENT_HTTP_URL") != null)
+        {
+            allowedOrigins.Add(Environment.GetEnvironmentVariable("CLIENT_HTTP_URL")!);
+        }
+
+        if (Environment.GetEnvironmentVariable("CLIENT_HTTPS_URL") != null)
+        {
+            allowedOrigins.Add(Environment.GetEnvironmentVariable("CLIENT_HTTPS_URL")!);
+        }
+
         policy
             .AllowAnyMethod()
             .AllowAnyHeader()
-            .WithOrigins("https://localhost:3000");
+            .WithOrigins(allowedOrigins.ToArray());
     });
 });
 
@@ -45,7 +56,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseAuthorization();
 

@@ -1,3 +1,10 @@
+### DDGS specific igoners ###
+
+# ssl-certificates
+https
+
+### Default ignores ###
+
 # Logs
 logs
 *.log
