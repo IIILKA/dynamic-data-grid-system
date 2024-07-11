@@ -2512,9 +2512,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mantine/core@npm:7.10.2":
-  version: 7.10.2
-  resolution: "@mantine/core@npm:7.10.2"
+"@mantine/core@npm:7.11.1":
+  version: 7.11.1
+  resolution: "@mantine/core@npm:7.11.1"
   dependencies:
     "@floating-ui/react": "npm:^0.26.9"
     clsx: "npm:^2.1.1"
@@ -2523,23 +2523,23 @@ __metadata:
     react-textarea-autosize: "npm:8.5.3"
     type-fest: "npm:^4.12.0"
   peerDependencies:
-    "@mantine/hooks": 7.10.2
+    "@mantine/hooks": 7.11.1
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 10c0/6cbddd40e12c0432925c6c68cad0182d4fb1dfdf6616cf6e1614b8b1f8fab7a96b49e3c4bf91dc0241fe0ff0c478a4a6c6ee32bc9da2ef81e8a49f18045a71d4
+  checksum: 10c0/f501aa262441a6344e813d85d3c5dfb0946a29cb8a1d57312e26c0899af523f7dd4edfc019df26824c7f93b605de4bc77734e558ef404cbe25849d46171e4d42
   languageName: node
   linkType: hard
 
-"@mantine/hooks@npm:7.10.2":
-  version: 7.10.2
-  resolution: "@mantine/hooks@npm:7.10.2"
+"@mantine/hooks@npm:7.11.1":
+  version: 7.11.1
+  resolution: "@mantine/hooks@npm:7.11.1"
   peerDependencies:
     react: ^18.2.0
-  checksum: 10c0/ebe2f1d21b5ca960194526aab76c72b684875655db651953afef211f07379b25dc7ca9fd36a7aaffe7a50536ef042c99c434c0b0de9c62d74845ab1228923cd1
+  checksum: 10c0/e21ed0b67f160d2500819b515bd61f741220019d780afefe59bdab69de0cf6db839920b5673f4dfe17fbd2598d8ed14b5deea11ce97af9bf06b42ce433b43226
   languageName: node
   linkType: hard
 
-"@mantine/modals@npm:^7.10.2":
+"@mantine/modals@npm:^7.11.1":
   version: 7.11.1
   resolution: "@mantine/modals@npm:7.11.1"
   peerDependencies:
@@ -14921,9 +14921,9 @@ __metadata:
   resolution: "vite-min-template@workspace:."
   dependencies:
     "@mantine/code-highlight": "npm:^7.10.2"
-    "@mantine/core": "npm:7.10.2"
-    "@mantine/hooks": "npm:7.10.2"
-    "@mantine/modals": "npm:^7.10.2"
+    "@mantine/core": "npm:7.11.1"
+    "@mantine/hooks": "npm:7.11.1"
+    "@mantine/modals": "npm:^7.11.1"
     "@reduxjs/toolkit": "npm:^2.2.5"
     "@tabler/icons-react": "npm:^3.6.0"
     "@types/node": "npm:^20.14.2"
