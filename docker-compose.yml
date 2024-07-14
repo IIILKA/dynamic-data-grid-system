@@ -8,15 +8,31 @@ services:
       context: .
       dockerfile: DDGS.Api/Dockerfile
     depends_on:
-      - mongodb
+      postgresdb:
+        condition:
+          service_healthy
+      mongodb:
+        condition:
+          service_started
     profiles:
       - with-https
-    
+
 
   mongodb:
     image: mongo:latest
-    container_name: ddgs.db
+    container_name: ddgs.mongo.db
     restart: always
+
+
+  postgresdb:
+    image: postgres:latest
+    container_name: ddgs.postrgres.db
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U superadmin -d DynamicDataGridSystemPostgresDb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 
   web-client-http:
@@ -64,4 +80,5 @@ networks:
 
 
 volumes:
-  ddgs-volume:
+  ddgs-mongodb-volume:
+  ddgs-postgresdb-volume:

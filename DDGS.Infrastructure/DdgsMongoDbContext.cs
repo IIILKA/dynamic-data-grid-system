@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DDGS.Infrastructure
 {
-    public class DdgsDbContext : DbContext
+    public class DdgsMongoDbContext : DbContext
     {
-        public DdgsDbContext(DbContextOptions<DdgsDbContext> options) : base(options) { }
+        public DdgsMongoDbContext(DbContextOptions<DdgsMongoDbContext> options) : base(options) { }
 
         public DbSet<TestDbEntity> Tests => Set<TestDbEntity>();
     }

@@ -1,5 +1,7 @@
+using DDGS.Api.Utils;
 using DDGS.Core.TestFeature;
 using DDGS.Core.TestFeature.Interfaces;
+using DDGS.Infrastructure;
 using DDGS.Infrastructure.Configuration;
 using DDGS.Infrastructure.Core;
 using DDGS.Infrastructure.Core.Interfaces;
@@ -9,7 +11,8 @@ using Mapster;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbServices();
+builder.Services.AddMongoDbServices();
+builder.Services.AddPostgresDbServices();
 
 //Core
 builder.Services.AddScoped<IEntityIdGenerator, EntityIdGenerator>();
@@ -48,6 +51,7 @@ builder.Services.AddCors(opts =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -62,9 +66,12 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseAuthorization();
-
 app.UseCors();
-
 app.MapControllers();
+
+if (EnvironmentUtils.GetEnvironmentVariableAsBool("AUTO_MIGRATION_ENABLED", false))
+{
+    await DatabaseStateSynchronizer.SyncMigrationsAsync<DdgsPostgresDbContext>(app);
+}
 
 app.Run();
