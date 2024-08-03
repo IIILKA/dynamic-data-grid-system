@@ -9,11 +9,11 @@ import {
   useState
 } from 'react';
 import { useClickOutside } from '@mantine/hooks';
-import { useNavigate } from 'react-router-dom';
-import { Routes } from '../navigation/Routes.ts';
+import { logoutAsync, UserInfo } from '../auth/AuthService.ts';
 
 interface UserWidgetMenuProps {
   children: ReactElement;
+  userInfo: UserInfo;
 }
 
 interface MenuProps {
@@ -25,16 +25,11 @@ export interface UserWidgetMenuRef {
 }
 
 export default forwardRef(function UserWidgetMenu(
-  { children }: UserWidgetMenuProps,
+  { children, userInfo }: UserWidgetMenuProps,
   ref: ForwardedRef<UserWidgetMenuRef>
 ) {
   const { colorScheme } = useMantineColorScheme();
   const isDarkTheme = colorScheme === 'dark';
-
-  const navigate = useNavigate();
-
-  const username = 'IIILKA';
-  const email = 'verbiloyegor@gmail.com';
 
   const [menu, setMenu] = useState<MenuProps>({
     isOpened: false
@@ -43,11 +38,6 @@ export default forwardRef(function UserWidgetMenu(
   useImperativeHandle<UserWidgetMenuRef, UserWidgetMenuRef>(ref, () => ({ setMenu }));
 
   const menuRef = useClickOutside(() => setMenu({ isOpened: false }));
-
-  const onLogOutClicked = () => {
-    setMenu({ isOpened: false });
-    navigate(Routes.Login);
-  };
 
   return (
     <Menu opened={menu.isOpened} position='bottom-end'>
@@ -62,7 +52,7 @@ export default forwardRef(function UserWidgetMenu(
                   ? { color: 'var(--mantine-color-gray-4)' }
                   : { color: 'var(--mantine-color-dark-6)' }
               }>
-              {username}
+              {userInfo?.name}
             </Text>
             <Text
               fz='14'
@@ -71,7 +61,7 @@ export default forwardRef(function UserWidgetMenu(
                   ? { color: 'var(--mantine-color-gray-4)' }
                   : { color: 'var(--mantine-color-dark-6)' }
               }>
-              {email}
+              {userInfo?.email}
             </Text>
           </Flex>
         </Menu.Label>
@@ -87,7 +77,7 @@ export default forwardRef(function UserWidgetMenu(
         <Menu.Item
           color='red'
           leftSection={<IconLogout style={{ width: rem(14), height: rem(14) }} />}
-          onClick={onLogOutClicked}>
+          onClick={async () => await logoutAsync()}>
           Log out
         </Menu.Item>
       </Menu.Dropdown>

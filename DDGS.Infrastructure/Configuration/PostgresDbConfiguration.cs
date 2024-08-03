@@ -5,7 +5,7 @@ namespace DDGS.Infrastructure.Configuration
 {
     public static class PostgresDbConfiguration
     {
-        public static IServiceCollection AddPostgresDbServices(this IServiceCollection services)
+        public static IServiceCollection AddPostgresDb(this IServiceCollection services)
         {
             var connectionString = Environment.GetEnvironmentVariable("POSTGRESDB_URL");
 
@@ -17,6 +17,8 @@ namespace DDGS.Infrastructure.Configuration
             services.AddDbContext<DdgsPostgresDbContext>(options =>
             {
                 options.UseNpgsql(connectionString);
+
+                options.UseOpenIddict();
             });
 
             return services;

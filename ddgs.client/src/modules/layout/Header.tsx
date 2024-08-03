@@ -1,4 +1,4 @@
-import { ReactElement, useRef } from 'react';
+import { ReactElement, useEffect, useRef, useState } from 'react';
 import { ActionIcon, useMantineColorScheme, Center, Avatar, Text, Flex } from '@mantine/core';
 import { IconSunFilled, IconMoonFilled } from '@tabler/icons-react';
 import DataGridLoader from '../data-grid/DataGridLoader';
@@ -6,12 +6,21 @@ import DataGridLoader from '../data-grid/DataGridLoader';
 // @ts-ignore
 import Logo from '../../../public/ddgs-logo.svg?react';
 import UserWidgetMenu, { UserWidgetMenuRef } from './UserWidgetMenu.tsx';
+import { getUserInfoAsync, UserInfo } from '../auth/AuthService.ts';
 
 export function Header(): ReactElement {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const isDarkTheme = colorScheme === 'dark';
 
-  const username = 'IIILKA';
+  const [userInfo, setUserInfo] = useState<UserInfo>();
+
+  useEffect(() => {
+    const loadUserInfo = async () => {
+      setUserInfo(await getUserInfoAsync());
+    };
+
+    loadUserInfo();
+  }, []);
 
   //TODO: Fix
   const menuRef = useRef<UserWidgetMenuRef>(null);
@@ -47,10 +56,10 @@ export function Header(): ReactElement {
             )}
           </ActionIcon>
         </Center>
-        <UserWidgetMenu ref={menuRef}>
+        <UserWidgetMenu ref={menuRef} userInfo={userInfo}>
           <Avatar
             src={null}
-            name={username}
+            name={userInfo?.name}
             color='initials'
             style={{ cursor: 'pointer' }}
             onClick={() => {

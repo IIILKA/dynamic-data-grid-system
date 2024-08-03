@@ -1,9 +1,10 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi, EndpointBuilder, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import TableEntity from '../seed-data/TableEntity';
 import { dataGridSlice } from '../data-grid/dataGridSlice';
 import { createEntityAdapter, createSelector } from '@reduxjs/toolkit';
 import { TableCellType } from '../seed-data/TableCellType';
 import { RootState } from '../../app/store';
+import { getAccessTokenAsync } from '../auth/AuthService.ts';
 
 interface NormalizedDataGridEntitiesCache {
   ids: string[];
@@ -29,9 +30,19 @@ const dataGridInitialState = tableEntityAdapter.getInitialState();
 
 export const apiSlice = createApi({
   reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_URL }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: import.meta.env.VITE_API_URL,
+    prepareHeaders: async (headers) => {
+      const token = await getAccessTokenAsync();
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+      return headers;
+    }
+  }),
   tagTypes: ['Tests'],
-  endpoints: (builder) => ({
+  //TODO: refactor, remove unknown
+  endpoints: (builder: EndpointBuilder<unknown, unknown, unknown>) => ({
     getTests: builder.query<NormalizedDataGridEntitiesCache, void>({
       query: () => '/test',
       transformResponse(baseQueryReturnValue: TableEntity[]) {

@@ -2,12 +2,14 @@
 using DDGS.Core.TestFeature.Interfaces;
 using DDGS.Core.TestFeature.Payloads;
 using MapsterMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DDGS.Api.TestFeature
 {
     [Route("api/test")]
     [ApiController]
+    [Authorize]
     public class TestController : ControllerBase
     {
         private readonly ITestService _testService;

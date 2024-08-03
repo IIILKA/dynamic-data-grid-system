@@ -18,6 +18,21 @@ services:
       - with-https
 
 
+  identity:
+    image: ${DOCKER_REGISTRY-}ddgsidentity
+    container_name: ddgs.identity
+    build:
+      context: .
+      dockerfile: DDGS.Identity/Dockerfile
+    depends_on:
+      postgresdb:
+        condition:
+          service_healthy
+    profiles:
+      - with-https
+
+
+
   mongodb:
     image: mongo:latest
     container_name: ddgs.mongo.db
@@ -25,7 +40,10 @@ services:
 
 
   postgresdb:
-    image: postgres:latest
+    image: ${DOCKER_REGISTRY-}ddgspostgresdb
+    build:
+      context: .
+      dockerfile: DDGS.Postgres/Dockerfile
     container_name: ddgs.postrgres.db
     restart: always
     healthcheck:
@@ -62,14 +80,33 @@ services:
       - with-https-client
 
 
-  api-witout-https:
+  api-without-https:
     image: ${DOCKER_REGISTRY-}ddgsapi
     container_name: ddgs.api
     build:
       context: .
       dockerfile: DDGS.Api/Dockerfile
     depends_on:
-      - mongodb
+      postgresdb:
+        condition:
+          service_healthy
+      mongodb:
+        condition:
+          service_started
+    profiles:
+      - without-https
+
+
+  identity-without-https:
+    image: ${DOCKER_REGISTRY-}ddgsidentity
+    container_name: ddgs.identity
+    build:
+      context: .
+      dockerfile: DDGS.Identity/Dockerfile
+    depends_on:
+      postgresdb:
+        condition:
+          service_healthy
     profiles:
       - without-https
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Design;
 using System.CommandLine;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace DDGS.Infrastructure.Design
 {
@@ -13,6 +14,8 @@ namespace DDGS.Infrastructure.Design
             var optionsBuilder = new DbContextOptionsBuilder<DdgsPostgresDbContext>();
 
             optionsBuilder.UseNpgsql(connectionString);
+
+            optionsBuilder.UseOpenIddict();
 
             return new DdgsPostgresDbContext(optionsBuilder.Options);
         }

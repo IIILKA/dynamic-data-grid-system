@@ -6,7 +6,7 @@ namespace DDGS.Infrastructure.Configuration
 {
     public static class MongoDbConfiguration
     {
-        public static IServiceCollection AddMongoDbServices(this IServiceCollection services)
+        public static IServiceCollection AddMongoDb(this IServiceCollection services)
         {
             var connectionString = Environment.GetEnvironmentVariable("MONGODB_URL");
             var dbName = Environment.GetEnvironmentVariable("MONGODB_NAME");

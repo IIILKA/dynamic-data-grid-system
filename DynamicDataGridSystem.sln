@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DDGS.Api.Tests", "Tests\DDG
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DDGS.UnitTesting.Core", "Tests\DDGS.UnitTesting.Core\DDGS.UnitTesting.Core.csproj", "{7C32DB05-FA0F-40CB-9820-235A6A319892}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDGS.Identity", "DDGS.Identity\DDGS.Identity.csproj", "{715E4902-62F2-477D-9232-D3FFE2596B9B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{7C32DB05-FA0F-40CB-9820-235A6A319892}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C32DB05-FA0F-40CB-9820-235A6A319892}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C32DB05-FA0F-40CB-9820-235A6A319892}.Release|Any CPU.Build.0 = Release|Any CPU
+		{715E4902-62F2-477D-9232-D3FFE2596B9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{715E4902-62F2-477D-9232-D3FFE2596B9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{715E4902-62F2-477D-9232-D3FFE2596B9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{715E4902-62F2-477D-9232-D3FFE2596B9B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

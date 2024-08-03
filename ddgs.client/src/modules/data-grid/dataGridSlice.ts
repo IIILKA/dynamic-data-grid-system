@@ -17,6 +17,7 @@ interface DataGridState {
   fetchingQueriesCount: number;
   selectedCell: SelectedCell | null;
   rows: TableEntity[];
+  accessToken: string | null;
 }
 
 const initialState: DataGridState = {
@@ -63,7 +64,8 @@ const initialState: DataGridState = {
       age: 31,
       isStudent: false
     }
-  ]
+  ],
+  accessToken: null
 };
 
 export const dataGridSlice = createSlice({
@@ -84,10 +86,14 @@ export const dataGridSlice = createSlice({
       if (changedCell) {
         changedCell[action.payload.collName] = action.payload.newValue;
       }
+    },
+    setAccessToken: (state, action: PayloadAction<string | null>) => {
+      state.accessToken = action.payload;
     }
   }
 });
 
-export const { queryStarted, queryFinished, selectCell, changeCellValue } = dataGridSlice.actions;
+export const { queryStarted, queryFinished, selectCell, changeCellValue, setAccessToken } =
+  dataGridSlice.actions;
 
 export default dataGridSlice.reducer;

@@ -3,6 +3,18 @@ import dataGridReducer from '../modules/data-grid/dataGridSlice';
 import { apiSlice } from '../modules/api/apiSlice';
 import { useDispatch } from 'react-redux';
 
+// const tokenMiddleware = (store) => (next) => (action) => {
+//   if (action.type === 'dataGridSlice/setAccessToken') {
+//     next(action); // Сначала обновите токен
+//     const state = store.getState();
+//     if (state.api.queries['getSomething(undefined)']) {
+//       store.dispatch(apiSlice.util?.invalidateTags(['GetSomething'])); // Перезапуск запроса
+//     }
+//   } else {
+//     return next(action);
+//   }
+// };
+
 const store = configureStore({
   reducer: {
     dataGrid: dataGridReducer,
