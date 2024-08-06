@@ -2,6 +2,7 @@
 using DDGS.Identity.Utils;
 using DDGS.Infrastructure;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.IdentityModel.Protocols.Configuration;
 using OpenIddict.Abstractions;
 
 namespace DDGS.Identity.Configuration
@@ -21,7 +22,7 @@ namespace DDGS.Identity.Configuration
                         .SetLogoutEndpointUris("logout")
                         .SetTokenEndpointUris("token");
 
-                    opts.RegisterScopes(OpenIddictConstants.Scopes.Email, OpenIddictConstants.Scopes.Profile, OpenIddictConstants.Scopes.Roles);
+                    opts.RegisterScopes(OpenIddictConstants.Scopes.Email, OpenIddictConstants.Scopes.Profile);
 
                     opts.AllowAuthorizationCodeFlow()
                         .AllowRefreshTokenFlow();
@@ -45,6 +46,36 @@ namespace DDGS.Identity.Configuration
                         .EnableAuthorizationEndpointPassthrough()
                         .EnableLogoutEndpointPassthrough()
                         .EnableTokenEndpointPassthrough();
+                })
+                .AddClient(opts =>
+                {
+                    opts.AllowAuthorizationCodeFlow();
+
+                    opts.AddDevelopmentEncryptionCertificate()
+                        .AddDevelopmentSigningCertificate();
+
+                    opts.UseAspNetCore()
+                        .EnableRedirectionEndpointPassthrough();
+
+                    opts.UseWebProviders()
+                        .AddGoogle(googleOpts =>
+                        {
+                            var googleClientId = Environment.GetEnvironmentVariable("AUTH_GOOGLE_CLIENT_ID");
+                            var googleClientSecret = Environment.GetEnvironmentVariable("AUTH_GOOGLE_CLIENT_SECRET");
+
+                            if (string.IsNullOrEmpty(googleClientSecret) || string.IsNullOrEmpty(googleClientId))
+                            {
+                                throw new InvalidConfigurationException("Auth Google variables are invalid");
+                            }
+
+                            googleOpts
+                                .AddScopes(OpenIddictConstants.Scopes.Email)
+                                .AddScopes(OpenIddictConstants.Scopes.Profile)
+                                .SetClientId(googleClientId)
+                                .SetClientSecret(googleClientSecret)
+                                .SetRedirectUri("callback/login/google");
+                        });
+
                 });
 
             services.AddHostedService<ClientSeeder>();
@@ -63,7 +94,7 @@ namespace DDGS.Identity.Configuration
                     options.SlidingExpiration = false;
                     options.Cookie.SameSite = SameSiteMode.Lax;
                     options.Cookie.SecurePolicy = httpsEnabled ? CookieSecurePolicy.Always : CookieSecurePolicy.None;
-                    options.LoginPath ="/user/login";
+                    options.LoginPath = "/user/login";
                 });
 
             return services;

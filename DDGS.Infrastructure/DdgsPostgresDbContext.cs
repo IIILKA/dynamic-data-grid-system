@@ -1,12 +1,11 @@
-﻿using DDGS.Core.User;
+﻿using DDGS.Core.Identity.Entities;
 using DDGS.Infrastructure.Configuration;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace DDGS.Infrastructure
 {
-    public class DdgsPostgresDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
+    public class DdgsPostgresDbContext : IdentityDbContext<User, Role, Guid>
     {
         public DdgsPostgresDbContext(DbContextOptions<DdgsPostgresDbContext> options) : base(options) { }
 

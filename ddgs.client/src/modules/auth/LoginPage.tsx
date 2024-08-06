@@ -16,7 +16,7 @@ import { Link } from 'react-router-dom';
 import { Routes } from '../navigation/Routes.ts';
 import { IconBrandGoogleFilled } from '@tabler/icons-react';
 import { useState } from 'react';
-import { logInAsync, sendOAuthRequestAsync } from './AuthService.ts';
+import { logInAsync, logInWithGoogle, sendOAuthRequestAsync } from './AuthService.ts';
 import { useDisclosure } from '@mantine/hooks';
 
 export default function LoginPage() {
@@ -34,6 +34,11 @@ export default function LoginPage() {
     if (logInResult.ok) {
       await sendOAuthRequestAsync();
     }
+  }
+
+  function authenticateWithGoogle() {
+    toggle();
+    logInWithGoogle();
   }
 
   return (
@@ -86,7 +91,11 @@ export default function LoginPage() {
               Continue
             </Button>
             <Divider my='sm' label='or' labelPosition='center' w='100%' />
-            <Button leftSection={<IconBrandGoogleFilled size={18} />} color='gray' fullWidth>
+            <Button
+              leftSection={<IconBrandGoogleFilled size={18} />}
+              color='gray'
+              fullWidth
+              onClick={authenticateWithGoogle}>
               Log in with Google
             </Button>
           </Flex>

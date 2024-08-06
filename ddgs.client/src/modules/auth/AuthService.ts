@@ -41,6 +41,10 @@ export async function logInAsync(email: string, password: string) {
   return await fetch(url, options);
 }
 
+export function logInWithGoogle() {
+  window.location.href = `${import.meta.env.VITE_AUTH_AUTHORITY}/challenge/google`;
+}
+
 export async function getUserAsync() {
   return await userManager.getUser();
 }

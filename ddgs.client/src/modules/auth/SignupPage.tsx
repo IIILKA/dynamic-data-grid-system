@@ -15,7 +15,7 @@ import Logo from '../../../public/ddgs-logo.svg?react';
 import { Link } from 'react-router-dom';
 import { Routes } from '../navigation/Routes.ts';
 import { IconBrandGoogleFilled } from '@tabler/icons-react';
-import { logInAsync, signUpAsync, sendOAuthRequestAsync } from './AuthService.ts';
+import { logInAsync, signUpAsync, sendOAuthRequestAsync, logInWithGoogle } from './AuthService.ts';
 import { useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 
@@ -45,6 +45,11 @@ export default function SignupPage() {
       }
     }
     toggle();
+  }
+
+  function signUpWithGoogle() {
+    toggle();
+    logInWithGoogle();
   }
 
   return (
@@ -97,8 +102,12 @@ export default function SignupPage() {
               Continue
             </Button>
             <Divider my='sm' label='or' labelPosition='center' w='100%' />
-            <Button leftSection={<IconBrandGoogleFilled size={18} />} color='gray' fullWidth>
-              Log in with Google
+            <Button
+              leftSection={<IconBrandGoogleFilled size={18} />}
+              color='gray'
+              fullWidth
+              onClick={signUpWithGoogle}>
+              Continue with Google
             </Button>
             <Text size='14px' mt='40px'>
               Already have an account? <Link to={Routes.Login}>Log in</Link>

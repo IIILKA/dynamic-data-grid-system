@@ -5,5 +5,6 @@ export enum Routes {
   Signup = '/signup',
   Unauthorized = '/unauthorized',
   Forbidden = '/forbidden',
-  OAuthCallback = '/oauth/callback'
+  OAuthCallback = '/oauth/callback',
+  OAuthExternalProviderCallback = '/oauth/external/callback'
 }

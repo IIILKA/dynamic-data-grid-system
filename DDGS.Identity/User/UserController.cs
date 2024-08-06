@@ -1,5 +1,5 @@
-﻿using DDGS.Core.Identity.Payloads;
-using DDGS.Core.User.Interfaces;
+﻿using DDGS.Core.Identity.Interfaces;
+using DDGS.Core.Identity.Payloads;
 using DDGS.Identity.User.Dto;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -10,13 +10,13 @@ namespace DDGS.Identity.User
     [Route("user")]
     public class UserController : ControllerBase
     {
-        private readonly IUserService _userService;
+        private readonly IIdentityService _identityService;
 
         private readonly IMapper _mapper;
 
-        public UserController(IUserService userService, IMapper mapper)
+        public UserController(IIdentityService identityService, IMapper mapper)
         {
-            _userService = userService;
+            _identityService = identityService;
             _mapper = mapper;
         }
 
@@ -39,7 +39,7 @@ namespace DDGS.Identity.User
         {
             var payload = _mapper.Map<UserRegisterPayload>(requestDto);
 
-            var result = await _userService.RegisterAsync(payload);
+            var result = await _identityService.RegisterAsync(payload, requestDto.Password);
 
             if (result.IsFailed)
             {

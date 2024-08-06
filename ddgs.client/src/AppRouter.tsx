@@ -7,6 +7,7 @@ import LoginPage from './modules/auth/LoginPage.tsx';
 import SignupPage from './modules/auth/SignupPage.tsx';
 import ErrorPage from './pages/ErrorPage.tsx';
 import OAuthCallbackPage from './modules/auth/OAuthCallbackPage.tsx';
+import OAuthExternalProviderCallbackPage from './modules/auth/OAuthExternalProviderCallbackPage.tsx';
 
 const baseLayoutRoutes: RouteObject[] = [
   {
@@ -80,5 +81,9 @@ export const appRouter = createBrowserRouter([
   {
     path: Routes.OAuthCallback,
     element: <OAuthCallbackPage />
+  },
+  {
+    path: Routes.OAuthExternalProviderCallback,
+    element: <OAuthExternalProviderCallbackPage />
   }
 ]);

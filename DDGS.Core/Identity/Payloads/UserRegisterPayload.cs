@@ -2,6 +2,5 @@
 {
     public record UserRegisterPayload(
         string Username,
-        string Email,
-        string Password);
+        string Email);
 }

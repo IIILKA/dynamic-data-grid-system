@@ -1,6 +1,12 @@
 ﻿using System.Collections.Immutable;
 using System.Security.Claims;
+using Amazon.Runtime.Internal.Transform;
+using DDGS.Core.Identity.Entities;
+using DDGS.Core.Identity.Interfaces;
+using DDGS.Core.Identity.Payloads;
 using DDGS.Identity.Auth.Dto;
+using DnsClient;
+using FluentResults;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -8,59 +14,56 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
+using OpenIddict.Client.WebIntegration;
 using OpenIddict.Server.AspNetCore;
+using Polly;
+using static OpenIddict.Client.WebIntegration.OpenIddictClientWebIntegrationConstants;
 
 namespace DDGS.Identity.Auth
 {
     public class AuthorizationController : Controller
     {
+        private readonly IIdentityService _identityService;
         private readonly IOpenIddictScopeManager _scopeManager;
         private readonly AuthUtilsService _authService;
 
-        private readonly UserManager<Core.User.User> _userManager;
-        private readonly SignInManager<Core.User.User> _signInManager;
-
         public AuthorizationController(
+            IIdentityService identityService,
             IOpenIddictScopeManager scopeManager,
-            AuthUtilsService authService,
-            UserManager<Core.User.User> userManager,
-            SignInManager<Core.User.User> signInManager)
+            AuthUtilsService authService)
         {
+            _identityService = identityService;
             _scopeManager = scopeManager;
             _authService = authService;
-            _userManager = userManager;
-            _signInManager = signInManager;
         }
 
         [HttpPost("~/authenticate")]
         public async Task<IActionResult> AuthenticateAsync([FromBody] UserAuthenticateRequestDto authDto)
         {
-            var user = await _userManager.FindByEmailAsync(authDto.Email);
+            var user = await _identityService.GetByEmailAsync(authDto.Email);
 
             if (user == null)
             {
                 return BadRequest($"User with email {authDto.Email} is not exist");
             }
 
-            var checkPasswordResult = await _signInManager.CheckPasswordSignInAsync(user, authDto.Password, false);
-
-            if (!checkPasswordResult.Succeeded)
+            if (!await _identityService.CheckUserPasswordAsync(user, authDto.Password))
             {
                 return BadRequest("Invalid password");
             }
 
-            var claims = new List<Claim>
+            var claims = new List<Claim>()
             {
-                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new(ClaimTypes.Name, user.UserName!),
-                new(ClaimTypes.Email, authDto.Email),
+                new(OpenIddictConstants.Claims.Subject, user.Id.ToString()),
+                new(OpenIddictConstants.Claims.Name, user.UserName!),
+                new(OpenIddictConstants.Claims.Email, user.Email!)
             };
 
-            var principal = new ClaimsPrincipal(
-                new List<ClaimsIdentity>
-                {
-                    new(claims, CookieAuthenticationDefaults.AuthenticationScheme)
-                });
+            var identity = new ClaimsIdentity(
+                claims,
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                OpenIddictConstants.Claims.Name,
+                OpenIddictConstants.Claims.Role);
 
             var authProperties = new AuthenticationProperties
             {
@@ -68,7 +71,7 @@ namespace DDGS.Identity.Auth
                 ExpiresUtc = DateTimeOffset.UtcNow.AddDays(14)
             };
 
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity), authProperties);
 
             return Ok();
         }
@@ -87,19 +90,11 @@ namespace DDGS.Identity.Auth
                 return Challenge(new[] { CookieAuthenticationDefaults.AuthenticationScheme });
             }
 
-            var userId = result.Principal.FindFirst(ClaimTypes.NameIdentifier)!.Value;
-            var username = result.Principal.FindFirst(ClaimTypes.Name)!.Value;
-            var email = result.Principal.FindFirst(ClaimTypes.Email)!.Value;
-            
             var identity = new ClaimsIdentity(
-                authenticationType: TokenValidationParameters.DefaultAuthenticationType,
-                nameType: OpenIddictConstants.Claims.Name,
-                roleType: OpenIddictConstants.Claims.Role);
-
-            identity.SetClaim(OpenIddictConstants.Claims.Subject, userId)
-                .SetClaim(OpenIddictConstants.Claims.Email, email)
-                .SetClaim(OpenIddictConstants.Claims.Name, username)
-                .SetClaims(OpenIddictConstants.Claims.Role, new List<string> { "user", "admin" }.ToImmutableArray());
+                result.Principal!.Claims,
+                TokenValidationParameters.DefaultAuthenticationType,
+                OpenIddictConstants.Claims.Name,
+                OpenIddictConstants.Claims.Role);
 
             identity.SetScopes(request.GetScopes());
             identity.SetResources(await _scopeManager.ListResourcesAsync(identity.GetScopes()).ToListAsync());
@@ -118,12 +113,9 @@ namespace DDGS.Identity.Auth
             if (!request.IsAuthorizationCodeGrantType() && !request.IsRefreshTokenGrantType())
                 throw new InvalidOperationException("The specified grant type is not supported.");
 
-            var result =
-                await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            var result = await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
-            var userId = result.Principal.GetClaim(OpenIddictConstants.Claims.Subject);
-            var username = result.Principal.GetClaim(OpenIddictConstants.Claims.Name);
-            var email = result.Principal.GetClaim(OpenIddictConstants.Claims.Email);
+            var userId = result.Principal!.GetClaim(OpenIddictConstants.Claims.Subject);
 
             if (string.IsNullOrEmpty(userId))
             {
@@ -137,15 +129,11 @@ namespace DDGS.Identity.Auth
                     }!));
             }
 
-            var identity = new ClaimsIdentity(result.Principal.Claims,
-                authenticationType: TokenValidationParameters.DefaultAuthenticationType,
-                nameType: OpenIddictConstants.Claims.Name,
-                roleType: OpenIddictConstants.Claims.Role);
-
-            identity.SetClaim(OpenIddictConstants.Claims.Subject, userId)
-                .SetClaim(OpenIddictConstants.Claims.Email, email)
-                .SetClaim(OpenIddictConstants.Claims.Name, username)
-                .SetClaims(OpenIddictConstants.Claims.Role, new List<string> { "user", "admin" }.ToImmutableArray());
+            var identity = new ClaimsIdentity(
+                result.Principal!.Claims,
+                TokenValidationParameters.DefaultAuthenticationType,
+                OpenIddictConstants.Claims.Name,
+                OpenIddictConstants.Claims.Role);
 
             identity.SetDestinations(c => AuthUtilsService.GetDestinations(identity, c));
 
@@ -164,6 +152,100 @@ namespace DDGS.Identity.Auth
                 {
                     RedirectUri = "/user/login"
                 });
+        }
+
+        [HttpGet("~/challenge/google")]
+        public IActionResult ChallengeGoogle()
+        {
+            var properties = new AuthenticationProperties
+            {
+                Parameters = { { "prompt", "select_account" } }
+            };
+            return Challenge(properties, new[] { Providers.Google });
+        }
+
+        [HttpGet("~/callback/login/google")]
+        [HttpPost("~/callback/login/google")]
+        public async Task<IActionResult> HandleGoogleLoginCallbackAsync()
+        {
+            var result = await HttpContext.AuthenticateAsync(Providers.Google);
+
+            var identity = new ClaimsIdentity(
+                "ExternalLogin",
+                OpenIddictConstants.Claims.Name,
+                OpenIddictConstants.Claims.Role);
+
+            var email = result.Principal!.GetClaim(OpenIddictConstants.Claims.Email)!;
+            var username = result.Principal!.GetClaim(OpenIddictConstants.Claims.Name)!;
+            var externalLoginUserId = result.Principal!.GetClaim(OpenIddictConstants.Claims.Subject)!;
+            var externalLoginProviderName = result.Principal!.GetClaim(OpenIddictConstants.Claims.Private.ProviderName)!;
+
+            var ensureUserRegisteredResult = await EnsureUserRegisteredAsync(email, username);
+            if (ensureUserRegisteredResult.IsFailed)
+            {
+                //TODO: redirect to SPA
+                return BadRequest(new { errors = ensureUserRegisteredResult.Errors.Select(_ => _.Message).ToArray() });
+            }
+            var user = ensureUserRegisteredResult.Value;
+
+            var ensureUserExternalLoginRegisteredResult =
+                await EnsureUserExternalLoginRegisteredAsync(user, externalLoginProviderName, externalLoginUserId);
+            if (ensureUserExternalLoginRegisteredResult.IsFailed)
+            {
+                //TODO: redirect to SPA
+                return BadRequest(new { errors = ensureUserExternalLoginRegisteredResult.Errors.Select(_ => _.Message).ToArray() });
+            }
+
+            identity.SetClaim(OpenIddictConstants.Claims.Subject, user.Id.ToString())
+                .SetClaim(OpenIddictConstants.Claims.Name, user.UserName)
+                .SetClaim(OpenIddictConstants.Claims.Email, email);
+
+            identity.SetClaim(OpenIddictConstants.Claims.Private.RegistrationId, result.Principal!.GetClaim(OpenIddictConstants.Claims.Private.RegistrationId))
+                .SetClaim(OpenIddictConstants.Claims.Private.ProviderName, externalLoginProviderName);
+
+            var properties = new AuthenticationProperties(result.Properties!.Items)
+            {
+                RedirectUri = result.Properties.RedirectUri ?? $"{Environment.GetEnvironmentVariable("CLIENT_URL")}/oauth/external/callback"
+            };
+
+            return SignIn(new ClaimsPrincipal(identity), properties, CookieAuthenticationDefaults.AuthenticationScheme);
+        }
+
+        private async Task<Result<Core.Identity.Entities.User>> EnsureUserRegisteredAsync(string email, string username)
+        {
+            var user = await _identityService.GetByEmailAsync(email);
+            if (user != null)
+            {
+                return user;
+            }
+
+            var registrationResult = await _identityService.RegisterAsync(new UserRegisterPayload(username, email));
+
+            if (registrationResult.IsFailed)
+            {
+                return Result.Fail(registrationResult.Errors.Select(_ => _.Message));
+            }
+
+            user = registrationResult.Value;
+
+            return user;
+        }
+
+        private async Task<Result> EnsureUserExternalLoginRegisteredAsync(Core.Identity.Entities.User user, string externalLoginProviderName, string externalLoginUserId)
+        {
+            if (await _identityService.DoesExternalLoginRegisteredAsync(user, externalLoginProviderName, externalLoginUserId))
+            {
+                return Result.Ok();
+            }
+
+            var addExternalLoginResult = await _identityService.AddExternalLoginAsync(
+                user,
+                new UserAddExternalLoginPayload(
+                    externalLoginProviderName,
+                    externalLoginUserId,
+                    externalLoginProviderName));
+
+            return addExternalLoginResult.IsFailed ? Result.Fail(addExternalLoginResult.Errors.Select(_ => _.Message)) : Result.Ok();
         }
     }
 }

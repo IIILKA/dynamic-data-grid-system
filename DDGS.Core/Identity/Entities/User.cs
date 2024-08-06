@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace DDGS.Core.User
+namespace DDGS.Core.Identity.Entities
 {
     public class User : IdentityUser<Guid> { }
 }
