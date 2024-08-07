@@ -1,11 +1,10 @@
-﻿using DDGS.Identity.Auth;
-using DDGS.Identity.Utils;
+﻿using DDGS.Identity.Utils;
 using DDGS.Infrastructure;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.IdentityModel.Protocols.Configuration;
 using OpenIddict.Abstractions;
 
-namespace DDGS.Identity.Configuration
+namespace DDGS.Identity.Auth.Configuration
 {
     public static class OpenIddictConfiguration
     {
@@ -25,12 +24,13 @@ namespace DDGS.Identity.Configuration
                     opts.RegisterScopes(OpenIddictConstants.Scopes.Email, OpenIddictConstants.Scopes.Profile);
 
                     opts.AllowAuthorizationCodeFlow()
-                        .AllowRefreshTokenFlow();
+                        .RequireProofKeyForCodeExchange();
+                    opts.AllowRefreshTokenFlow();
 
                     opts.AddDevelopmentEncryptionCertificate()
                         .AddDevelopmentSigningCertificate();
 
-                    opts.SetAccessTokenLifetime(TimeSpan.FromHours(1))
+                    opts.SetAccessTokenLifetime(TimeSpan.FromHours(4))
                         .SetRefreshTokenLifetime(TimeSpan.FromDays(2));
 
                     if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == Environments.Development)

@@ -1,3 +1,5 @@
+import { WebStorageStateStore } from 'oidc-client-ts';
+
 const ddgsSettings = {
   authority: import.meta.env.VITE_AUTH_AUTHORITY,
   client_id: import.meta.env.VITE_AUTH_CLIENT_ID,
@@ -6,7 +8,8 @@ const ddgsSettings = {
   silent_redirect_uri: `${import.meta.env.VITE_SELF_URL}/oauth/callback`,
   post_logout_redirect_uri: `${import.meta.env.VITE_SELF_URL}/login`,
   response_type: 'code',
-  scope: 'ddgs.api openid profile'
+  scope: 'ddgs.api openid profile offline_access',
+  userStore: new WebStorageStateStore({ store: window.localStorage })
 };
 
 export const ddgsConfig = {

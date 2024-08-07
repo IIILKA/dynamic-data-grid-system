@@ -1,7 +1,7 @@
 ﻿using Microsoft.IdentityModel.Protocols.Configuration;
 using OpenIddict.Abstractions;
 
-namespace DDGS.Identity.Auth
+namespace DDGS.Identity.Auth.Configuration
 {
     public class ClientSeeder : IHostedService
     {
@@ -91,10 +91,10 @@ namespace DDGS.Identity.Auth
                     OpenIddictConstants.Permissions.Endpoints.Logout,
                     OpenIddictConstants.Permissions.Endpoints.Token,
                     OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode,
+                    OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
                     OpenIddictConstants.Permissions.ResponseTypes.Code,
                     OpenIddictConstants.Permissions.Scopes.Email,
                     OpenIddictConstants.Permissions.Scopes.Profile,
-                    OpenIddictConstants.Permissions.Scopes.Roles,
                     $"{OpenIddictConstants.Permissions.Prefixes.Scope}ddgs.api"
                 },
                 Requirements =
