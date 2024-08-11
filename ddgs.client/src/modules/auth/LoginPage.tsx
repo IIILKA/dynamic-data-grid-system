@@ -1,13 +1,13 @@
 import {
   Button,
   Card,
+  Divider,
   Flex,
   Input,
-  Divider,
-  Text,
-  useMantineColorScheme,
+  LoadingOverlay,
   PasswordInput,
-  LoadingOverlay
+  Text,
+  useMantineColorScheme
 } from '@mantine/core';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -16,29 +16,44 @@ import { Link } from 'react-router-dom';
 import { Routes } from '../navigation/Routes.ts';
 import { IconBrandGoogleFilled } from '@tabler/icons-react';
 import { useState } from 'react';
-import { logInAsync, logInWithGoogle, sendOAuthRequestAsync } from './AuthService.ts';
-import { useDisclosure } from '@mantine/hooks';
+import { logInAsync, logInWithExternalProvider, sendOAuthRequestAsync } from './AuthService.ts';
+import { addErrors } from '../data-grid/dataGridSlice.ts';
+import { useDispatch } from 'react-redux';
+import ErrorViewModels from '../error-handling/error-view-models.ts';
+import { AuthProvider } from './auth-provider.ts';
 
 export default function LoginPage() {
   const { colorScheme } = useMantineColorScheme();
   const isDarkTheme = colorScheme === 'dark';
-  const [visible, { toggle }] = useDisclosure(false);
 
+  const dispatch = useDispatch();
+
+  const [loadingOverlayVisible, setLoadingOverlayVisible] = useState(false);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
-  async function authenticate() {
-    toggle();
-    const logInResult = await logInAsync(email, password);
-    toggle();
-    if (logInResult.ok) {
-      await sendOAuthRequestAsync();
-    }
-  }
+  async function authenticate(provider: AuthProvider) {
+    try {
+      setLoadingOverlayVisible(true);
 
-  function authenticateWithGoogle() {
-    toggle();
-    logInWithGoogle();
+      if (provider !== AuthProvider.DDGS) {
+        logInWithExternalProvider(provider);
+        return;
+      }
+
+      const logInResult = await logInAsync(email, password);
+      if (logInResult.ok) {
+        await sendOAuthRequestAsync();
+      }
+    } catch (error) {
+      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        dispatch(addErrors(ErrorViewModels.serverUnavailable));
+      } else {
+        dispatch(addErrors(ErrorViewModels.unknownError));
+      }
+    } finally {
+      setLoadingOverlayVisible(false);
+    }
   }
 
   return (
@@ -51,7 +66,7 @@ export default function LoginPage() {
         w='30%'
         style={{ justifySelf: 'center' }}
         pos='relative'>
-        <LoadingOverlay visible={visible} overlayProps={{ radius: 'md', blur: 1 }} />
+        <LoadingOverlay visible={loadingOverlayVisible} overlayProps={{ radius: 'md', blur: 1 }} />
         <Card.Section withBorder>
           <Flex justify='center' align='center' gap='xs' style={{ cursor: 'pointer' }}>
             <Logo style={{ height: '40px', width: '40px', color: 'teal' }} />
@@ -87,7 +102,7 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.currentTarget.value)}
               />
             </Input.Wrapper>
-            <Button fullWidth color='teal' onClick={authenticate}>
+            <Button fullWidth color='teal' onClick={() => authenticate(AuthProvider.DDGS)}>
               Continue
             </Button>
             <Divider my='sm' label='or' labelPosition='center' w='100%' />
@@ -95,7 +110,7 @@ export default function LoginPage() {
               leftSection={<IconBrandGoogleFilled size={18} />}
               color='gray'
               fullWidth
-              onClick={authenticateWithGoogle}>
+              onClick={() => authenticate(AuthProvider.Google)}>
               Log in with Google
             </Button>
           </Flex>

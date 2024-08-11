@@ -1,13 +1,13 @@
 import {
   Button,
   Card,
+  Divider,
   Flex,
   Input,
-  Divider,
-  Text,
-  useMantineColorScheme,
+  LoadingOverlay,
   PasswordInput,
-  LoadingOverlay
+  Text,
+  useMantineColorScheme
 } from '@mantine/core';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -15,47 +15,65 @@ import Logo from '../../../public/ddgs-logo.svg?react';
 import { Link } from 'react-router-dom';
 import { Routes } from '../navigation/Routes.ts';
 import { IconBrandGoogleFilled } from '@tabler/icons-react';
-import { logInAsync, signUpAsync, sendOAuthRequestAsync, logInWithGoogle } from './AuthService.ts';
+import {
+  logInAsync,
+  logInWithExternalProvider,
+  sendOAuthRequestAsync,
+  signUpAsync
+} from './AuthService.ts';
 import { useState } from 'react';
-import { useDisclosure } from '@mantine/hooks';
+import { useDispatch } from 'react-redux';
+import { addErrors } from '../data-grid/dataGridSlice.ts';
+import ErrorViewModels from '../error-handling/error-view-models.ts';
+import { AuthProvider } from './auth-provider.ts';
 
 export default function SignupPage() {
   const { colorScheme } = useMantineColorScheme();
   const isDarkTheme = colorScheme === 'dark';
-  const [visible, { toggle }] = useDisclosure(false);
 
+  const dispatch = useDispatch();
+
+  const [loadingOverlayVisible, setLoadingOverlayVisible] = useState(false);
   const [username, setUsername] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
 
-  async function signUp() {
-    if (password !== confirmPassword) {
-      console.error('Passwords are not match');
-      return;
-    }
-
-    toggle();
-    const signUpResult = await signUpAsync(username, email, password);
-    if (signUpResult.ok) {
-      const loginResult = await logInAsync(email, password);
-      toggle();
-      if (loginResult.ok) {
-        await sendOAuthRequestAsync();
+  async function signUp(provider: AuthProvider) {
+    try {
+      if (provider !== AuthProvider.DDGS) {
+        setLoadingOverlayVisible(true);
+        logInWithExternalProvider(provider);
+        return;
       }
-    }
-    toggle();
-  }
 
-  function signUpWithGoogle() {
-    toggle();
-    logInWithGoogle();
+      if (password !== confirmPassword) {
+        console.error('Passwords are not match');
+        return;
+      }
+      setLoadingOverlayVisible(true);
+      const signUpResult = await signUpAsync(username, email, password);
+      if (signUpResult.ok) {
+        const loginResult = await logInAsync(email, password);
+        if (loginResult.ok) {
+          await sendOAuthRequestAsync();
+        }
+      }
+    } catch (error) {
+      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        dispatch(addErrors(ErrorViewModels.serverUnavailable));
+      } else {
+        dispatch(addErrors(ErrorViewModels.unknownError));
+      }
+    } finally {
+      setLoadingOverlayVisible(false);
+    }
   }
 
   return (
     <Flex justify='center' align='center' h='100%'>
       <Card shadow='sm' padding={0} radius='md' withBorder w='30%'>
-        <LoadingOverlay visible={visible} overlayProps={{ radius: 'md', blur: 1 }} />
+        <LoadingOverlay visible={loadingOverlayVisible} overlayProps={{ radius: 'md', blur: 1 }} />
         <Card.Section withBorder>
           <Flex justify='center' align='center' gap='xs' style={{ cursor: 'pointer' }}>
             <Logo style={{ height: '40px', width: '40px', color: 'teal' }} />
@@ -98,7 +116,7 @@ export default function SignupPage() {
                 onChange={(e) => setConfirmPassword(e.currentTarget.value)}
               />
             </Input.Wrapper>
-            <Button fullWidth color='teal' mt='10px' onClick={() => signUp()}>
+            <Button fullWidth color='teal' mt='10px' onClick={() => signUp(AuthProvider.DDGS)}>
               Continue
             </Button>
             <Divider my='sm' label='or' labelPosition='center' w='100%' />
@@ -106,7 +124,7 @@ export default function SignupPage() {
               leftSection={<IconBrandGoogleFilled size={18} />}
               color='gray'
               fullWidth
-              onClick={signUpWithGoogle}>
+              onClick={() => signUp(AuthProvider.Google)}>
               Continue with Google
             </Button>
             <Text size='14px' mt='40px'>

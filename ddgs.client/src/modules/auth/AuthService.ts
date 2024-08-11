@@ -1,6 +1,8 @@
 import { UserManager } from 'oidc-client-ts';
 import { ddgsConfig } from './AuthConfig.ts';
 import { jwtDecode } from 'jwt-decode';
+import { Routes } from '../navigation/Routes.ts';
+import { AuthProvider } from './auth-provider.ts';
 
 const userManager = new UserManager(ddgsConfig.settings);
 
@@ -41,8 +43,8 @@ export async function logInAsync(email: string, password: string) {
   return await fetch(url, options);
 }
 
-export function logInWithGoogle() {
-  window.location.href = `${import.meta.env.VITE_AUTH_AUTHORITY}/challenge/google`;
+export function logInWithExternalProvider(provider: AuthProvider) {
+  window.location.href = `${import.meta.env.VITE_AUTH_AUTHORITY}/challenge/${provider}`;
 }
 
 export async function getUserAsync() {
@@ -85,23 +87,9 @@ export async function getAccessTokenAsync() {
   return user?.access_token;
 }
 
-export async function logoutAsync() {
+export async function logoutAsync(postLogoutRedirectUri: string = Routes.Login) {
   await userManager.clearStaleState();
-  await userManager.signoutRedirect();
+  await userManager.signoutRedirect({
+    post_logout_redirect_uri: import.meta.env.VITE_SELF_URL + postLogoutRedirectUri
+  });
 }
-
-// This function is used to access token claims
-// `.profile` is available in Open Id Connect implementations
-// in simple OAuth2 it is empty, because UserInfo endpoint does not exist
-// export async function getRole() {
-//     const user = await getUser();
-//     return user?.profile?.role;
-// }
-
-// This function is used to change account similar way it is done in Google
-// export async function selectOrganization() {
-//     const args = {
-//         prompt: "select_account"
-//     }
-//     await userManager.signinRedirect(args);
-// }

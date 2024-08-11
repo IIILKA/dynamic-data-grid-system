@@ -1,3 +1,4 @@
+using DDGS.Identity.Auth.Configuration;
 using DDGS.Infrastructure.Configuration;
 using DDGS.Identity.Configuration;
 using DDGS.Identity.Utils;

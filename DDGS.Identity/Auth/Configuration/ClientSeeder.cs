@@ -83,7 +83,8 @@ namespace DDGS.Identity.Auth.Configuration
                 },
                 PostLogoutRedirectUris =
                 {
-                    new Uri($"{spaClientUrl}/login")
+                    new Uri($"{spaClientUrl}/login"),
+                    new Uri($"{spaClientUrl}/unauthorized")
                 },
                 Permissions =
                 {

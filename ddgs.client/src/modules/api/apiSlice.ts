@@ -1,10 +1,12 @@
 import { createApi, EndpointBuilder, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import TableEntity from '../seed-data/TableEntity';
-import { dataGridSlice } from '../data-grid/dataGridSlice';
+import { addErrors, dataGridSlice } from '../data-grid/dataGridSlice';
 import { createEntityAdapter, createSelector } from '@reduxjs/toolkit';
 import { TableCellType } from '../seed-data/TableCellType';
 import { RootState } from '../../app/store';
-import { getAccessTokenAsync } from '../auth/AuthService.ts';
+import { getAccessTokenAsync, logoutAsync } from '../auth/AuthService.ts';
+import { Routes } from '../navigation/Routes.ts';
+import ErrorViewModels from '../error-handling/error-view-models.ts';
 
 interface NormalizedDataGridEntitiesCache {
   ids: string[];
@@ -28,18 +30,37 @@ export const tableEntityAdapter = createEntityAdapter<TableEntity>({
 
 const dataGridInitialState = tableEntityAdapter.getInitialState();
 
-export const apiSlice = createApi({
-  reducerPath: 'api',
-  baseQuery: fetchBaseQuery({
+const baseQuery = async (args, api, extraOptions) => {
+  const baseResult = await fetchBaseQuery({
     baseUrl: import.meta.env.VITE_API_URL,
     prepareHeaders: async (headers) => {
       const token = await getAccessTokenAsync();
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);
       }
-      return headers;
     }
-  }),
+  })(args, api, extraOptions);
+
+  if (baseResult?.error) {
+    const error = baseResult.error;
+
+    if (error.status === 401) {
+      await logoutAsync(Routes.Unauthorized);
+    } else if (error.status === 403) {
+      window.location.href = Routes.Forbidden;
+    } else if (error.status === 'FETCH_ERROR') {
+      api.dispatch(addErrors(ErrorViewModels.serverUnavailable));
+    } else {
+      api.dispatch(addErrors(ErrorViewModels.unknownError));
+    }
+  }
+
+  return baseResult;
+};
+
+export const apiSlice = createApi({
+  reducerPath: 'api',
+  baseQuery,
   tagTypes: ['Tests'],
   //TODO: refactor, remove unknown
   endpoints: (builder: EndpointBuilder<unknown, unknown, unknown>) => ({

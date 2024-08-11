@@ -2,10 +2,11 @@ import { ReactElement, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { Footer } from './Footer';
 import { Header } from './Header';
-import { Flex, MantineProvider } from '@mantine/core';
-import { theme } from '../../theme.ts';
 import { getAccessTokenAsync, getUserInfoAsync } from '../auth/AuthService.ts';
 import { Routes } from '../navigation/Routes.ts';
+import { theme } from '../../theme.ts';
+import { Flex, MantineProvider } from '@mantine/core';
+import ErrorNotification from '../error-handling/error-notification.tsx';
 
 export default function LayoutWithRequiredAuth(): ReactElement {
   const navigate = useNavigate();
@@ -25,10 +26,11 @@ export default function LayoutWithRequiredAuth(): ReactElement {
 
   return (
     <MantineProvider theme={theme} defaultColorScheme='auto'>
-      <Flex direction='column' px='48px' py='0px' h='100%yarn '>
+      <Flex direction='column' px='48px' py='0px' mih='100%'>
         <Header />
-        <div style={{ flex: '1 0 auto' }}>
+        <div style={{ flex: '1 0 auto', position: 'relative' }}>
           <Outlet />
+          <ErrorNotification />
         </div>
         <Footer />
       </Flex>
