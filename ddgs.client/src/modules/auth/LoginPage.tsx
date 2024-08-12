@@ -15,46 +15,33 @@ import Logo from '../../../public/ddgs-logo.svg?react';
 import { Link } from 'react-router-dom';
 import { Routes } from '../navigation/Routes.ts';
 import { IconBrandGoogleFilled } from '@tabler/icons-react';
-import { useState } from 'react';
-import { logInAsync, logInWithExternalProvider, sendOAuthRequestAsync } from './AuthService.ts';
-import { addErrors } from '../data-grid/dataGridSlice.ts';
-import { useDispatch } from 'react-redux';
-import ErrorViewModels from '../error-handling/error-view-models.ts';
+import { useEffect, useState } from 'react';
+import { logInWithExternalProvider } from './AuthService.ts';
+import { useSelector } from 'react-redux';
 import { AuthProvider } from './auth-provider.ts';
+import { useLazyLogInQuery } from '../api/auth-api-slice.ts';
+import { RootState } from '../../app/store.ts';
 
 export default function LoginPage() {
   const { colorScheme } = useMantineColorScheme();
   const isDarkTheme = colorScheme === 'dark';
 
-  const dispatch = useDispatch();
+  const [logInAsync] = useLazyLogInQuery();
+  const fetchingQueriesCount = useSelector(
+    (state: RootState) => state.dataGrid.fetchingQueriesCount
+  );
 
   const [loadingOverlayVisible, setLoadingOverlayVisible] = useState(false);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
-  async function authenticate(provider: AuthProvider) {
-    try {
-      setLoadingOverlayVisible(true);
-
-      if (provider !== AuthProvider.DDGS) {
-        logInWithExternalProvider(provider);
-        return;
-      }
-
-      const logInResult = await logInAsync(email, password);
-      if (logInResult.ok) {
-        await sendOAuthRequestAsync();
-      }
-    } catch (error) {
-      if (error instanceof TypeError && error.message === 'Failed to fetch') {
-        dispatch(addErrors(ErrorViewModels.serverUnavailable));
-      } else {
-        dispatch(addErrors(ErrorViewModels.unknownError));
-      }
-    } finally {
+  useEffect(() => {
+    if (fetchingQueriesCount === 0) {
       setLoadingOverlayVisible(false);
+    } else {
+      setLoadingOverlayVisible(true);
     }
-  }
+  }, [fetchingQueriesCount]);
 
   return (
     <Flex justify='center' align='center' h='100%'>
@@ -102,7 +89,7 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.currentTarget.value)}
               />
             </Input.Wrapper>
-            <Button fullWidth color='teal' onClick={() => authenticate(AuthProvider.DDGS)}>
+            <Button fullWidth color='teal' onClick={() => logInAsync({ email, password })}>
               Continue
             </Button>
             <Divider my='sm' label='or' labelPosition='center' w='100%' />
@@ -110,7 +97,10 @@ export default function LoginPage() {
               leftSection={<IconBrandGoogleFilled size={18} />}
               color='gray'
               fullWidth
-              onClick={() => authenticate(AuthProvider.Google)}>
+              onClick={() => {
+                setLoadingOverlayVisible(true);
+                logInWithExternalProvider(AuthProvider.Google);
+              }}>
               Log in with Google
             </Button>
           </Flex>

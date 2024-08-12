@@ -15,23 +15,22 @@ import Logo from '../../../public/ddgs-logo.svg?react';
 import { Link } from 'react-router-dom';
 import { Routes } from '../navigation/Routes.ts';
 import { IconBrandGoogleFilled } from '@tabler/icons-react';
-import {
-  logInAsync,
-  logInWithExternalProvider,
-  sendOAuthRequestAsync,
-  signUpAsync
-} from './AuthService.ts';
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { addErrors } from '../data-grid/dataGridSlice.ts';
-import ErrorViewModels from '../error-handling/error-view-models.ts';
+import { logInWithExternalProvider } from './AuthService.ts';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { AuthProvider } from './auth-provider.ts';
+import { useLazyLogInQuery, useLazySignUpQuery } from '../api/auth-api-slice.ts';
+import { RootState } from '../../app/store.ts';
 
 export default function SignupPage() {
   const { colorScheme } = useMantineColorScheme();
   const isDarkTheme = colorScheme === 'dark';
 
-  const dispatch = useDispatch();
+  const [signUpAsync] = useLazySignUpQuery();
+  const [logInAsync] = useLazyLogInQuery();
+  const fetchingQueriesCount = useSelector(
+    (state: RootState) => state.dataGrid.fetchingQueriesCount
+  );
 
   const [loadingOverlayVisible, setLoadingOverlayVisible] = useState(false);
   const [username, setUsername] = useState<string>('');
@@ -39,36 +38,13 @@ export default function SignupPage() {
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
 
-  async function signUp(provider: AuthProvider) {
-    try {
-      if (provider !== AuthProvider.DDGS) {
-        setLoadingOverlayVisible(true);
-        logInWithExternalProvider(provider);
-        return;
-      }
-
-      if (password !== confirmPassword) {
-        console.error('Passwords are not match');
-        return;
-      }
-      setLoadingOverlayVisible(true);
-      const signUpResult = await signUpAsync(username, email, password);
-      if (signUpResult.ok) {
-        const loginResult = await logInAsync(email, password);
-        if (loginResult.ok) {
-          await sendOAuthRequestAsync();
-        }
-      }
-    } catch (error) {
-      if (error instanceof TypeError && error.message === 'Failed to fetch') {
-        dispatch(addErrors(ErrorViewModels.serverUnavailable));
-      } else {
-        dispatch(addErrors(ErrorViewModels.unknownError));
-      }
-    } finally {
+  useEffect(() => {
+    if (fetchingQueriesCount === 0) {
       setLoadingOverlayVisible(false);
+    } else {
+      setLoadingOverlayVisible(true);
     }
-  }
+  }, [fetchingQueriesCount]);
 
   return (
     <Flex justify='center' align='center' h='100%'>
@@ -116,7 +92,14 @@ export default function SignupPage() {
                 onChange={(e) => setConfirmPassword(e.currentTarget.value)}
               />
             </Input.Wrapper>
-            <Button fullWidth color='teal' mt='10px' onClick={() => signUp(AuthProvider.DDGS)}>
+            <Button
+              fullWidth
+              color='teal'
+              mt='10px'
+              onClick={async () => {
+                await signUpAsync({ username, email, password });
+                await logInAsync({ email, password });
+              }}>
               Continue
             </Button>
             <Divider my='sm' label='or' labelPosition='center' w='100%' />
@@ -124,7 +107,10 @@ export default function SignupPage() {
               leftSection={<IconBrandGoogleFilled size={18} />}
               color='gray'
               fullWidth
-              onClick={() => signUp(AuthProvider.Google)}>
+              onClick={() => {
+                setLoadingOverlayVisible(true);
+                logInWithExternalProvider(AuthProvider.Google);
+              }}>
               Continue with Google
             </Button>
             <Text size='14px' mt='40px'>

@@ -11,38 +11,6 @@ export interface UserInfo {
   email: string;
 }
 
-export async function signUpAsync(username: string, email: string, password: string) {
-  const url = `${import.meta.env.VITE_AUTH_AUTHORITY}/user/register`;
-
-  const options: RequestInit = {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      username,
-      email,
-      password
-    })
-  };
-
-  return await fetch(url, options);
-}
-
-export async function logInAsync(email: string, password: string) {
-  const url = `${import.meta.env.VITE_AUTH_AUTHORITY}/authenticate`;
-
-  const options: RequestInit = {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      email,
-      password
-    }),
-    credentials: 'include'
-  };
-
-  return await fetch(url, options);
-}
-
 export function logInWithExternalProvider(provider: AuthProvider) {
   window.location.href = `${import.meta.env.VITE_AUTH_AUTHORITY}/challenge/${provider}`;
 }
