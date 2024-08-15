@@ -5,7 +5,6 @@ import {
   Flex,
   Input,
   LoadingOverlay,
-  PasswordInput,
   Text,
   useMantineColorScheme
 } from '@mantine/core';
@@ -21,6 +20,9 @@ import { useSelector } from 'react-redux';
 import { AuthProvider } from './auth-provider.ts';
 import { useLazyLogInQuery } from '../api/auth-api-slice.ts';
 import { RootState } from '../../app/store.ts';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { loginFormSchema, LoginFormSchema } from './login-form-schema.ts';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 export default function LoginPage() {
   const { colorScheme } = useMantineColorScheme();
@@ -32,8 +34,16 @@ export default function LoginPage() {
   );
 
   const [loadingOverlayVisible, setLoadingOverlayVisible] = useState(false);
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<LoginFormSchema>({ resolver: zodResolver(loginFormSchema) });
+
+  const onSubmit: SubmitHandler<LoginFormSchema> = async (data) => {
+    await logInAsync({ email: data.email, password: data.password });
+  };
 
   useEffect(() => {
     if (fetchingQueriesCount === 0) {
@@ -70,40 +80,46 @@ export default function LoginPage() {
           </Flex>
         </Card.Section>
         <Card.Section>
-          <Flex direction='column' align='center' p='20px' pb='60px'>
-            <Flex direction='column' align='center' mb='20px'>
-              <h1 style={{ margin: 0 }}>Log in</h1>
-              <Text>
-                or <Link to={Routes.Signup}>create account</Link>
-              </Text>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Flex direction='column' align='center' p='20px' pb='60px'>
+              <Flex direction='column' align='center' mb='20px'>
+                <h1 style={{ margin: 0 }}>Log in</h1>
+                <Text>
+                  or <Link to={Routes.Signup}>create account</Link>
+                </Text>
+              </Flex>
+              <Input.Wrapper
+                label='Email'
+                size='md'
+                w='100%'
+                mb='10px'
+                error={errors.email ? errors.email.message : null}>
+                <Input {...register('email')} placeholder='Your email adress' />
+              </Input.Wrapper>
+              <Input.Wrapper
+                label='Password'
+                size='md'
+                w='100%'
+                mb='20px'
+                error={errors.password ? errors.password.message : null}>
+                <Input {...register('password')} type='password' placeholder='Your password' />
+              </Input.Wrapper>
+              <Button fullWidth color='teal' type='submit'>
+                Continue
+              </Button>
+              <Divider my='sm' label='or' labelPosition='center' w='100%' />
+              <Button
+                leftSection={<IconBrandGoogleFilled size={18} />}
+                color='gray'
+                fullWidth
+                onClick={() => {
+                  setLoadingOverlayVisible(true);
+                  logInWithExternalProvider(AuthProvider.Google);
+                }}>
+                Log in with Google
+              </Button>
             </Flex>
-            <Input.Wrapper label='Email' size='md' w='100%' mb='10px'>
-              <Input
-                placeholder='Your email adress'
-                onChange={(e) => setEmail(e.currentTarget.value)}
-              />
-            </Input.Wrapper>
-            <Input.Wrapper label='Password' size='md' w='100%' mb='20px'>
-              <PasswordInput
-                placeholder='Your password'
-                onChange={(e) => setPassword(e.currentTarget.value)}
-              />
-            </Input.Wrapper>
-            <Button fullWidth color='teal' onClick={() => logInAsync({ email, password })}>
-              Continue
-            </Button>
-            <Divider my='sm' label='or' labelPosition='center' w='100%' />
-            <Button
-              leftSection={<IconBrandGoogleFilled size={18} />}
-              color='gray'
-              fullWidth
-              onClick={() => {
-                setLoadingOverlayVisible(true);
-                logInWithExternalProvider(AuthProvider.Google);
-              }}>
-              Log in with Google
-            </Button>
-          </Flex>
+          </form>
         </Card.Section>
       </Card>
     </Flex>

@@ -1,8 +1,9 @@
 import { createApi, EndpointBuilder, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { logoutAsync, sendOAuthRequestAsync } from '../auth/AuthService.ts';
 import { Routes } from '../navigation/Routes.ts';
-import { addErrors, dataGridSlice } from '../data-grid/dataGridSlice.ts';
+import { addError, dataGridSlice } from '../data-grid/dataGridSlice.ts';
 import ErrorViewModels from '../error-handling/error-view-models.ts';
+import ErrorViewModel from '../error-handling/error-view-model.ts';
 
 interface LoginRequestDto {
   email: string;
@@ -28,9 +29,19 @@ const baseQuery = async (args, api, extraOptions) => {
     } else if (error.status === 403) {
       window.location.href = Routes.Forbidden;
     } else if (error.status === 'FETCH_ERROR') {
-      api.dispatch(addErrors(ErrorViewModels.serverUnavailable));
-    } else {
-      api.dispatch(addErrors(ErrorViewModels.unknownError));
+      api.dispatch(addError(ErrorViewModels.serverUnavailable));
+    } else if (
+      error.status === 400 &&
+      !!error.data.errors &&
+      error.data.errors instanceof Array<string>
+    ) {
+      const errorsViewModels: ErrorViewModel[] = error.data.errors.map((error) => ({
+        title: 'Validation error',
+        description: error
+      }));
+      errorsViewModels.forEach((errorViewModel) => api.dispatch(addError(errorViewModel)));
+    } else if (error.status === 400 || error.status === 500) {
+      api.dispatch(addError(ErrorViewModels.unknownError));
     }
   }
 

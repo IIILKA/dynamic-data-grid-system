@@ -1,5 +1,6 @@
 ﻿using DDGS.Core.Identity;
 using DDGS.Core.Identity.Entities;
+using DDGS.Core.Identity.Entities.Constraints;
 using DDGS.Core.Identity.Interfaces;
 using DDGS.Infrastructure.Repositories;
 using DDGS.Infrastructure;
@@ -11,13 +12,13 @@ namespace DDGS.Identity.Configuration
     {
         public static IServiceCollection AddDdgsIdentity(this IServiceCollection services, TypeAdapterConfig typeAdapterConfig)
         {
-            services.AddIdentity<Core.Identity.Entities.User, Role>(opts =>
+            services.AddIdentity<DDGS.Core.Identity.Entities.User, Role>(opts =>
             {
                 opts.Password.RequireDigit = true;
                 opts.Password.RequireLowercase = true;
                 opts.Password.RequireNonAlphanumeric = true;
                 opts.Password.RequireUppercase = true;
-                opts.Password.RequiredLength = 6;
+                opts.Password.RequiredLength = UserConstraints.PasswordMinLength;
                 opts.Password.RequiredUniqueChars = 1;
 
                 opts.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);

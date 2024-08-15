@@ -90,7 +90,7 @@ export const dataGridSlice = createSlice({
         changedCell[action.payload.collName] = action.payload.newValue;
       }
     },
-    addErrors: (state, action: PayloadAction<ErrorViewModel>) => {
+    addError: (state, action: PayloadAction<ErrorViewModel>) => {
       const error = { ...action.payload, id: getUniqueId() };
       state.errors.push(error);
     },
@@ -103,7 +103,7 @@ export const dataGridSlice = createSlice({
   }
 });
 
-export const { queryStarted, queryFinished, selectCell, changeCellValue, addErrors, removeError } =
+export const { queryStarted, queryFinished, selectCell, changeCellValue, addError, removeError } =
   dataGridSlice.actions;
 
 export default dataGridSlice.reducer;

@@ -1,4 +1,4 @@
-﻿namespace DDGS.Core.Identity.Payloads
+﻿namespace DDGS.Core.Identity.Entities.Payloads
 {
     public record UserAddExternalLoginPayload(
         string ProviderName,

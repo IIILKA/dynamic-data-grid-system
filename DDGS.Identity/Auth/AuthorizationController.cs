@@ -1,23 +1,17 @@
-﻿using System.Collections.Immutable;
-using System.Security.Claims;
-using Amazon.Runtime.Internal.Transform;
-using DDGS.Core.Identity.Entities;
+﻿using System.Security.Claims;
+using DDGS.Core.Identity.Entities.Payloads;
 using DDGS.Core.Identity.Interfaces;
-using DDGS.Core.Identity.Payloads;
 using DDGS.Identity.Auth.Dto;
-using DnsClient;
+using DDGS.Identity.Core;
 using FluentResults;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using OpenIddict.Client.WebIntegration;
 using OpenIddict.Server.AspNetCore;
-using Polly;
-using static OpenIddict.Client.WebIntegration.OpenIddictClientWebIntegrationConstants;
 
 namespace DDGS.Identity.Auth
 {
@@ -44,12 +38,12 @@ namespace DDGS.Identity.Auth
 
             if (user == null)
             {
-                return BadRequest($"User with email {authDto.Email} is not exist");
+                return BadRequest(new ErrorResponseDto($"User with email {authDto.Email} is not exist"));
             }
 
             if (!await _identityService.CheckUserPasswordAsync(user, authDto.Password))
             {
-                return BadRequest("Invalid password");
+                return BadRequest(new ErrorResponseDto("Invalid password"));
             }
 
             var claims = new List<Claim>()
@@ -161,14 +155,14 @@ namespace DDGS.Identity.Auth
             {
                 Parameters = { { "prompt", "select_account" } }
             };
-            return Challenge(properties, new[] { Providers.Google });
+            return Challenge(properties, new[] { OpenIddictClientWebIntegrationConstants.Providers.Google });
         }
 
         [HttpGet("~/callback/login/google")]
         [HttpPost("~/callback/login/google")]
         public async Task<IActionResult> HandleGoogleLoginCallbackAsync()
         {
-            var result = await HttpContext.AuthenticateAsync(Providers.Google);
+            var result = await HttpContext.AuthenticateAsync(OpenIddictClientWebIntegrationConstants.Providers.Google);
 
             var identity = new ClaimsIdentity(
                 "ExternalLogin",
@@ -184,7 +178,7 @@ namespace DDGS.Identity.Auth
             if (ensureUserRegisteredResult.IsFailed)
             {
                 //TODO: redirect to SPA
-                return BadRequest(new { errors = ensureUserRegisteredResult.Errors.Select(_ => _.Message).ToArray() });
+                return BadRequest(new ErrorResponseDto(ensureUserRegisteredResult.Errors.Select(_ => _.Message).ToArray()));
             }
             var user = ensureUserRegisteredResult.Value;
 
@@ -193,7 +187,7 @@ namespace DDGS.Identity.Auth
             if (ensureUserExternalLoginRegisteredResult.IsFailed)
             {
                 //TODO: redirect to SPA
-                return BadRequest(new { errors = ensureUserExternalLoginRegisteredResult.Errors.Select(_ => _.Message).ToArray() });
+                return BadRequest(new ErrorResponseDto(ensureUserExternalLoginRegisteredResult.Errors.Select(_ => _.Message).ToArray()));
             }
 
             identity.SetClaim(OpenIddictConstants.Claims.Subject, user.Id.ToString())
@@ -211,7 +205,7 @@ namespace DDGS.Identity.Auth
             return SignIn(new ClaimsPrincipal(identity), properties, CookieAuthenticationDefaults.AuthenticationScheme);
         }
 
-        private async Task<Result<Core.Identity.Entities.User>> EnsureUserRegisteredAsync(string email, string username)
+        private async Task<Result<DDGS.Core.Identity.Entities.User>> EnsureUserRegisteredAsync(string email, string username)
         {
             var user = await _identityService.GetByEmailAsync(email);
             if (user != null)
@@ -231,7 +225,7 @@ namespace DDGS.Identity.Auth
             return user;
         }
 
-        private async Task<Result> EnsureUserExternalLoginRegisteredAsync(Core.Identity.Entities.User user, string externalLoginProviderName, string externalLoginUserId)
+        private async Task<Result> EnsureUserExternalLoginRegisteredAsync(DDGS.Core.Identity.Entities.User user, string externalLoginProviderName, string externalLoginUserId)
         {
             if (await _identityService.DoesExternalLoginRegisteredAsync(user, externalLoginProviderName, externalLoginUserId))
             {

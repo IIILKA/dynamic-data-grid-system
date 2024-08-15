@@ -1,5 +1,5 @@
 ﻿using DDGS.Core.Identity.Entities;
-using DDGS.Core.Identity.Payloads;
+using DDGS.Core.Identity.Entities.Payloads;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 

@@ -1,6 +1,6 @@
 ﻿using DDGS.Core.Identity.Entities;
+using DDGS.Core.Identity.Entities.Payloads;
 using DDGS.Core.Identity.Interfaces;
-using DDGS.Core.Identity.Payloads;
 using FluentResults;
 using MapsterMapper;
 using Microsoft.AspNetCore.Identity;

@@ -1,5 +1,6 @@
-﻿using DDGS.Core.Identity.Interfaces;
-using DDGS.Core.Identity.Payloads;
+﻿using DDGS.Core.Identity.Entities.Payloads;
+using DDGS.Core.Identity.Interfaces;
+using DDGS.Identity.Core;
 using DDGS.Identity.User.Dto;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -43,7 +44,7 @@ namespace DDGS.Identity.User
 
             if (result.IsFailed)
             {
-                return BadRequest(new { errors = result.Errors.Select(_ => _.Message).ToArray() });
+                return BadRequest(new ErrorResponseDto(result.Errors.Select(_ => _.Message).ToArray()));
             }
 
             return Ok();

@@ -1,6 +1,6 @@
 import { createApi, EndpointBuilder, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import TableEntity from '../seed-data/TableEntity';
-import { addErrors, dataGridSlice } from '../data-grid/dataGridSlice';
+import { addError, dataGridSlice } from '../data-grid/dataGridSlice';
 import { createEntityAdapter, createSelector } from '@reduxjs/toolkit';
 import { TableCellType } from '../seed-data/TableCellType';
 import { RootState } from '../../app/store';
@@ -49,9 +49,9 @@ const baseQuery = async (args, api, extraOptions) => {
     } else if (error.status === 403) {
       window.location.href = Routes.Forbidden;
     } else if (error.status === 'FETCH_ERROR') {
-      api.dispatch(addErrors(ErrorViewModels.serverUnavailable));
+      api.dispatch(addError(ErrorViewModels.serverUnavailable));
     } else {
-      api.dispatch(addErrors(ErrorViewModels.unknownError));
+      api.dispatch(addError(ErrorViewModels.unknownError));
     }
   }
 

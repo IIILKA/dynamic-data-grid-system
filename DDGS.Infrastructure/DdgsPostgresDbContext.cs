@@ -1,4 +1,5 @@
 ﻿using DDGS.Core.Identity.Entities;
+using DDGS.Core.Identity.Entities.Constraints;
 using DDGS.Infrastructure.Configuration;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,13 @@ namespace DDGS.Infrastructure
             {
                 builder.Property(_ => _.Id)
                     .HasDefaultValueSql($"{PostgresDbFunctionNames.GenerateUUIDv7}()");
+
+                builder.Property(_ => _.UserName)
+                    .IsRequired()
+                    .HasMaxLength(UserConstraints.UsernameMaxLength);
+
+                builder.Property(_ => _.Email)
+                    .IsRequired();
             });
         }
     }
