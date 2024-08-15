@@ -1,8 +1,8 @@
-import DataGrid from '../../modules/data-grid/DataGrid';
-import { useGetTestsQuery } from '../../modules/api/apiSlice';
+import DataGrid from '../modules/data-grid/DataGrid.tsx';
+import { useGetTestsQuery } from '../modules/api/apiSlice.ts';
 import { Center, Loader } from '@mantine/core';
 
-export function TestPage() {
+export default function TestPage() {
   const { data: normalizedTests, isLoading, isSuccess } = useGetTestsQuery();
 
   return (

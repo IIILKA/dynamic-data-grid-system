@@ -8,7 +8,6 @@ namespace DDGS.Core.TestFeature
     public class TestService : ITestService
     {
         private readonly ITestRepository _testRepository;
-
         private readonly IMapper _mapper;
 
         public TestService(ITestRepository testRepository, IMapper mapper)

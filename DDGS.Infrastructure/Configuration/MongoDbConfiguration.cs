@@ -6,7 +6,7 @@ namespace DDGS.Infrastructure.Configuration
 {
     public static class MongoDbConfiguration
     {
-        public static IServiceCollection AddDbServices(this IServiceCollection services)
+        public static IServiceCollection AddMongoDb(this IServiceCollection services)
         {
             var connectionString = Environment.GetEnvironmentVariable("MONGODB_URL");
             var dbName = Environment.GetEnvironmentVariable("MONGODB_NAME");
@@ -21,7 +21,7 @@ namespace DDGS.Infrastructure.Configuration
                 throw new Exception("Database name for MongoDb not define. Please set 'MONGODB_NAME' environment variable.");
             }
 
-            services.AddDbContext<DdgsDbContext>(options =>
+            services.AddDbContext<DdgsMongoDbContext>(options =>
             {
                 options.UseMongoDB(connectionString, dbName);
             });

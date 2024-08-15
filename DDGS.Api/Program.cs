@@ -1,52 +1,27 @@
-using DDGS.Core.TestFeature;
-using DDGS.Core.TestFeature.Interfaces;
+using DDGS.Api.Configuration;
+using DDGS.Api.Utils;
+using DDGS.Infrastructure;
 using DDGS.Infrastructure.Configuration;
 using DDGS.Infrastructure.Core;
 using DDGS.Infrastructure.Core.Interfaces;
-using DDGS.Infrastructure.TestFeature;
 using Mapster;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddDbServices();
-
-//Core
-builder.Services.AddScoped<IEntityIdGenerator, EntityIdGenerator>();
-
-//FeatureServices
-builder.Services.AddScoped<ITestRepository, TestRepository>();
-builder.Services.AddScoped<ITestService, TestService>();
-
 builder.Services.AddMapster();
 
+builder.Services
+    .AddMongoDb()
+    .AddPostgresDb()
+    .AddOpenIddictAuthentication()
+    .AddAuthorization()
+    .AddDdgsCors()
+    .AddScoped<IEntityIdGenerator, EntityIdGenerator>()//TODO: Refactor, maybe change this service
+    .AddTestServices()
+    .AddEndpointsApiExplorer()
+    .AddSwaggerGen();
+
 builder.Services.AddControllers();
-//TODO: Configure cors
-builder.Services.AddCors(opts =>
-{
-    opts.AddDefaultPolicy(policy =>
-    {
-        var allowedOrigins = new List<string>();
-
-        if (Environment.GetEnvironmentVariable("CLIENT_HTTP_URL") != null)
-        {
-            allowedOrigins.Add(Environment.GetEnvironmentVariable("CLIENT_HTTP_URL")!);
-        }
-
-        if (Environment.GetEnvironmentVariable("CLIENT_HTTPS_URL") != null)
-        {
-            allowedOrigins.Add(Environment.GetEnvironmentVariable("CLIENT_HTTPS_URL")!);
-        }
-
-        policy
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .WithOrigins(allowedOrigins.ToArray());
-    });
-});
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -56,15 +31,27 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-if (!app.Environment.IsDevelopment())
+if (EnvironmentUtils.GetEnvironmentVariableAsBool("ASPNETCORE_HTTPS_ENABLED", true))
 {
     app.UseHttpsRedirection();
 }
 
-app.UseAuthorization();
+app.UseRouting();
 
 app.UseCors();
 
-app.MapControllers();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseEndpoints(options =>
+{
+    options.MapControllers();
+    options.MapDefaultControllerRoute();
+});
+
+if (EnvironmentUtils.GetEnvironmentVariableAsBool("AUTO_MIGRATION_ENABLED", false))
+{
+    await DatabaseStateSynchronizer.SyncMigrationsAsync<DdgsPostgresDbContext>(app);
+}
 
 app.Run();

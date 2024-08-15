@@ -8,27 +8,25 @@ namespace DDGS.Infrastructure.TestFeature
 {
     public class TestRepository : ITestRepository
     {
-        private readonly DdgsDbContext _dbContext;
-
+        private readonly DdgsMongoDbContext _mongoDbContext;
         private readonly IMapper _mapper;
-
         private readonly IEntityIdGenerator _entityIdGenerator;
 
-        public TestRepository(DdgsDbContext dbContext, IMapper mapper, IEntityIdGenerator entityIdGenerator)
+        public TestRepository(DdgsMongoDbContext mongoDbContext, IMapper mapper, IEntityIdGenerator entityIdGenerator)
         {
-            _dbContext = dbContext;
+            _mongoDbContext = mongoDbContext;
             _mapper = mapper;
             _entityIdGenerator = entityIdGenerator;
         }
 
         public async Task<List<Test>> GetManyAsync()
         {
-            return _mapper.Map<List<Test>>(await _dbContext.Tests.AsNoTracking().ToListAsync());
+            return _mapper.Map<List<Test>>(await _mongoDbContext.Tests.AsNoTracking().ToListAsync());
         }
 
         public async Task<Test?> GetAsync(Guid id)
         {
-            return _mapper.Map<Test>((await _dbContext.Tests.AsNoTracking().FirstOrDefaultAsync(_ => _.Id == id))!);
+            return _mapper.Map<Test>((await _mongoDbContext.Tests.AsNoTracking().FirstOrDefaultAsync(_ => _.Id == id))!);
         }
 
         public async Task<Test> CreateAsync(Test entity)
@@ -36,35 +34,35 @@ namespace DDGS.Infrastructure.TestFeature
             entity.Id = _entityIdGenerator.GenerateId();
 
             var dbEntity =
-                (await _dbContext.Tests.AddAsync(_mapper.Map<TestDbEntity>(entity)))
+                (await _mongoDbContext.Tests.AddAsync(_mapper.Map<TestDbEntity>(entity)))
                 .Entity;
 
-            await _dbContext.SaveChangesAsync();
+            await _mongoDbContext.SaveChangesAsync();
 
             return _mapper.Map<Test>(dbEntity);
         }
 
         public async Task<Test?> UpdateAsync(Test entity)
         {
-            var dbEntity = _dbContext.Tests.Update(_mapper.Map<TestDbEntity>(entity)).Entity;
+            var dbEntity = _mongoDbContext.Tests.Update(_mapper.Map<TestDbEntity>(entity)).Entity;
 
-            await _dbContext.SaveChangesAsync();
+            await _mongoDbContext.SaveChangesAsync();
 
             return _mapper.Map<Test>(dbEntity);
         }
 
         public async Task DeleteAsync(Guid id)
         {
-            var dbEntity = _dbContext.Tests.FirstOrDefault(_ => _.Id == id);
+            var dbEntity = _mongoDbContext.Tests.FirstOrDefault(_ => _.Id == id);
 
             if (dbEntity == null)
             {
                 return;
             }
 
-            _dbContext.Tests.Remove(dbEntity);
+            _mongoDbContext.Tests.Remove(dbEntity);
 
-            await _dbContext.SaveChangesAsync();
+            await _mongoDbContext.SaveChangesAsync();
         }
     }
 }

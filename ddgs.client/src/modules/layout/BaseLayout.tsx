@@ -1,37 +1,18 @@
 import { ReactElement } from 'react';
 import { Outlet } from 'react-router-dom';
-import { Footer } from './Footer';
-import { Header } from './Header';
-import { styled } from 'styled-components';
-import { MantineProvider } from '@mantine/core';
+import { Flex, MantineProvider } from '@mantine/core';
 import { theme } from '../../theme.ts';
+import ErrorNotification from '../error-handling/error-notification.tsx';
 
-const StyledContainer = styled.div`
-  padding: 0 3rem;
-  min-height: 100%;
-
-  display: flex;
-  flex-direction: column;
-
-  .content {
-    flex: 1 0 auto;
-  }
-`;
-
-function AppLayout(): ReactElement {
+export default function BaseLayout(): ReactElement {
   return (
     <MantineProvider theme={theme} defaultColorScheme='auto'>
-      <StyledContainer>
-        <Header />
-        <div className='content'>
+      <Flex direction='column' px='24px' py='24px' mih='100%'>
+        <div style={{ flex: '1 0 auto', position: 'relative' }}>
           <Outlet />
+          <ErrorNotification />
         </div>
-        <Footer />
-      </StyledContainer>
+      </Flex>
     </MantineProvider>
   );
-}
-
-export function BaseLayout(): ReactElement {
-  return <AppLayout />;
 }

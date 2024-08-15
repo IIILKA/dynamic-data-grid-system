@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import TableEntity from '../seed-data/TableEntity';
 import { TableCellType } from '../seed-data/TableCellType';
+import ErrorViewModel from '../error-handling/error-view-model.ts';
+import { getUniqueId } from '../../utils/unique-id.ts';
 
 interface CellChangedPayload {
   rowId: string;
@@ -17,6 +19,7 @@ interface DataGridState {
   fetchingQueriesCount: number;
   selectedCell: SelectedCell | null;
   rows: TableEntity[];
+  errors: ErrorViewModel[];
 }
 
 const initialState: DataGridState = {
@@ -63,9 +66,11 @@ const initialState: DataGridState = {
       age: 31,
       isStudent: false
     }
-  ]
+  ],
+  errors: []
 };
 
+//TODO: create multiply skices
 export const dataGridSlice = createSlice({
   name: 'dataGrid',
   initialState,
@@ -84,10 +89,21 @@ export const dataGridSlice = createSlice({
       if (changedCell) {
         changedCell[action.payload.collName] = action.payload.newValue;
       }
+    },
+    addError: (state, action: PayloadAction<ErrorViewModel>) => {
+      const error = { ...action.payload, id: getUniqueId() };
+      state.errors.push(error);
+    },
+    removeError: (state, action: PayloadAction<number>) => {
+      const index = state.errors.findIndex((error) => error.id === action.payload);
+      if (index > -1) {
+        state.errors.splice(index, 1);
+      }
     }
   }
 });
 
-export const { queryStarted, queryFinished, selectCell, changeCellValue } = dataGridSlice.actions;
+export const { queryStarted, queryFinished, selectCell, changeCellValue, addError, removeError } =
+  dataGridSlice.actions;
 
 export default dataGridSlice.reducer;

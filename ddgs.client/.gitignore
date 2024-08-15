@@ -1,4 +1,5 @@
 ### DDGS specific igoners ###
+vite.config.ts.timestamp-*.mjs
 
 # ssl-certificates
 https

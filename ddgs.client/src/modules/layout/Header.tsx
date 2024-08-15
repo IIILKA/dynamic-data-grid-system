@@ -1,49 +1,44 @@
-import { ReactElement } from 'react';
-import { styled } from 'styled-components';
-import { ActionIcon, useMantineColorScheme, Center } from '@mantine/core';
+import { ReactElement, useEffect, useRef, useState } from 'react';
+import { ActionIcon, useMantineColorScheme, Center, Avatar, Text, Flex } from '@mantine/core';
 import { IconSunFilled, IconMoonFilled } from '@tabler/icons-react';
 import DataGridLoader from '../data-grid/DataGridLoader';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Logo from '../../../public/ddgs-logo.svg?react';
-
-const HeaderContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const StyledLogoContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-`;
-
-const DarkThemeLogoText = styled.h1`
-  margin-top: 10px;
-  margin-bottom: 10px;
-  font-size: 36px;
-`;
-
-const LightThemeLogoText = styled.h1`
-  margin-top: 10px;
-  margin-bottom: 10px;
-  font-size: 36px;
-  color: var(--mantine-color-dark-6);
-`;
+import UserWidgetMenu, { UserWidgetMenuRef } from './UserWidgetMenu.tsx';
+import { getUserInfoAsync, UserInfo } from '../auth/AuthService.ts';
 
 export function Header(): ReactElement {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const isDarkTheme = colorScheme === 'dark';
 
+  const [userInfo, setUserInfo] = useState<UserInfo>();
+
+  useEffect(() => {
+    const loadUserInfo = async () => {
+      setUserInfo(await getUserInfoAsync());
+    };
+
+    loadUserInfo();
+  }, []);
+
+  const menuRef = useRef<UserWidgetMenuRef | null>(null);
+
   return (
-    <HeaderContainer>
-      <StyledLogoContainer>
+    <Flex justify='space-between' align='center'>
+      <Flex justify='center' align='center' gap='xs' style={{ cursor: 'pointer' }}>
         <Logo style={{ height: '48px', width: '48px', color: 'teal' }} />
-        {isDarkTheme && <DarkThemeLogoText>DDGS</DarkThemeLogoText>}
-        {!isDarkTheme && <LightThemeLogoText>DDGS</LightThemeLogoText>}
-      </StyledLogoContainer>
+        <Text
+          mt='10px'
+          mb='10px'
+          fz='36px'
+          fw='700'
+          style={() => {
+            isDarkTheme ? { color: 'var(--mantine-color-dark-6)' } : null;
+          }}>
+          DDGS
+        </Text>
+      </Flex>
       <div style={{ display: 'flex', gap: '4px' }}>
         <DataGridLoader isDarkTheme={isDarkTheme} />
         <Center>
@@ -60,7 +55,18 @@ export function Header(): ReactElement {
             )}
           </ActionIcon>
         </Center>
+        <UserWidgetMenu ref={menuRef} userInfo={userInfo}>
+          <Avatar
+            src={null}
+            name={userInfo?.name}
+            color='initials'
+            style={{ cursor: 'pointer' }}
+            onClick={() => {
+              menuRef.current!.setMenu({ isOpened: true });
+            }}
+          />
+        </UserWidgetMenu>
       </div>
-    </HeaderContainer>
+    </Flex>
   );
 }

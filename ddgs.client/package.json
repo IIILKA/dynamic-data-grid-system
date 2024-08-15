@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev:https": "VITE_API_URL=https://localhost:4430/api VITE_PORT=3000 VITE_PROTOCOL=https VITE_SSL_CERTIFICATE_CRYPTIC_PASSWORD=ddgs-client-cryptic-password@123 vite",
-    "dev:http": "VITE_API_URL=http://localhost:8000/api VITE_PORT=3080 VITE_PROTOCOL=http vite",
+    "dev:https": "VITE_API_URL=https://localhost:4430/api VITE_PORT=3000 VITE_PROTOCOL=https VITE_SSL_CERTIFICATE_CRYPTIC_PASSWORD=ddgs-client-cryptic-password@123 VITE_AUTH_AUTHORITY=https://localhost:4431 VITE_AUTH_CLIENT_ID=web-client VITE_AUTH_CLIENT_SECRET=901564A5-E7FE-42CB-B10D-61EF6A8F3654 VITE_SELF_URL=https://localhost:3000 vite",
+    "dev:http": "VITE_API_URL=http://localhost:8000/api VITE_PORT=3080 VITE_PROTOCOL=http VITE_SELF_URL=http://localhost:3080 AUTH_AUTHORITY=http://localhost:8001 VITE_AUTH_AUTHORITY=http://localhost:8001 VITE_AUTH_CLIENT_ID=web-client VITE_AUTH_CLIENT_SECRET=901564A5-E7FE-42CB-B10D-61EF6A8F3654 VITE_SELF_URL=https://localhost:3080 vite",
     "local": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
@@ -13,17 +13,20 @@
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.9.0",
     "@mantine/code-highlight": "^7.10.2",
-    "@mantine/core": "7.10.2",
-    "@mantine/hooks": "7.10.2",
-    "@mantine/modals": "^7.10.2",
+    "@mantine/core": "7.11.1",
+    "@mantine/hooks": "7.11.1",
+    "@mantine/modals": "^7.11.1",
     "@reduxjs/toolkit": "^2.2.5",
     "@tabler/icons-react": "^3.6.0",
     "@types/node": "^20.14.2",
     "immer": "^10.1.1",
+    "jwt-decode": "^4.0.0",
+    "oidc-client-ts": "^3.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-hook-form": "^7.51.5",
+    "react-hook-form": "^7.52.2",
     "react-redux": "^9.1.2",
     "react-router-dom": "^6.23.1",
     "react-scripts": "^5.0.1",
@@ -32,7 +35,8 @@
     "use-immer": "^0.10.0",
     "vite-plugin-dts": "^3.9.1",
     "vite-plugin-svgr": "^4.2.0",
-    "web-vitals": "^4.1.1"
+    "web-vitals": "^4.1.1",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",

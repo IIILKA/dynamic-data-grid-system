@@ -17,9 +17,9 @@ export default function DataGrid<T extends TableEntity>({
   const [createRow] = useCreateTestMutation();
 
   async function handleAddEntityClicked() {
-    const resetedRow = resetObject({ ...dataGridRows[sortedIds[0]] });
+    const resetRow = resetObject({ ...dataGridRows[sortedIds[0]] });
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { id, ...entityCreatePayload } = resetedRow;
+    const { id, ...entityCreatePayload } = resetRow;
     entityCreatePayload.index = sortedIds.length + 1;
     await createRow(entityCreatePayload);
   }
