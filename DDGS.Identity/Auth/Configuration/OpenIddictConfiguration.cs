@@ -1,4 +1,5 @@
-﻿using DDGS.Identity.Utils;
+﻿using DDGS.Identity.Auth.Interfaces;
+using DDGS.Identity.Utils;
 using DDGS.Infrastructure;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.IdentityModel.Protocols.Configuration;
@@ -27,8 +28,15 @@ namespace DDGS.Identity.Auth.Configuration
                         .RequireProofKeyForCodeExchange();
                     opts.AllowRefreshTokenFlow();
 
-                    opts.AddDevelopmentEncryptionCertificate()
-                        .AddDevelopmentSigningCertificate();
+                    if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == Environments.Development)
+                    {
+                        opts.AddDevelopmentEncryptionCertificate()
+                            .AddDevelopmentSigningCertificate();
+                    }
+                    else
+                    {
+                        //TODO: Configure
+                    }
 
                     opts.SetAccessTokenLifetime(TimeSpan.FromHours(4))
                         .SetRefreshTokenLifetime(TimeSpan.FromDays(2));
@@ -50,9 +58,17 @@ namespace DDGS.Identity.Auth.Configuration
                 .AddClient(opts =>
                 {
                     opts.AllowAuthorizationCodeFlow();
+                    opts.AllowRefreshTokenFlow();
 
-                    opts.AddDevelopmentEncryptionCertificate()
-                        .AddDevelopmentSigningCertificate();
+                    if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == Environments.Development)
+                    {
+                        opts.AddDevelopmentEncryptionCertificate()
+                            .AddDevelopmentSigningCertificate();
+                    }
+                    else
+                    {
+                        //TODO: Configure
+                    }
 
                     opts.UseAspNetCore()
                         .EnableRedirectionEndpointPassthrough();
@@ -80,8 +96,7 @@ namespace DDGS.Identity.Auth.Configuration
 
             services.AddHostedService<ClientSeeder>();
 
-            //TODO: Maybe use static class
-            services.AddSingleton<AuthUtilsService>();
+            services.AddSingleton<IAuthUtilsService, AuthUtilsService>();
 
             var httpsEnabled = EnvironmentUtils.GetEnvironmentVariableAsBool("ASPNETCORE_HTTPS_ENABLED", false);
 

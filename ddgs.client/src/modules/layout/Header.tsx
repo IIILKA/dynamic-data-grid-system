@@ -22,8 +22,7 @@ export function Header(): ReactElement {
     loadUserInfo();
   }, []);
 
-  //TODO: Fix
-  const menuRef = useRef<UserWidgetMenuRef>(null);
+  const menuRef = useRef<UserWidgetMenuRef | null>(null);
 
   return (
     <Flex justify='space-between' align='center'>

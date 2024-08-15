@@ -12,7 +12,6 @@ namespace DDGS.Identity.User
     public class UserController : ControllerBase
     {
         private readonly IIdentityService _identityService;
-
         private readonly IMapper _mapper;
 
         public UserController(IIdentityService identityService, IMapper mapper)

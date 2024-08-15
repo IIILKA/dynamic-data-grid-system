@@ -20,8 +20,7 @@ export default function DataGridBody<T extends TableEntity>({
 
   const tableRef = useClickOutside(() => dispatch(selectCell(null)), ['click']);
 
-  //TODO: Fix
-  const menuRef = useRef<DaraGridBodyMenuRef>(null);
+  const menuRef = useRef<DaraGridBodyMenuRef | null>(null);
 
   const rows = useMemo(
     () => sortedIds.map((rowId) => <DadaGridBodyRow key={rowId} rowData={dataGridRows[rowId]} />),

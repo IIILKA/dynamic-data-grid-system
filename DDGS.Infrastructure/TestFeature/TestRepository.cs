@@ -9,9 +9,7 @@ namespace DDGS.Infrastructure.TestFeature
     public class TestRepository : ITestRepository
     {
         private readonly DdgsMongoDbContext _mongoDbContext;
-
         private readonly IMapper _mapper;
-
         private readonly IEntityIdGenerator _entityIdGenerator;
 
         public TestRepository(DdgsMongoDbContext mongoDbContext, IMapper mapper, IEntityIdGenerator entityIdGenerator)

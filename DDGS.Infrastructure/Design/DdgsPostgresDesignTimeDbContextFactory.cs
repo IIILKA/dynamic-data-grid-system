@@ -15,6 +15,7 @@ namespace DDGS.Infrastructure.Design
 
             optionsBuilder.UseNpgsql(connectionString);
 
+            //TODO: Remove if it is not necessary
             optionsBuilder.UseOpenIddict();
 
             return new DdgsPostgresDbContext(optionsBuilder.Options);

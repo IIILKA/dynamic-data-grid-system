@@ -13,7 +13,6 @@ namespace DDGS.Api.TestFeature
     public class TestController : ControllerBase
     {
         private readonly ITestService _testService;
-
         private readonly IMapper _mapper;
 
         public TestController(ITestService testService, IMapper mapper)

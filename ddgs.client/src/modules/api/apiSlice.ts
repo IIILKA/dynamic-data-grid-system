@@ -7,6 +7,7 @@ import { RootState } from '../../app/store';
 import { getAccessTokenAsync, logoutAsync } from '../auth/AuthService.ts';
 import { Routes } from '../navigation/Routes.ts';
 import ErrorViewModels from '../error-handling/error-view-models.ts';
+import ErrorViewModel from '../error-handling/error-view-model.ts';
 
 interface NormalizedDataGridEntitiesCache {
   ids: string[];
@@ -41,6 +42,7 @@ const baseQuery = async (args, api, extraOptions) => {
     }
   })(args, api, extraOptions);
 
+  //TODO: move with duplicate
   if (baseResult?.error) {
     const error = baseResult.error;
 
@@ -50,7 +52,17 @@ const baseQuery = async (args, api, extraOptions) => {
       window.location.href = Routes.Forbidden;
     } else if (error.status === 'FETCH_ERROR') {
       api.dispatch(addError(ErrorViewModels.serverUnavailable));
-    } else {
+    } else if (
+      error.status === 400 &&
+      !!error.data.errors &&
+      error.data.errors instanceof Array<string>
+    ) {
+      const errorsViewModels: ErrorViewModel[] = error.data.errors.map((error) => ({
+        title: 'Validation error',
+        description: error
+      }));
+      errorsViewModels.forEach((errorViewModel) => api.dispatch(addError(errorViewModel)));
+    } else if (error.status === 400 || error.status === 500) {
       api.dispatch(addError(ErrorViewModels.unknownError));
     }
   }

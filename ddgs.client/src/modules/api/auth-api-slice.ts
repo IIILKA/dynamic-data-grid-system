@@ -51,6 +51,7 @@ const baseQuery = async (args, api, extraOptions) => {
 export const authApiSlice = createApi({
   reducerPath: 'authApi',
   baseQuery,
+  //TODO: refactor, remove unknown
   endpoints: (builder: EndpointBuilder<unknown, unknown, unknown>) => ({
     logIn: builder.query<LoginRequestDto, void>({
       query: (loginRequestDto) => ({
@@ -88,4 +89,3 @@ export const authApiSlice = createApi({
 });
 
 export const { useLazyLogInQuery, useLazySignUpQuery } = authApiSlice;
-export const { endpoints } = authApiSlice; // Экспортируем endpoints

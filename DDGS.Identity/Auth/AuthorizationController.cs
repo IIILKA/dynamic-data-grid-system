@@ -2,6 +2,7 @@
 using DDGS.Core.Identity.Entities.Payloads;
 using DDGS.Core.Identity.Interfaces;
 using DDGS.Identity.Auth.Dto;
+using DDGS.Identity.Auth.Interfaces;
 using DDGS.Identity.Core;
 using FluentResults;
 using Microsoft.AspNetCore;
@@ -19,16 +20,16 @@ namespace DDGS.Identity.Auth
     {
         private readonly IIdentityService _identityService;
         private readonly IOpenIddictScopeManager _scopeManager;
-        private readonly AuthUtilsService _authService;
+        private readonly IAuthUtilsService _authUtilsService;
 
         public AuthorizationController(
             IIdentityService identityService,
             IOpenIddictScopeManager scopeManager,
-            AuthUtilsService authService)
+            IAuthUtilsService authUtilsService)
         {
             _identityService = identityService;
             _scopeManager = scopeManager;
-            _authService = authService;
+            _authUtilsService = authUtilsService;
         }
 
         [HttpPost("~/authenticate")]
@@ -79,7 +80,7 @@ namespace DDGS.Identity.Auth
 
             var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-            if (!_authService.IsAuthenticated(result, request))
+            if (!_authUtilsService.IsAuthenticated(result, request))
             {
                 return Challenge(new[] { CookieAuthenticationDefaults.AuthenticationScheme });
             }
@@ -93,7 +94,7 @@ namespace DDGS.Identity.Auth
             identity.SetScopes(request.GetScopes());
             identity.SetResources(await _scopeManager.ListResourcesAsync(identity.GetScopes()).ToListAsync());
 
-            identity.SetDestinations(c => AuthUtilsService.GetDestinations(identity, c));
+            identity.SetDestinations(GetDestinations);
 
             return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
@@ -129,7 +130,7 @@ namespace DDGS.Identity.Auth
                 OpenIddictConstants.Claims.Name,
                 OpenIddictConstants.Claims.Role);
 
-            identity.SetDestinations(c => AuthUtilsService.GetDestinations(identity, c));
+            identity.SetDestinations(GetDestinations);
 
             return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
@@ -203,6 +204,18 @@ namespace DDGS.Identity.Auth
             };
 
             return SignIn(new ClaimsPrincipal(identity), properties, CookieAuthenticationDefaults.AuthenticationScheme);
+        }
+
+        private List<string> GetDestinations(Claim claim)
+        {
+            var destinations = new List<string>();
+
+            if (claim.Type is OpenIddictConstants.Claims.Name or OpenIddictConstants.Claims.Email)
+            {
+                destinations.Add(OpenIddictConstants.Destinations.AccessToken);
+            }
+
+            return destinations;
         }
 
         private async Task<Result<DDGS.Core.Identity.Entities.User>> EnsureUserRegisteredAsync(string email, string username)

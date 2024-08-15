@@ -3,9 +3,10 @@ using DDGS.Core.Identity.Entities.Constraints;
 
 namespace DDGS.Identity.Auth.Dto
 {
-    public class UserAuthenticateRequestDto
+    public record UserAuthenticateRequestDto
     {
         [Required]
+        [EmailAddress]
         public required string Email { get; init; }
 
         [Required]
