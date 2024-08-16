@@ -14,8 +14,6 @@ services:
       mongodb:
         condition:
           service_started
-    profiles:
-      - with-https
 
 
   identity:
@@ -28,9 +26,16 @@ services:
       postgresdb:
         condition:
           service_healthy
-    profiles:
-      - with-https
 
+
+  web-client:
+    image: ${DOCKER_REGISTRY-}ddgsclient
+    container_name: ddgs.client
+    build:
+      context: .
+      dockerfile: ddgs.client/Dockerfile
+    profiles:
+      - with-client
 
 
   mongodb:
@@ -51,64 +56,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-
-  web-client-http:
-    image: ${DOCKER_REGISTRY-}ddgsclient
-    container_name: ddgs.client.http
-    build:
-      context: .
-      dockerfile: ddgs.client/Dockerfile
-    environment:
-      - VITE_PROTOCOL=http
-    profiles:
-      - with-clients
-      - with-http-client
-      - without-https
-
-
-  web-client-https:
-    image: ${DOCKER_REGISTRY-}ddgsclient
-    container_name: ddgs.client.https
-    build:
-      context: .
-      dockerfile: ddgs.client/Dockerfile
-    environment:
-      - VITE_PROTOCOL=https
-    profiles:
-      - with-clients
-      - with-https-client
-
-
-  api-without-https:
-    image: ${DOCKER_REGISTRY-}ddgsapi
-    container_name: ddgs.api
-    build:
-      context: .
-      dockerfile: DDGS.Api/Dockerfile
-    depends_on:
-      postgresdb:
-        condition:
-          service_healthy
-      mongodb:
-        condition:
-          service_started
-    profiles:
-      - without-https
-
-
-  identity-without-https:
-    image: ${DOCKER_REGISTRY-}ddgsidentity
-    container_name: ddgs.identity
-    build:
-      context: .
-      dockerfile: DDGS.Identity/Dockerfile
-    depends_on:
-      postgresdb:
-        condition:
-          service_healthy
-    profiles:
-      - without-https
 
 
 networks:

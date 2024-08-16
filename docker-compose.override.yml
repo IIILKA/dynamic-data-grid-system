@@ -4,9 +4,7 @@ services:
   api:
     environment:
       - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT_NAME}
-      - ASPNETCORE_HTTP_PORTS=${API_HTTP_INTERNAL_PORT}
       - ASPNETCORE_HTTPS_PORTS=${API_HTTPS_INTERNAL_PORT}
-      - ASPNETCORE_HTTPS_ENABLED=true
       - AUTO_MIGRATION_ENABLED=${AUTO_MIGRATION_ENABLED}
       - MONGODB_URL=mongodb://defaultuser:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:${MONGO_EXTERNAL_PORT}/ddgs/?authSource=${MONGO_INITDB_DATABASE}
       - MONGODB_NAME=${MONGO_INITDB_DATABASE}
@@ -15,7 +13,6 @@ services:
       - AUTH_RESOURCE_SERVER_NAME=${AUTH_RESOURCE_SERVER_NAME}
       - AUTH_SERVER_URL=https://localhost:${IDENTITY_HTTPS_EXTERNAL_PORT}/
     ports:
-      - "${API_HTTP_EXTERNAL_PORT}:${API_HTTP_INTERNAL_PORT}"
       - "${API_HTTPS_EXTERNAL_PORT}:${API_HTTPS_INTERNAL_PORT}"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
@@ -29,9 +26,7 @@ services:
   identity:
     environment:
       - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT_NAME}
-      - ASPNETCORE_HTTP_PORTS=${IDENTITY_HTTP_INTERNAL_PORT}
       - ASPNETCORE_HTTPS_PORTS=${IDENTITY_HTTPS_INTERNAL_PORT}
-      - ASPNETCORE_HTTPS_ENABLED=true 
       - POSTGRESDB_URL=Host=ddgs.postrgres.db;Port=${POSTGRES_EXTERNAL_PORT};Database=${POSTGRES_DB_NAME};Username=${POSTGRES_SUPER_USER_NAME};Password=${POSTGRES_SUPER_USER_PASSWORD}
       - CLIENT_URL=https://localhost:${CLIENT_HTTPS_EXTERNAL_PORT}
       - AUTH_RESOURCE_SERVER_NAME=${AUTH_RESOURCE_SERVER_NAME} 
@@ -41,13 +36,27 @@ services:
       - AUTH_GOOGLE_CLIENT_SECRET=${AUTH_GOOGLE_CLIENT_SECRET}
       - AUTH_GOOGLE_CLIENT_ID=${AUTH_GOOGLE_CLIENT_ID}
     ports:
-      - "${IDENTITY_HTTP_EXTERNAL_PORT}:${IDENTITY_HTTP_INTERNAL_PORT}"
       - "${IDENTITY_HTTPS_EXTERNAL_PORT}:${IDENTITY_HTTPS_INTERNAL_PORT}"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
     networks:
       - ddgs-network
+
+
+  web-client:
+    environment:
+        - VITE_SELF_URL=https://localhost:${CLIENT_HTTPS_EXTERNAL_PORT}
+        - VITE_PORT=${CLIENT_HTTPS_INTERNAL_PORT}
+        - VITE_API_URL=https://localhost:${API_HTTPS_EXTERNAL_PORT}/api
+        - VITE_SSL_CERTIFICATE_CRYPTIC_PASSWORD=${CLIENT_SSL_CERTIFICATE_CRYPTIC_PASSWORD} 
+        - AUTH_AUTHORITY=https://localhost:${IDENTITY_HTTPS_EXTERNAL_PORT}
+        - AUTH_CLIENT_SECRET=${AUTH_SPA_CLIENT_SECRET}
+        - AUTH_CLIENT_ID=${AUTH_SPA_CLIENT_ID}
+    ports:
+        - "${CLIENT_HTTPS_EXTERNAL_PORT}:${CLIENT_HTTPS_INTERNAL_PORT}"
+    networks:
+        - ddgs-network
 
 
   mongodb:
@@ -75,62 +84,5 @@ services:
     volumes:
       - ddgs-postgresdb-volume:/var/lib/postgresql/data
       - ./DDGS.Infrastructure/Seed/pg_uuidv7.sql:/docker-entrypoint-initdb.d/pg_uuidv7.sql:ro
-    networks:
-      - ddgs-network
-
-
-  web-client-https:
-    environment:
-        - VITE_SELF_URL=https://localhost:${CLIENT_HTTPS_EXTERNAL_PORT}
-        - VITE_PORT=${CLIENT_HTTPS_INTERNAL_PORT}
-        - VITE_API_URL=https://localhost:${API_HTTPS_EXTERNAL_PORT}/api
-        - VITE_SSL_CERTIFICATE_CRYPTIC_PASSWORD=${CLIENT_SSL_CERTIFICATE_CRYPTIC_PASSWORD} 
-        - AUTH_AUTHORITY=https://localhost:${IDENTITY_HTTPS_EXTERNAL_PORT}
-        - AUTH_CLIENT_SECRET=${AUTH_SPA_CLIENT_SECRET}
-        - AUTH_CLIENT_ID=${AUTH_SPA_CLIENT_ID}
-    ports:
-        - "${CLIENT_HTTPS_EXTERNAL_PORT}:${CLIENT_HTTPS_INTERNAL_PORT}"
-    networks:
-        - ddgs-network
-
-
-  web-client-http:
-    environment:
-      - VITE_PORT=${CLIENT_HTTP_INTERNAL_PORT}
-      - VITE_API_URL=http://localhost:${API_HTTP_EXTERNAL_PORT}/api
-    ports:
-      - "${CLIENT_HTTP_EXTERNAL_PORT}:${CLIENT_HTTP_INTERNAL_PORT}"
-    networks:
-      - ddgs-network
-
-
-  api-without-https:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT_NAME}
-      - ASPNETCORE_HTTP_PORTS=${API_HTTP_INTERNAL_PORT}
-      - ASPNETCORE_HTTPS_ENABLED=false
-      - AUTO_MIGRATION_ENABLED=${AUTO_MIGRATION_ENABLED}
-      - MONGODB_URL=mongodb://defaultuser:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:${MONGO_EXTERNAL_PORT}/ddgs/?authSource=${MONGO_INITDB_DATABASE}
-      - MONGODB_NAME=${MONGO_INITDB_DATABASE}
-      - POSTGRESDB_URL=Host=ddgs.postrgres.db;Port=${POSTGRES_EXTERNAL_PORT};Database=${POSTGRES_DB_NAME};Username=${POSTGRES_SUPER_USER_NAME};Password=${POSTGRES_SUPER_USER_PASSWORD}
-      - CLIENT_URL=http://localhost:${CLIENT_HTTP_EXTERNAL_PORT}
-    ports:
-      - "${API_HTTP_EXTERNAL_PORT}:${API_HTTP_INTERNAL_PORT}"
-    networks:
-      - ddgs-network
-
-
-  identity-without-https:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT_NAME}
-      - ASPNETCORE_HTTP_PORTS=${IDENTITY_HTTP_INTERNAL_PORT}
-      - ASPNETCORE_HTTPS_ENABLED=false
-      - POSTGRESDB_URL=Host=ddgs.postrgres.db;Port=${POSTGRES_EXTERNAL_PORT};Database=${POSTGRES_DB_NAME};Username=${POSTGRES_SUPER_USER_NAME};Password=${POSTGRES_SUPER_USER_PASSWORD}
-      - CLIENT_URL=http://localhost:${CLIENT_HTTP_EXTERNAL_PORT}
-    ports:
-      - "${IDENTITY_HTTP_EXTERNAL_PORT}:${IDENTITY_HTTP_INTERNAL_PORT}"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
     networks:
       - ddgs-network
