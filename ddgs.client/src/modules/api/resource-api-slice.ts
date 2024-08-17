@@ -1,10 +1,10 @@
 import { createApi, EndpointBuilder, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import TableEntity from '../seed-data/TableEntity';
+import TableEntity from '../seed-data/table-entity.ts';
 import { createEntityAdapter, createSelector } from '@reduxjs/toolkit';
-import { TableCellType } from '../seed-data/TableCellType';
+import { TableCellType } from '../seed-data/table-cell-type.ts';
 import { RootState } from '../../app/store';
-import { getAccessTokenAsync, logoutAsync } from '../auth/AuthService.ts';
-import { Routes } from '../navigation/Routes.ts';
+import { getAccessTokenAsync, logoutAsync } from '../auth/auth-service.ts';
+import { Routes } from '../navigation/routes.ts';
 import ErrorViewModels from '../error-handling/error-view-models.ts';
 import ErrorViewModel from '../error-handling/error-view-model.ts';
 import { loadingSlice } from '../loading/loading-slice.ts';

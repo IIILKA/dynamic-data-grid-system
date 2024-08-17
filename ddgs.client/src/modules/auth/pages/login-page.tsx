@@ -10,18 +10,18 @@ import {
 } from '@mantine/core';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import Logo from '../../../public/ddgs-logo.svg?react';
+import Logo from '../../../../public/ddgs-logo.svg?react';
 import { Link } from 'react-router-dom';
-import { Routes } from '../navigation/Routes.ts';
+import { Routes } from '../../navigation/routes.ts';
 import { IconBrandGoogleFilled } from '@tabler/icons-react';
-import { logInWithExternalProvider } from './AuthService.ts';
+import { logInWithExternalProvider } from '../auth-service.ts';
 import { useSelector } from 'react-redux';
-import { AuthProvider } from './auth-provider.ts';
-import { useLazyLogInQuery } from '../api/auth-api-slice.ts';
+import { AuthProvider } from '../auth-provider.ts';
+import { useLazyLogInQuery } from '../../api/auth-api-slice.ts';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { loginFormSchema, LoginFormSchema } from './login-form-schema.ts';
+import { loginFormSchema, LoginFormSchema } from '../forms/login-form-schema.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { selectIsLoading } from '../loading/loading-slice.ts';
+import { selectIsLoading } from '../../loading/loading-slice.ts';
 
 export default function LoginPage() {
   const { colorScheme } = useMantineColorScheme();

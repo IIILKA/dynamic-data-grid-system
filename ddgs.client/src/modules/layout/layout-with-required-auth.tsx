@@ -1,12 +1,12 @@
 import { ReactElement, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { Footer } from './Footer';
-import { Header } from './Header';
-import { getAccessTokenAsync, getUserInfoAsync } from '../auth/AuthService.ts';
-import { Routes } from '../navigation/Routes.ts';
+import { Footer } from './footer.tsx';
+import { Header } from './header.tsx';
+import { getAccessTokenAsync, getUserInfoAsync } from '../auth/auth-service.ts';
+import { Routes } from '../navigation/routes.ts';
 import { theme } from '../../theme.ts';
 import { Flex, MantineProvider } from '@mantine/core';
-import ErrorNotification from '../error-handling/error-notification.tsx';
+import ErrorNotification from '../error-handling/components/error-notification.tsx';
 
 export default function LayoutWithRequiredAuth(): ReactElement {
   const navigate = useNavigate();

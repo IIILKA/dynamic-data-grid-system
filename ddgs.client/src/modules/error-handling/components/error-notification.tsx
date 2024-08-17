@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Notification, Stack } from '@mantine/core';
-import { removeError, selectErrors } from './error-slice.ts';
+import { removeError, selectErrors } from '../error-slice.ts';
 
 export default function ErrorNotification(): ReactElement {
   const dispatch = useDispatch();

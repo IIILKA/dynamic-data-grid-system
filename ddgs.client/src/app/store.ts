@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import dataGridReducer from '../modules/data-grid/dataGridSlice';
+import dataGridReducer from '../modules/data-grid/data-grid-slice.ts';
 import errorReducer from '../modules/error-handling/error-slice.ts';
 import loadingReducer from '../modules/loading/loading-slice.ts';
 import { resourceApiSlice } from '../modules/api/resource-api-slice.ts';

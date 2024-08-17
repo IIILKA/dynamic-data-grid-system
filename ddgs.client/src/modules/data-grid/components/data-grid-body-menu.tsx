@@ -10,8 +10,8 @@ import {
   useState
 } from 'react';
 import { useSelector } from 'react-redux';
-import { useDeleteTestMutation } from '../api/resource-api-slice.ts';
-import { selectSelectedCell } from './dataGridSlice.ts';
+import { useDeleteTestMutation } from '../../api/resource-api-slice.ts';
+import { selectSelectedCell } from '../data-grid-slice.ts';
 
 interface DaraGridBodyMenuProps {
   children: ReactElement;

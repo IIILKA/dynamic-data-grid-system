@@ -1,17 +1,17 @@
 import { NumberInput, Table, TextInput, Checkbox, Center } from '@mantine/core';
 import { styled } from 'styled-components';
-import { selectCell } from './dataGridSlice';
+import { selectCell } from '../data-grid-slice.ts';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   resourceApiSlice,
   selectTestById,
   tableEntityAdapter,
   useUpdateTestMutation
-} from '../api/resource-api-slice.ts';
-import { TableCellType } from '../seed-data/TableCellType';
-import { RootState, useAppDispatch } from '../../app/store';
+} from '../../api/resource-api-slice.ts';
+import { TableCellType } from '../../seed-data/table-cell-type.ts';
+import { RootState, useAppDispatch } from '../../../app/store.ts';
 import { useEffect, useState } from 'react';
-import { useDebounce } from '../hooks/debounce';
+import { useDebounce } from '../../hooks/debounce.ts';
 
 const DataGridCellContainer = styled.div`
   cursor: default;

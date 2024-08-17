@@ -1,13 +1,13 @@
 import { createBrowserRouter, Navigate, RouteObject } from 'react-router-dom';
-import { Routes } from './modules/navigation/Routes';
-import BaseLayout from './modules/layout/BaseLayout';
-import LayoutWithRequiredAuth from './modules/layout/LayoutWithRequiredAuth.tsx';
-import TestPage from './pages/TestPage.tsx';
-import LoginPage from './modules/auth/LoginPage.tsx';
-import SignupPage from './modules/auth/SignupPage.tsx';
-import ErrorPage from './pages/ErrorPage.tsx';
-import OAuthCallbackPage from './modules/auth/OAuthCallbackPage.tsx';
-import OAuthExternalProviderCallbackPage from './modules/auth/OAuthExternalProviderCallbackPage.tsx';
+import { Routes } from './modules/navigation/routes.ts';
+import BaseLayout from './modules/layout/base-layout.tsx';
+import LayoutWithRequiredAuth from './modules/layout/layout-with-required-auth.tsx';
+import TestPage from './modules/data-grid/test-page.tsx';
+import LoginPage from './modules/auth/pages/login-page.tsx';
+import SignupPage from './modules/auth/pages/signup-page.tsx';
+import ErrorPage from './modules/error-handling/components/error-page.tsx';
+import OauthCallbackPage from './modules/auth/pages/oauth-callback-page.tsx';
+import OauthExternalProviderCallbackPage from './modules/auth/pages/oauth-external-provider-callback-page.tsx';
 
 const baseLayoutRoutes: RouteObject[] = [
   {
@@ -80,10 +80,10 @@ export const appRouter = createBrowserRouter([
   },
   {
     path: Routes.OAuthCallback,
-    element: <OAuthCallbackPage />
+    element: <OauthCallbackPage />
   },
   {
     path: Routes.OAuthExternalProviderCallback,
-    element: <OAuthExternalProviderCallbackPage />
+    element: <OauthExternalProviderCallbackPage />
   }
 ]);

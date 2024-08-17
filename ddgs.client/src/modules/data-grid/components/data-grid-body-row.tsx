@@ -1,11 +1,11 @@
-import TableEntity from '../seed-data/TableEntity';
+import TableEntity from '../../seed-data/table-entity.ts';
 import { Table } from '@mantine/core';
 import { ReactNode } from 'react';
-import DataGridBodyCell from './DataGridBodyCell';
+import DataGridBodyCell from './data-grid-body-cell.tsx';
 import { styled } from 'styled-components';
-import { nameOf } from '../../utils/NameOfHelper';
+import { nameOf } from '../../../utils/name-of-helper.ts';
 import { useSelector } from 'react-redux';
-import { selectSelectedCell } from './dataGridSlice.ts';
+import { selectSelectedCell } from '../data-grid-slice.ts';
 
 const TableStyledTr = styled(Table.Tr)`
   &.active {

@@ -1,6 +1,6 @@
 import { createApi, EndpointBuilder, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { logoutAsync, sendOAuthRequestAsync } from '../auth/AuthService.ts';
-import { Routes } from '../navigation/Routes.ts';
+import { logoutAsync, sendOAuthRequestAsync } from '../auth/auth-service.ts';
+import { Routes } from '../navigation/routes.ts';
 import ErrorViewModels from '../error-handling/error-view-models.ts';
 import ErrorViewModel from '../error-handling/error-view-model.ts';
 import { loadingSlice } from '../loading/loading-slice.ts';

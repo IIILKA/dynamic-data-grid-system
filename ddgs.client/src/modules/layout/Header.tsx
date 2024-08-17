@@ -5,8 +5,8 @@ import HeaderLoader from '../loading/header-loader.tsx';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Logo from '../../../public/ddgs-logo.svg?react';
-import UserWidgetMenu, { UserWidgetMenuRef } from './UserWidgetMenu.tsx';
-import { getUserInfoAsync, UserInfo } from '../auth/AuthService.ts';
+import UserWidgetMenu, { UserWidgetMenuRef } from './user-widget-menu.tsx';
+import { getUserInfoAsync, UserInfo } from '../auth/auth-service.ts';
 
 export function Header(): ReactElement {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();

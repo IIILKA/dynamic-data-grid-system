@@ -9,7 +9,7 @@ import {
   useState
 } from 'react';
 import { useClickOutside } from '@mantine/hooks';
-import { logoutAsync, UserInfo } from '../auth/AuthService.ts';
+import { logoutAsync, UserInfo } from '../auth/auth-service.ts';
 
 interface UserWidgetMenuProps {
   children: ReactElement;
