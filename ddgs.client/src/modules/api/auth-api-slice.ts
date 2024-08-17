@@ -1,9 +1,10 @@
 import { createApi, EndpointBuilder, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { logoutAsync, sendOAuthRequestAsync } from '../auth/AuthService.ts';
 import { Routes } from '../navigation/Routes.ts';
-import { addError, dataGridSlice } from '../data-grid/dataGridSlice.ts';
 import ErrorViewModels from '../error-handling/error-view-models.ts';
 import ErrorViewModel from '../error-handling/error-view-model.ts';
+import { loadingSlice } from '../loading/loading-slice.ts';
+import { addError } from '../error-handling/error-slice.ts';
 
 interface LoginRequestDto {
   email: string;
@@ -61,12 +62,12 @@ export const authApiSlice = createApi({
         credentials: 'include'
       }),
       async onQueryStarted(loginRequestDto, { dispatch, queryFulfilled }) {
-        dispatch(dataGridSlice.actions.queryStarted());
+        dispatch(loadingSlice.actions.queryStarted());
         try {
           await queryFulfilled;
           await sendOAuthRequestAsync();
         } finally {
-          dispatch(dataGridSlice.actions.queryFinished());
+          dispatch(loadingSlice.actions.queryFinished());
         }
       }
     }),
@@ -77,11 +78,11 @@ export const authApiSlice = createApi({
         body: signupRequestDto
       }),
       async onQueryStarted(signupRequestDto, { dispatch, queryFulfilled }) {
-        dispatch(dataGridSlice.actions.queryStarted());
+        dispatch(loadingSlice.actions.queryStarted());
         try {
           await queryFulfilled;
         } finally {
-          dispatch(dataGridSlice.actions.queryFinished());
+          dispatch(loadingSlice.actions.queryFinished());
         }
       }
     })

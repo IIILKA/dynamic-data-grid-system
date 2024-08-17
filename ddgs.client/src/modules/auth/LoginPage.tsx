@@ -14,26 +14,21 @@ import Logo from '../../../public/ddgs-logo.svg?react';
 import { Link } from 'react-router-dom';
 import { Routes } from '../navigation/Routes.ts';
 import { IconBrandGoogleFilled } from '@tabler/icons-react';
-import { useEffect, useState } from 'react';
 import { logInWithExternalProvider } from './AuthService.ts';
 import { useSelector } from 'react-redux';
 import { AuthProvider } from './auth-provider.ts';
 import { useLazyLogInQuery } from '../api/auth-api-slice.ts';
-import { RootState } from '../../app/store.ts';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { loginFormSchema, LoginFormSchema } from './login-form-schema.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { selectIsLoading } from '../loading/loading-slice.ts';
 
 export default function LoginPage() {
   const { colorScheme } = useMantineColorScheme();
   const isDarkTheme = colorScheme === 'dark';
 
   const [logInAsync] = useLazyLogInQuery();
-  const fetchingQueriesCount = useSelector(
-    (state: RootState) => state.dataGrid.fetchingQueriesCount
-  );
-
-  const [loadingOverlayVisible, setLoadingOverlayVisible] = useState(false);
+  const isLoading = useSelector(selectIsLoading);
 
   const {
     register,
@@ -45,14 +40,6 @@ export default function LoginPage() {
     await logInAsync({ email: data.email, password: data.password });
   };
 
-  useEffect(() => {
-    if (fetchingQueriesCount === 0) {
-      setLoadingOverlayVisible(false);
-    } else {
-      setLoadingOverlayVisible(true);
-    }
-  }, [fetchingQueriesCount]);
-
   return (
     <Flex justify='center' align='center' h='100%'>
       <Card
@@ -63,7 +50,7 @@ export default function LoginPage() {
         w='30%'
         style={{ justifySelf: 'center' }}
         pos='relative'>
-        <LoadingOverlay visible={loadingOverlayVisible} overlayProps={{ radius: 'md', blur: 1 }} />
+        <LoadingOverlay visible={isLoading} overlayProps={{ radius: 'md', blur: 1 }} />
         <Card.Section withBorder>
           <Flex justify='center' align='center' gap='xs' style={{ cursor: 'pointer' }}>
             <Logo style={{ height: '40px', width: '40px', color: 'teal' }} />
@@ -112,10 +99,7 @@ export default function LoginPage() {
                 leftSection={<IconBrandGoogleFilled size={18} />}
                 color='gray'
                 fullWidth
-                onClick={() => {
-                  setLoadingOverlayVisible(true);
-                  logInWithExternalProvider(AuthProvider.Google);
-                }}>
+                onClick={() => logInWithExternalProvider(AuthProvider.Google)}>
                 Log in with Google
               </Button>
             </Flex>

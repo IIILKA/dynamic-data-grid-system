@@ -1,6 +1,5 @@
 import { createApi, EndpointBuilder, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import TableEntity from '../seed-data/TableEntity';
-import { addError, dataGridSlice } from '../data-grid/dataGridSlice';
 import { createEntityAdapter, createSelector } from '@reduxjs/toolkit';
 import { TableCellType } from '../seed-data/TableCellType';
 import { RootState } from '../../app/store';
@@ -8,6 +7,8 @@ import { getAccessTokenAsync, logoutAsync } from '../auth/AuthService.ts';
 import { Routes } from '../navigation/Routes.ts';
 import ErrorViewModels from '../error-handling/error-view-models.ts';
 import ErrorViewModel from '../error-handling/error-view-model.ts';
+import { loadingSlice } from '../loading/loading-slice.ts';
+import { addError } from '../error-handling/error-slice.ts';
 
 interface NormalizedDataGridEntitiesCache {
   ids: string[];
@@ -70,8 +71,8 @@ const baseQuery = async (args, api, extraOptions) => {
   return baseResult;
 };
 
-export const apiSlice = createApi({
-  reducerPath: 'api',
+export const resourceApiSlice = createApi({
+  reducerPath: 'resourceApi',
   baseQuery,
   tagTypes: ['Tests'],
   //TODO: refactor, remove unknown
@@ -91,18 +92,18 @@ export const apiSlice = createApi({
       }),
       async onQueryStarted(entityCreatePayload, { dispatch, queryFulfilled }) {
         const createResult = dispatch(
-          apiSlice.util?.updateQueryData('getTests', undefined, (draft) => {
-            dispatch(dataGridSlice.actions.queryStarted());
+          resourceApiSlice.util?.updateQueryData('getTests', undefined, (draft) => {
+            dispatch(loadingSlice.actions.queryStarted());
 
             tableEntityAdapter.addOne(draft, { ...entityCreatePayload, id: '' });
           })
         );
         try {
           await queryFulfilled;
-          dispatch(dataGridSlice.actions.queryFinished());
+          dispatch(loadingSlice.actions.queryFinished());
         } catch {
           createResult.undo();
-          dispatch(dataGridSlice.actions.queryFinished());
+          dispatch(loadingSlice.actions.queryFinished());
         }
       },
       invalidatesTags: ['Tests']
@@ -115,18 +116,18 @@ export const apiSlice = createApi({
       }),
       async onQueryStarted({ id, entityUpdatePayload }, { dispatch, queryFulfilled }) {
         const updateResult = dispatch(
-          apiSlice.util?.updateQueryData('getTests', undefined, (draft) => {
-            dispatch(dataGridSlice.actions.queryStarted());
+          resourceApiSlice.util?.updateQueryData('getTests', undefined, (draft) => {
+            dispatch(loadingSlice.actions.queryStarted());
 
             tableEntityAdapter.updateOne(draft, { id, changes: entityUpdatePayload });
           })
         );
         try {
           await queryFulfilled;
-          dispatch(dataGridSlice.actions.queryFinished());
+          dispatch(loadingSlice.actions.queryFinished());
         } catch {
           updateResult.undo();
-          dispatch(dataGridSlice.actions.queryFinished());
+          dispatch(loadingSlice.actions.queryFinished());
         }
       },
       invalidatesTags: ['Tests']
@@ -138,17 +139,17 @@ export const apiSlice = createApi({
       }),
       async onQueryStarted(testId, { dispatch, queryFulfilled }) {
         const deleteResult = dispatch(
-          apiSlice.util?.updateQueryData('getTests', undefined, (draft) => {
-            dispatch(dataGridSlice.actions.queryStarted());
+          resourceApiSlice.util?.updateQueryData('getTests', undefined, (draft) => {
+            dispatch(loadingSlice.actions.queryStarted());
             tableEntityAdapter.removeOne(draft, testId);
           })
         );
         try {
           await queryFulfilled;
-          dispatch(dataGridSlice.actions.queryFinished());
+          dispatch(loadingSlice.actions.queryFinished());
         } catch {
           deleteResult.undo();
-          dispatch(dataGridSlice.actions.queryFinished());
+          dispatch(loadingSlice.actions.queryFinished());
         }
       },
       invalidatesTags: ['Tests']
@@ -161,10 +162,10 @@ export const {
   useCreateTestMutation,
   useUpdateTestMutation,
   useDeleteTestMutation
-} = apiSlice;
+} = resourceApiSlice;
 
 const selectTestsData = createSelector(
-  apiSlice.endpoints?.getTests.select(),
+  resourceApiSlice.endpoints?.getTests.select(),
   (testsResult) => testsResult.data
 );
 

@@ -3,11 +3,11 @@ import { styled } from 'styled-components';
 import { selectCell } from './dataGridSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  apiSlice,
+  resourceApiSlice,
   selectTestById,
   tableEntityAdapter,
   useUpdateTestMutation
-} from '../api/apiSlice';
+} from '../api/resource-api-slice.ts';
 import { TableCellType } from '../seed-data/TableCellType';
 import { RootState, useAppDispatch } from '../../app/store';
 import { useEffect, useState } from 'react';
@@ -69,7 +69,7 @@ export default function DataGridBodyCell({ rowId, colName, isActive }: DataGridB
     const { id, ...entityUpdatePayload } = entity;
     entityUpdatePayload[colName] = newValue;
     appDispatch(
-      apiSlice.util?.updateQueryData('getTests', undefined, (draft) => {
+      resourceApiSlice.util?.updateQueryData('getTests', undefined, (draft) => {
         tableEntityAdapter.updateOne(draft, { id, changes: entityUpdatePayload });
       })
     );

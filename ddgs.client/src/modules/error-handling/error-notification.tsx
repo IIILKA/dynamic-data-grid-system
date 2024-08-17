@@ -1,11 +1,11 @@
 import { ReactElement } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Notification, Stack } from '@mantine/core';
-import { removeError } from '../data-grid/dataGridSlice.ts';
+import { removeError, selectErrors } from './error-slice.ts';
 
 export default function ErrorNotification(): ReactElement {
   const dispatch = useDispatch();
-  const errors = useSelector((state) => state.dataGrid.errors);
+  const errors = useSelector(selectErrors);
 
   function onCloseClick(id: number) {
     dispatch(removeError(id));

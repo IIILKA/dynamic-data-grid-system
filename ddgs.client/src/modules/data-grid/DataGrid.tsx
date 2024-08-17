@@ -2,7 +2,7 @@ import { Table, Button } from '@mantine/core';
 import TableEntity from '../seed-data/TableEntity';
 import DataGridHead from './DataGridHead';
 import DataGridBody from './DataGridBody';
-import { useCreateTestMutation } from '../api/apiSlice';
+import { useCreateTestMutation } from '../api/resource-api-slice.ts';
 import { resetObject } from '../../utils/ResetObjectHelper';
 
 interface DataGridProps<T extends TableEntity> {
