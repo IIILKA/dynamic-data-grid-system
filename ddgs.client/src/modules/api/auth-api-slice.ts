@@ -1,57 +1,13 @@
-import { createApi, EndpointBuilder, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { logoutAsync, sendOAuthRequestAsync } from '../auth/auth-service.ts';
-import { Routes } from '../navigation/routes.ts';
-import ErrorViewModels from '../error-handling/error-view-models.ts';
-import ErrorViewModel from '../error-handling/error-view-model.ts';
+import { createApi, EndpointBuilder } from '@reduxjs/toolkit/query/react';
+import { sendOAuthRequestAsync } from '../auth/auth-service.ts';
 import { loadingSlice } from '../loading/loading-slice.ts';
-import { addError } from '../error-handling/error-slice.ts';
-
-interface LoginRequestDto {
-  email: string;
-  password: string;
-}
-
-interface SignupRequestDto {
-  username: string;
-  email: string;
-  password: string;
-}
-
-const baseQuery = async (args, api, extraOptions) => {
-  const baseResult = await fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_AUTH_AUTHORITY
-  })(args, api, extraOptions);
-
-  if (baseResult?.error) {
-    const error = baseResult.error;
-
-    if (error.status === 401) {
-      await logoutAsync(Routes.Unauthorized);
-    } else if (error.status === 403) {
-      window.location.href = Routes.Forbidden;
-    } else if (error.status === 'FETCH_ERROR') {
-      api.dispatch(addError(ErrorViewModels.serverUnavailable));
-    } else if (
-      error.status === 400 &&
-      !!error.data.errors &&
-      error.data.errors instanceof Array<string>
-    ) {
-      const errorsViewModels: ErrorViewModel[] = error.data.errors.map((error) => ({
-        title: 'Validation error',
-        description: error
-      }));
-      errorsViewModels.forEach((errorViewModel) => api.dispatch(addError(errorViewModel)));
-    } else if (error.status === 400 || error.status === 500) {
-      api.dispatch(addError(ErrorViewModels.unknownError));
-    }
-  }
-
-  return baseResult;
-};
+import LoginRequestDto from './dto/login-request-dto.ts';
+import SignupRequestDto from './dto/signup-request-dto.ts';
+import { getBaseQuery } from './api-utils.ts';
 
 export const authApiSlice = createApi({
   reducerPath: 'authApi',
-  baseQuery,
+  baseQuery: getBaseQuery(import.meta.env.VITE_AUTH_AUTHORITY),
   //TODO: refactor, remove unknown
   endpoints: (builder: EndpointBuilder<unknown, unknown, unknown>) => ({
     logIn: builder.query<LoginRequestDto, void>({

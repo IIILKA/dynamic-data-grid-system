@@ -1,14 +1,10 @@
-import { createApi, EndpointBuilder, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi, EndpointBuilder } from '@reduxjs/toolkit/query/react';
 import TableEntity from '../seed-data/table-entity.ts';
 import { createEntityAdapter, createSelector } from '@reduxjs/toolkit';
 import { TableCellType } from '../seed-data/table-cell-type.ts';
 import { RootState } from '../../app/store';
-import { getAccessTokenAsync, logoutAsync } from '../auth/auth-service.ts';
-import { Routes } from '../navigation/routes.ts';
-import ErrorViewModels from '../error-handling/error-view-models.ts';
-import ErrorViewModel from '../error-handling/error-view-model.ts';
 import { loadingSlice } from '../loading/loading-slice.ts';
-import { addError } from '../error-handling/error-slice.ts';
+import { getBaseQuery } from './api-utils.ts';
 
 interface NormalizedDataGridEntitiesCache {
   ids: string[];
@@ -32,48 +28,9 @@ export const tableEntityAdapter = createEntityAdapter<TableEntity>({
 
 const dataGridInitialState = tableEntityAdapter.getInitialState();
 
-const baseQuery = async (args, api, extraOptions) => {
-  const baseResult = await fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_API_URL,
-    prepareHeaders: async (headers) => {
-      const token = await getAccessTokenAsync();
-      if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
-      }
-    }
-  })(args, api, extraOptions);
-
-  //TODO: move with duplicate
-  if (baseResult?.error) {
-    const error = baseResult.error;
-
-    if (error.status === 401) {
-      await logoutAsync(Routes.Unauthorized);
-    } else if (error.status === 403) {
-      window.location.href = Routes.Forbidden;
-    } else if (error.status === 'FETCH_ERROR') {
-      api.dispatch(addError(ErrorViewModels.serverUnavailable));
-    } else if (
-      error.status === 400 &&
-      !!error.data.errors &&
-      error.data.errors instanceof Array<string>
-    ) {
-      const errorsViewModels: ErrorViewModel[] = error.data.errors.map((error) => ({
-        title: 'Validation error',
-        description: error
-      }));
-      errorsViewModels.forEach((errorViewModel) => api.dispatch(addError(errorViewModel)));
-    } else if (error.status === 400 || error.status === 500) {
-      api.dispatch(addError(ErrorViewModels.unknownError));
-    }
-  }
-
-  return baseResult;
-};
-
 export const resourceApiSlice = createApi({
   reducerPath: 'resourceApi',
-  baseQuery,
+  baseQuery: getBaseQuery(import.meta.env.VITE_API_URL, true),
   tagTypes: ['Tests'],
   //TODO: refactor, remove unknown
   endpoints: (builder: EndpointBuilder<unknown, unknown, unknown>) => ({

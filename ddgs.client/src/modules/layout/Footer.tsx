@@ -6,6 +6,7 @@ const StyledContainer = styled.div`
   justify-content: flex-end;
   margin: 10px 0;
 `;
+
 export function Footer(): ReactElement {
   return (
     <StyledContainer>

@@ -20,6 +20,7 @@ export default function DataGrid<T extends TableEntity>({
     const resetRow = resetObject({ ...dataGridRows[sortedIds[0]] });
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, ...entityCreatePayload } = resetRow;
+    //TODO: fix
     entityCreatePayload.index = sortedIds.length + 1;
     await createRow(entityCreatePayload);
   }
