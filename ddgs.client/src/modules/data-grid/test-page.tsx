@@ -1,5 +1,5 @@
-import DataGrid from '../modules/data-grid/DataGrid.tsx';
-import { useGetTestsQuery } from '../modules/api/apiSlice.ts';
+import DataGrid from './components/data-grid.tsx';
+import { useGetTestsQuery } from '../api/resource-api-slice.ts';
 import { Center, Loader } from '@mantine/core';
 
 export default function TestPage() {

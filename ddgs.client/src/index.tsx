@@ -4,7 +4,7 @@ import '@mantine/code-highlight/styles.css';
 import { createRoot } from 'react-dom/client';
 import { StrictMode } from 'react';
 import { RouterProvider } from 'react-router-dom';
-import { appRouter } from './AppRouter';
+import { appRouter } from './app-router.tsx';
 import { Provider } from 'react-redux';
 import store from './app/store';
 

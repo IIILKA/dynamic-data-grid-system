@@ -1,11 +1,11 @@
 import { Table } from '@mantine/core';
-import DaraGridBodyMenu, { DaraGridBodyMenuRef } from './DataGridBodyMenu';
-import DadaGridBodyRow from './DataGridBodyRow';
+import DaraGridBodyMenu, { DaraGridBodyMenuRef } from './data-grid-body-menu.tsx';
+import DadaGridBodyRow from './data-grid-body-row.tsx';
 import { useMemo, useRef } from 'react';
 import { useClickOutside } from '@mantine/hooks';
-import TableEntity from '../seed-data/TableEntity';
+import TableEntity from '../../seed-data/table-entity.ts';
 import { useDispatch } from 'react-redux';
-import { selectCell } from './dataGridSlice';
+import { selectCell } from '../data-grid-slice.ts';
 
 interface DataGridBodyProps<T extends TableEntity> {
   sortedIds: string[];

@@ -2,7 +2,7 @@ import { ReactElement } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Flex, MantineProvider } from '@mantine/core';
 import { theme } from '../../theme.ts';
-import ErrorNotification from '../error-handling/error-notification.tsx';
+import ErrorNotification from '../error-handling/components/error-notification.tsx';
 
 export default function BaseLayout(): ReactElement {
   return (

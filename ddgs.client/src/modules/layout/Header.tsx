@@ -1,12 +1,12 @@
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import { ActionIcon, useMantineColorScheme, Center, Avatar, Text, Flex } from '@mantine/core';
 import { IconSunFilled, IconMoonFilled } from '@tabler/icons-react';
-import DataGridLoader from '../data-grid/DataGridLoader';
+import HeaderLoader from '../loading/header-loader.tsx';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Logo from '../../../public/ddgs-logo.svg?react';
-import UserWidgetMenu, { UserWidgetMenuRef } from './UserWidgetMenu.tsx';
-import { getUserInfoAsync, UserInfo } from '../auth/AuthService.ts';
+import UserWidgetMenu, { UserWidgetMenuRef } from './user-widget-menu.tsx';
+import { getUserInfoAsync, UserInfo } from '../auth/auth-service.ts';
 
 export function Header(): ReactElement {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
@@ -40,7 +40,7 @@ export function Header(): ReactElement {
         </Text>
       </Flex>
       <div style={{ display: 'flex', gap: '4px' }}>
-        <DataGridLoader isDarkTheme={isDarkTheme} />
+        <HeaderLoader isDarkTheme={isDarkTheme} />
         <Center>
           <ActionIcon
             variant='subtle'
@@ -55,7 +55,7 @@ export function Header(): ReactElement {
             )}
           </ActionIcon>
         </Center>
-        <UserWidgetMenu ref={menuRef} userInfo={userInfo}>
+        <UserWidgetMenu ref={menuRef} userInfo={userInfo!}>
           <Avatar
             src={null}
             name={userInfo?.name}

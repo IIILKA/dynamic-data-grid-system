@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { handleOAuthCallbackAsync } from './AuthService.ts';
-import { Routes } from '../navigation/Routes.ts';
+import { handleOAuthCallbackAsync } from '../auth-service.ts';
+import { Routes } from '../../navigation/routes.ts';
 
-export default function OAuthCallbackPage() {
+export default function OauthCallbackPage() {
   //TODO: remove isProccess logic
   // rerendering the components does not change isProcessed, but remounting the component does change.
   const isProcessed = useRef(false);

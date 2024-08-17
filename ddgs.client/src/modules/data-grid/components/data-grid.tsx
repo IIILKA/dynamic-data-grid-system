@@ -1,9 +1,9 @@
 import { Table, Button } from '@mantine/core';
-import TableEntity from '../seed-data/TableEntity';
-import DataGridHead from './DataGridHead';
-import DataGridBody from './DataGridBody';
-import { useCreateTestMutation } from '../api/apiSlice';
-import { resetObject } from '../../utils/ResetObjectHelper';
+import TableEntity from '../../seed-data/table-entity.ts';
+import DataGridHead from './data-grid-head.tsx';
+import DataGridBody from './data-grid-body.tsx';
+import { useCreateTestMutation } from '../../api/resource-api-slice.ts';
+import { resetObject } from '../../../utils/reset-object-helper.ts';
 
 interface DataGridProps<T extends TableEntity> {
   sortedIds: string[];
@@ -20,6 +20,7 @@ export default function DataGrid<T extends TableEntity>({
     const resetRow = resetObject({ ...dataGridRows[sortedIds[0]] });
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, ...entityCreatePayload } = resetRow;
+    //TODO: fix
     entityCreatePayload.index = sortedIds.length + 1;
     await createRow(entityCreatePayload);
   }

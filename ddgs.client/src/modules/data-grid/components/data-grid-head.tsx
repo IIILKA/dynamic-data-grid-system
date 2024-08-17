@@ -1,6 +1,6 @@
 import { Table } from '@mantine/core';
-import { nameOf } from '../../utils/NameOfHelper';
-import TableEntity from '../seed-data/TableEntity';
+import { nameOf } from '../../../utils/name-of-helper.ts';
+import TableEntity from '../../seed-data/table-entity.ts';
 
 interface DataGridHeadProps {
   propNames: string[];

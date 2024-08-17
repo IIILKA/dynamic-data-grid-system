@@ -1,34 +1,32 @@
 import { Center, Loader } from '@mantine/core';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../app/store';
 import { styled } from 'styled-components';
 import { useEffect, useState } from 'react';
+import { selectIsLoading } from './loading-slice.ts';
 
 const LoaderContainer = styled.div`
   display: inline-flex;
   gap: 6px;
 `;
 
-const DataGridLoaderText = styled.p`
+const HeaderLoaderText = styled.p`
   font-size: 12px;
 `;
 
-interface DataGridLoaderProps {
+interface HeaderLoaderProps {
   isDarkTheme: boolean;
 }
 
-export default function DataGridLoader({ isDarkTheme }: DataGridLoaderProps) {
+export default function HeaderLoader({ isDarkTheme }: HeaderLoaderProps) {
   const [isVisible, setIsVisible] = useState(false);
-  const fetchingQueriesCount = useSelector(
-    (state: RootState) => state.dataGrid.fetchingQueriesCount
-  );
+  const isLoading = useSelector(selectIsLoading);
 
   useEffect(() => {
     let handler: NodeJS.Timeout | undefined;
-    if (fetchingQueriesCount === 0) {
-      handler = setTimeout(() => setIsVisible(false), 5000);
-    } else {
+    if (isLoading) {
       setIsVisible(true);
+    } else {
+      handler = setTimeout(() => setIsVisible(false), 5000);
     }
 
     return () => {
@@ -36,22 +34,22 @@ export default function DataGridLoader({ isDarkTheme }: DataGridLoaderProps) {
         clearTimeout(handler);
       }
     };
-  }, [fetchingQueriesCount]);
+  }, [isLoading]);
 
   const color = isDarkTheme ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)';
 
   return (
     <>
-      {fetchingQueriesCount > 0 && (
+      {isLoading && (
         <LoaderContainer>
           <Center>
             <Loader color={color} size='12' />
           </Center>
-          <DataGridLoaderText style={{ color }}>Saving...</DataGridLoaderText>
+          <HeaderLoaderText style={{ color }}>Saving...</HeaderLoaderText>
         </LoaderContainer>
       )}
-      {fetchingQueriesCount === 0 && isVisible && (
-        <DataGridLoaderText style={{ color }}>All changed saved</DataGridLoaderText>
+      {!isLoading && isVisible && (
+        <HeaderLoaderText style={{ color }}>All changed saved</HeaderLoaderText>
       )}
     </>
   );

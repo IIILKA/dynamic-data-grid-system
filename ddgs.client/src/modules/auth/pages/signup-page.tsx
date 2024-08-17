@@ -10,19 +10,19 @@ import {
 } from '@mantine/core';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import Logo from '../../../public/ddgs-logo.svg?react';
+import Logo from '../../../../public/ddgs-logo.svg?react';
 import { Link } from 'react-router-dom';
-import { Routes } from '../navigation/Routes.ts';
+import { Routes } from '../../navigation/routes.ts';
 import { IconBrandGoogleFilled } from '@tabler/icons-react';
-import { logInWithExternalProvider } from './AuthService.ts';
-import { useEffect, useState } from 'react';
+import { logInWithExternalProvider } from '../auth-service.ts';
+import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { AuthProvider } from './auth-provider.ts';
-import { useLazyLogInQuery, useLazySignUpQuery } from '../api/auth-api-slice.ts';
-import { RootState } from '../../app/store.ts';
+import { AuthProvider } from '../auth-provider.ts';
+import { useLazyLogInQuery, useLazySignUpQuery } from '../../api/auth-api-slice.ts';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signupFormSchema, SignupFormSchema } from './signup-form-schema.ts';
+import { signupFormSchema, SignupFormSchema } from '../forms/signup-form-schema.ts';
+import { selectIsLoading } from '../../loading/loading-slice.ts';
 
 export default function SignupPage() {
   const { colorScheme } = useMantineColorScheme();
@@ -30,11 +30,7 @@ export default function SignupPage() {
 
   const [signUpAsync, { isSuccess }] = useLazySignUpQuery();
   const [logInAsync] = useLazyLogInQuery();
-  const fetchingQueriesCount = useSelector(
-    (state: RootState) => state.dataGrid.fetchingQueriesCount
-  );
-
-  const [loadingOverlayVisible, setLoadingOverlayVisible] = useState(false);
+  const isLoading = useSelector(selectIsLoading);
 
   const {
     register,
@@ -48,21 +44,15 @@ export default function SignupPage() {
   };
 
   useEffect(() => {
-    if (fetchingQueriesCount === 0) {
-      setLoadingOverlayVisible(false);
-    } else {
-      setLoadingOverlayVisible(true);
-    }
-
     if (isSuccess) {
       logInAsync({ email: getValues().email, password: getValues().password });
     }
-  }, [fetchingQueriesCount, isSuccess]);
+  }, [isSuccess]);
 
   return (
     <Flex justify='center' align='center' h='100%'>
       <Card shadow='sm' padding={0} radius='md' withBorder w='30%'>
-        <LoadingOverlay visible={loadingOverlayVisible} overlayProps={{ radius: 'md', blur: 1 }} />
+        <LoadingOverlay visible={isLoading} overlayProps={{ radius: 'md', blur: 1 }} />
         <Card.Section withBorder>
           <Flex justify='center' align='center' gap='xs' style={{ cursor: 'pointer' }}>
             <Logo style={{ height: '40px', width: '40px', color: 'teal' }} />
@@ -140,10 +130,7 @@ export default function SignupPage() {
                 leftSection={<IconBrandGoogleFilled size={18} />}
                 color='gray'
                 fullWidth
-                onClick={() => {
-                  setLoadingOverlayVisible(true);
-                  logInWithExternalProvider(AuthProvider.Google);
-                }}>
+                onClick={() => logInWithExternalProvider(AuthProvider.Google)}>
                 Continue with Google
               </Button>
               <Text size='14px' mt='40px'>

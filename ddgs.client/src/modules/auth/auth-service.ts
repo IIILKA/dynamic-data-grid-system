@@ -1,7 +1,7 @@
 import { UserManager } from 'oidc-client-ts';
-import { ddgsConfig } from './AuthConfig.ts';
+import { ddgsConfig } from './auth-config.ts';
 import { jwtDecode } from 'jwt-decode';
-import { Routes } from '../navigation/Routes.ts';
+import { Routes } from '../navigation/routes.ts';
 import { AuthProvider } from './auth-provider.ts';
 
 const userManager = new UserManager(ddgsConfig.settings);
