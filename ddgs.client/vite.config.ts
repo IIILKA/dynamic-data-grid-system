@@ -19,33 +19,19 @@ const baseConfig = {
 };
 
 export default defineConfig(() => {
-  if (process.env.VITE_PROTOCOL === 'https') {
-    return {
-      ...baseConfig,
-      server: {
-        watch: {
-          usePolling: true
-        },
-        host: true,
-        strictPort: true,
-        port: +process.env.VITE_PORT,
-        https: {
-          pfx: fs.readFileSync(path.resolve(__dirname, 'https/ddgs.client.pfx')),
-          passphrase: process.env.VITE_SSL_CERTIFICATE_CRYPTIC_PASSWORD
-        }
+  return {
+    ...baseConfig,
+    server: {
+      watch: {
+        usePolling: true
+      },
+      host: true,
+      strictPort: true,
+      port: +process.env.VITE_PORT,
+      https: {
+        pfx: fs.readFileSync(path.resolve(__dirname, 'https/ddgs.client.pfx')),
+        passphrase: process.env.VITE_SSL_CERTIFICATE_CRYPTIC_PASSWORD
       }
-    };
-  } else {
-    return {
-      ...baseConfig,
-      server: {
-        watch: {
-          usePolling: true
-        },
-        host: true,
-        strictPort: true,
-        port: +process.env.VITE_PORT
-      }
-    };
-  }
+    }
+  };
 });

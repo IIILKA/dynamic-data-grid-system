@@ -6,10 +6,9 @@
 cd <Путь к корню проекта>
 ```
 
-## Настройка https (необязательно)
+## Настройка https
 
-Если вы хотите использовать https в приложении, вам необходимо сгенерировать ssl сертификаты.
-Раздел по настройке https можно пропустить если вы не хотите использовать https, так как с данным приложением можно работать по http.
+Вам необходимо сгенерировать ssl сертификаты.
 Далее описано как сгенерировать необходимые ssl-сертификаты c помощью .NET CLI. Для использования .NET CLI у вас должен быть установлен .NET
 
 Сначала генерируем .pfx файл для сервера
@@ -62,15 +61,12 @@ dotnet dev-certs https --trust
 *Если измените пароль здесь, то так же необходимо сделать соответсвующие изменения в файле ddgs.client\vite.config.ts*
 
 ---
----
 **INFO**
 
 *Дополнительная информация по генерации очистке сертификатов смотрите в [документации Microsoft](https://learn.microsoft.com/en-us/dotnet/core/additional-tools/self-signed-certificates-guide)*
 
 ---
 ## Запуск контейнеров
-
-Запустить контейнеры можно тремя разными способами:
 
 ---
 **NOTE**
@@ -79,31 +75,17 @@ dotnet dev-certs https --trust
 
 ---
 
-- Для запуска приложения работающего на http и https исполняем следующую команду
+Для запуска приложения исполняем следующую команду:
 
 ```powershell
-docker-compose --profile with-clients --profile with-https up -d
+docker-compose --profile with-client up -d
 ```
 
-- Если вы не настраивали https, то исполняйте следующую команду
+Клиент будет доступен по url: https://localhost:3000
 
-```powershell
-docker-compose --profile with-http-client --profile without-https up -d
-```
+Сервер ресурсов будет доступен по url: https://localhost:4430
 
-- Если вы хотите использовать только https, то используйте команду
-
-```powershell
-docker-compose --profile with-https-client --profile with-https up -d
-```
-
-Клиент будет доступен по url:
-- https://localhost:3000
-- http://localhost:3080
-
-Сервер будет доступен по url:
-- https://localhost:4430/api
-- http://localhost:8000/api
+Сервер авторизации будет доступен по url: https://localhost:4431
 
 ## Настройка url, портов и строк подключения
 

@@ -3,10 +3,12 @@
     "Docker Compose": {
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
-      "composeProfile": {
-        "includes": [
-          "with-https"
-        ]
+      "serviceActions": {
+        "api": "StartDebugging",
+        "identity": "StartDebugging",
+        "mongodb": "StartWithoutDebugging",
+        "postgresdb": "StartWithoutDebugging",
+        "web-client": "DoNotStart"
       }
     }
   }

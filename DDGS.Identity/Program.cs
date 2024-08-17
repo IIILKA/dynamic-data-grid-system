@@ -1,7 +1,6 @@
 using DDGS.Identity.Auth.Configuration;
 using DDGS.Infrastructure.Configuration;
 using DDGS.Identity.Configuration;
-using DDGS.Identity.Utils;
 using Mapster;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,10 +26,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-if (EnvironmentUtils.GetEnvironmentVariableAsBool("ASPNETCORE_HTTPS_ENABLED", true))
-{
-    app.UseHttpsRedirection();
-}
+app.UseHttpsRedirection();
 
 app.UseCors();
 

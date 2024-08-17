@@ -3,8 +3,7 @@
     "Container (Dockerfile)": {
       "commandName": "Docker",
       "environmentVariables": {
-        "ASPNETCORE_HTTPS_PORTS": "4430",
-        "ASPNETCORE_HTTP_PORTS": "8000"
+        "ASPNETCORE_HTTPS_PORTS": "4430"
       },
       "publishAllPorts": true,
       "useSSL": true

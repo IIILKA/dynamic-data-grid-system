@@ -1,5 +1,4 @@
 ﻿using DDGS.Identity.Auth.Interfaces;
-using DDGS.Identity.Utils;
 using DDGS.Infrastructure;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.IdentityModel.Protocols.Configuration;
@@ -98,8 +97,6 @@ namespace DDGS.Identity.Auth.Configuration
 
             services.AddSingleton<IAuthUtilsService, AuthUtilsService>();
 
-            var httpsEnabled = EnvironmentUtils.GetEnvironmentVariableAsBool("ASPNETCORE_HTTPS_ENABLED", false);
-
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
@@ -108,7 +105,7 @@ namespace DDGS.Identity.Auth.Configuration
                     options.ExpireTimeSpan = TimeSpan.FromDays(14);
                     options.SlidingExpiration = false;
                     options.Cookie.SameSite = SameSiteMode.Lax;
-                    options.Cookie.SecurePolicy = httpsEnabled ? CookieSecurePolicy.Always : CookieSecurePolicy.None;
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                     options.LoginPath = "/user/login";
                 });
 

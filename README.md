@@ -6,10 +6,9 @@ To launch the application, go to the root of the project
 cd <Path to root of project>
 ```
 
-## Configuring https (optional)
+## Configuring https
 
-If you want to use https in the application, you need to generate ssl certificates.
-The section on configuring https can be skipped if you don't want to use https, since you can work with this application over http.
+You need to generate ssl certificates.
 The following describes how to generate the necessary ssl certificates using the .NET CLI. To use the .NET CLI, you must have the .NET installed
 
 First, generate a .pfx file for the server
@@ -62,15 +61,12 @@ dotnet dev-certs https --trust
 *If you change the password here, you should also make corresponding changes in the ddgs.client\vite.config.ts file.*
 
 ---
----
 **INFO**
 
 *For more information about generating certificate and cleanup, see [Microsoft documentation](https://learn.microsoft.com/en-us/dotnet/core/additional-tools/self-signed-certificates-guide)*
 
 ---
 ## Launching containers
-
-You can start containers in three different ways:
 
 ---
 **NOTE**
@@ -79,31 +75,17 @@ You can start containers in three different ways:
 
 ---
 
-- To launch the application running on http and https, execute the following command
+To launch the application running on http and https, execute the following command
 
 ```powershell
-docker-compose --profile with-clients --profile with-https up -d
+docker-compose --profile with-client up -d
 ```
 
-- If you have not configured https, execute the following command
+The client will be accessible by url: https://localhost:3000
 
-```powershell
-docker-compose --profile with-http-client --profile without-https up -d
-```
+The resource server will be accessible by url: https://localhost:4430
 
-- If you want to use only https, use the command
-
-```powershell
-docker-compose --profile with-https-client --profile with-https up -d
-```
-
-The client will be accessible by url:
-- https://localhost:3000
-- http://localhost:3080
-
-The server will be accessible by url:
-- https://localhost:4430/api
-- http://localhost:8000/api
+The authorization server will be accessible by url: https://localhost:4431
 
 ## Configuring url, ports and connection strings
 
