@@ -4,7 +4,7 @@ import { createEntityAdapter, createSelector } from '@reduxjs/toolkit';
 import { TableCellType } from '../seed-data/table-cell-type.ts';
 import { RootState } from '../../app/store';
 import { loadingSlice } from '../loading/loading-slice.ts';
-import { getBaseQuery } from './api-utils.ts';
+import { AppBaseQuery, getBaseQuery } from './api-utils.ts';
 
 interface NormalizedDataGridEntitiesCache {
   ids: string[];
@@ -32,8 +32,7 @@ export const resourceApiSlice = createApi({
   reducerPath: 'resourceApi',
   baseQuery: getBaseQuery(import.meta.env.VITE_API_URL, true),
   tagTypes: ['Tests'],
-  //TODO: refactor, remove unknown
-  endpoints: (builder: EndpointBuilder<unknown, unknown, unknown>) => ({
+  endpoints: (builder: EndpointBuilder<AppBaseQuery, string, 'resourceApi'>) => ({
     getTests: builder.query<NormalizedDataGridEntitiesCache, void>({
       query: () => '/test',
       transformResponse(baseQueryReturnValue: TableEntity[]) {

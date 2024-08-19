@@ -5,4 +5,6 @@ export default function OauthExternalProviderCallbackPage() {
   useEffect(() => {
     sendOAuthRequestAsync();
   });
+
+  return <></>;
 }

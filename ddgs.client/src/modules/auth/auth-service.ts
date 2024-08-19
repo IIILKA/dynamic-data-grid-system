@@ -32,7 +32,7 @@ export async function isAuthenticatedAsync() {
   return !!token;
 }
 
-export async function handleOAuthCallbackAsync(callbackUrl) {
+export async function handleOAuthCallbackAsync(callbackUrl: string) {
   try {
     const user = await userManager.signinRedirectCallback(callbackUrl);
     return user;

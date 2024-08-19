@@ -1,7 +1,6 @@
 import { NumberInput, Table, TextInput, Checkbox, Center } from '@mantine/core';
 import { styled } from 'styled-components';
 import { selectCell } from '../data-grid-slice.ts';
-import { useDispatch, useSelector } from 'react-redux';
 import {
   resourceApiSlice,
   selectTestById,
@@ -9,9 +8,10 @@ import {
   useUpdateTestMutation
 } from '../../api/resource-api-slice.ts';
 import { TableCellType } from '../../seed-data/table-cell-type.ts';
-import { RootState, useAppDispatch } from '../../../app/store.ts';
+import { RootState } from '../../../app/store.ts';
 import { useEffect, useState } from 'react';
 import { useDebounce } from '../../hooks/debounce.ts';
+import { useAppDispatch, useAppSelector } from '../../../app/hooks.ts';
 
 const DataGridCellContainer = styled.div`
   cursor: default;
@@ -49,10 +49,9 @@ interface DataGridBodyCellProps {
 }
 
 export default function DataGridBodyCell({ rowId, colName, isActive }: DataGridBodyCellProps) {
-  const dispatch = useDispatch();
-  const appDispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
   const [updateRow] = useUpdateTestMutation();
-  const entity = useSelector((state: RootState) => selectTestById(state, rowId));
+  const entity = useAppSelector((state: RootState) => selectTestById(state, rowId));
   const debounce = useDebounce(entity[colName]);
   const [changeValueServerHandled, setChangeValueServerHandled] = useState(true);
 
@@ -68,7 +67,7 @@ export default function DataGridBodyCell({ rowId, colName, isActive }: DataGridB
     setChangeValueServerHandled(false);
     const { id, ...entityUpdatePayload } = entity;
     entityUpdatePayload[colName] = newValue;
-    appDispatch(
+    dispatch(
       resourceApiSlice.util?.updateQueryData('getTests', undefined, (draft) => {
         tableEntityAdapter.updateOne(draft, { id, changes: entityUpdatePayload });
       })

@@ -1,11 +1,11 @@
 import { ReactElement } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Notification, Stack } from '@mantine/core';
 import { removeError, selectErrors } from '../error-slice.ts';
+import { useAppDispatch, useAppSelector } from '../../../app/hooks.ts';
 
 export default function ErrorNotification(): ReactElement {
-  const dispatch = useDispatch();
-  const errors = useSelector(selectErrors);
+  const dispatch = useAppDispatch();
+  const errors = useAppSelector(selectErrors);
 
   function getNotifications() {
     return (

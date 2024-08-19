@@ -1,14 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store.ts';
 
-interface SelectedCell {
+type SelectedCell = {
   rowId: string;
   colName: string;
-}
+};
 
-interface DataGridState {
+type DataGridState = {
   selectedCell: SelectedCell | null;
-}
+};
 
 const initialState: DataGridState = {
   selectedCell: null
@@ -27,4 +27,3 @@ export const dataGridSlice = createSlice({
 export const selectSelectedCell = (state: RootState) => state.dataGrid.selectedCell;
 
 export const { selectCell } = dataGridSlice.actions;
-export default dataGridSlice.reducer;

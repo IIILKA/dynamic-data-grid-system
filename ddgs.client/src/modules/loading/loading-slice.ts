@@ -28,5 +28,3 @@ export const selectIsLoading = createSelector(
 );
 
 export const { queryStarted, queryFinished } = loadingSlice.actions;
-
-export default loadingSlice.reducer;

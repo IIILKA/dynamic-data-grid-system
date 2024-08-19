@@ -28,6 +28,5 @@ export const errorSlice = createSlice({
   }
 });
 
-export const selectErrors = (state: RootState) => state.errors.errors;
+export const selectErrors = (state: RootState): ErrorViewModel[] => state.errors.errors;
 export const { addError, removeError } = errorSlice.actions;
-export default errorSlice.reducer;

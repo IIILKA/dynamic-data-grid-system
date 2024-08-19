@@ -9,8 +9,8 @@ import {
   useImperativeHandle,
   useState
 } from 'react';
-import { useSelector } from 'react-redux';
 import { useDeleteTestMutation } from '../../api/resource-api-slice.ts';
+import { useAppSelector } from '../../../app/hooks.ts';
 import { selectSelectedCell } from '../data-grid-slice.ts';
 
 interface DaraGridBodyMenuProps {
@@ -32,7 +32,7 @@ export default forwardRef(function DaraGridBodyMenu(
   { disableAddNewItemButtons, children }: DaraGridBodyMenuProps,
   ref: ForwardedRef<DaraGridBodyMenuRef>
 ) {
-  const selectedCell = useSelector(selectSelectedCell);
+  const selectedCell = useAppSelector(selectSelectedCell);
 
   const [menu, setMenu] = useState<MenuProps>({
     isOpened: false

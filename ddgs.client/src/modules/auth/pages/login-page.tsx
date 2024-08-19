@@ -15,20 +15,21 @@ import { Link } from 'react-router-dom';
 import { Routes } from '../../navigation/routes.ts';
 import { IconBrandGoogleFilled } from '@tabler/icons-react';
 import { logInWithExternalProvider } from '../auth-service.ts';
-import { useSelector } from 'react-redux';
 import { AuthProvider } from '../auth-provider.ts';
-import { useLazyLogInQuery } from '../../api/auth-api-slice.ts';
+import { useLogInMutation } from '../../api/auth-api-slice.ts';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { loginFormSchema, LoginFormSchema } from '../forms/login-form-schema.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { selectIsLoading } from '../../loading/loading-slice.ts';
+import { useAppSelector } from '../../../app/hooks.ts';
+import LoginRequestDto from '../../api/dto/login-request-dto.ts';
 
 export default function LoginPage() {
   const { colorScheme } = useMantineColorScheme();
   const isDarkTheme = colorScheme === 'dark';
 
-  const [logInAsync] = useLazyLogInQuery();
-  const isLoading = useSelector(selectIsLoading);
+  const [logInAsync] = useLogInMutation<LoginRequestDto>();
+  const isLoading = useAppSelector(selectIsLoading);
 
   const {
     register,

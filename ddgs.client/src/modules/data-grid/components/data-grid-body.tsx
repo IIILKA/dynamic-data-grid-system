@@ -4,8 +4,8 @@ import DadaGridBodyRow from './data-grid-body-row.tsx';
 import { useMemo, useRef } from 'react';
 import { useClickOutside } from '@mantine/hooks';
 import TableEntity from '../../seed-data/table-entity.ts';
-import { useDispatch } from 'react-redux';
 import { selectCell } from '../data-grid-slice.ts';
+import { useAppDispatch } from '../../../app/hooks.ts';
 
 interface DataGridBodyProps<T extends TableEntity> {
   sortedIds: string[];
@@ -16,7 +16,7 @@ export default function DataGridBody<T extends TableEntity>({
   sortedIds,
   dataGridRows
 }: DataGridBodyProps<T>) {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const tableRef = useClickOutside(() => dispatch(selectCell(null)), ['click']);
 

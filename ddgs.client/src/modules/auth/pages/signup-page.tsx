@@ -16,21 +16,26 @@ import { Routes } from '../../navigation/routes.ts';
 import { IconBrandGoogleFilled } from '@tabler/icons-react';
 import { logInWithExternalProvider } from '../auth-service.ts';
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { AuthProvider } from '../auth-provider.ts';
-import { useLazyLogInQuery, useLazySignUpQuery } from '../../api/auth-api-slice.ts';
+import { useLogInMutation, useSignUpMutation } from '../../api/auth-api-slice.ts';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signupFormSchema, SignupFormSchema } from '../forms/signup-form-schema.ts';
 import { selectIsLoading } from '../../loading/loading-slice.ts';
+import { useAppSelector } from '../../../app/hooks.ts';
+import LoginRequestDto from '../../api/dto/login-request-dto.ts';
+import SignupRequestDto from '../../api/dto/signup-request-dto.ts';
 
 export default function SignupPage() {
   const { colorScheme } = useMantineColorScheme();
   const isDarkTheme = colorScheme === 'dark';
 
-  const [signUpAsync, { isSuccess }] = useLazySignUpQuery();
-  const [logInAsync] = useLazyLogInQuery();
-  const isLoading = useSelector(selectIsLoading);
+  //TODO: Разобраться почему при сборке (без ts-ignore) возникает ошибка error TS2339: Property 'isSuccess' does not exist on type 'UseMutationStateResult<MutationDefinition<SignupRequestDto, AppBaseQuery, string, void, "authApi">, SignupRequestDto>'.
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const [signUpAsync, { isSuccess }] = useSignUpMutation<SignupRequestDto>();
+  const [logInAsync] = useLogInMutation<LoginRequestDto>();
+  const isLoading = useAppSelector(selectIsLoading);
 
   const {
     register,
@@ -47,7 +52,7 @@ export default function SignupPage() {
     if (isSuccess) {
       logInAsync({ email: getValues().email, password: getValues().password });
     }
-  }, [isSuccess]);
+  }, [isSuccess]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Flex justify='center' align='center' h='100%'>

@@ -1,8 +1,8 @@
 import { Center, Loader } from '@mantine/core';
-import { useSelector } from 'react-redux';
 import { styled } from 'styled-components';
 import { useEffect, useState } from 'react';
 import { selectIsLoading } from './loading-slice.ts';
+import { useAppSelector } from '../../app/hooks.ts';
 
 const LoaderContainer = styled.div`
   display: inline-flex;
@@ -19,7 +19,7 @@ interface HeaderLoaderProps {
 
 export default function HeaderLoader({ isDarkTheme }: HeaderLoaderProps) {
   const [isVisible, setIsVisible] = useState(false);
-  const isLoading = useSelector(selectIsLoading);
+  const isLoading = useAppSelector(selectIsLoading);
 
   useEffect(() => {
     let handler: NodeJS.Timeout | undefined;

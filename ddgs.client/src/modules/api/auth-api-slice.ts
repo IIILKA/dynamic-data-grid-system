@@ -3,14 +3,13 @@ import { sendOAuthRequestAsync } from '../auth/auth-service.ts';
 import { loadingSlice } from '../loading/loading-slice.ts';
 import LoginRequestDto from './dto/login-request-dto.ts';
 import SignupRequestDto from './dto/signup-request-dto.ts';
-import { getBaseQuery } from './api-utils.ts';
+import { AppBaseQuery, getBaseQuery } from './api-utils.ts';
 
 export const authApiSlice = createApi({
   reducerPath: 'authApi',
   baseQuery: getBaseQuery(import.meta.env.VITE_AUTH_AUTHORITY),
-  //TODO: refactor, remove unknown
-  endpoints: (builder: EndpointBuilder<unknown, unknown, unknown>) => ({
-    logIn: builder.query<LoginRequestDto, void>({
+  endpoints: (builder: EndpointBuilder<AppBaseQuery, string, 'authApi'>) => ({
+    logIn: builder.mutation<void, LoginRequestDto>({
       query: (loginRequestDto) => ({
         url: '/authenticate',
         method: 'POST',
@@ -27,7 +26,7 @@ export const authApiSlice = createApi({
         }
       }
     }),
-    signUp: builder.query<SignupRequestDto, void>({
+    signUp: builder.mutation<void, SignupRequestDto>({
       query: (signupRequestDto) => ({
         url: '/user/register',
         method: 'POST',
@@ -45,4 +44,4 @@ export const authApiSlice = createApi({
   })
 });
 
-export const { useLazyLogInQuery, useLazySignUpQuery } = authApiSlice;
+export const { useLogInMutation, useSignUpMutation } = authApiSlice;

@@ -26,6 +26,6 @@ const signupFormSchema = z
     message: 'Your password and confirmation password must match'
   });
 
-type SignupFormSchema = z.infer<typeof signupFormSchema>;
+export type SignupFormSchema = z.infer<typeof signupFormSchema>;
 
-export { signupFormSchema, SignupFormSchema };
+export { signupFormSchema };

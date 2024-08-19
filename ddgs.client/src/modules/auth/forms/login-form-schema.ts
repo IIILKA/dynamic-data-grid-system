@@ -15,6 +15,6 @@ const loginFormSchema = z.object({
     .regex(/[^a-zA-Z0-9]/, 'Password must include at least one special character')
 });
 
-type LoginFormSchema = z.infer<typeof loginFormSchema>;
+export type LoginFormSchema = z.infer<typeof loginFormSchema>;
 
-export { loginFormSchema, LoginFormSchema };
+export { loginFormSchema };

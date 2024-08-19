@@ -1,11 +1,18 @@
-import { fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import {
+  BaseQueryFn,
+  FetchArgs,
+  fetchBaseQuery,
+  FetchBaseQueryError
+} from '@reduxjs/toolkit/query/react';
 import { getAccessTokenAsync, logoutAsync } from '../auth/auth-service.ts';
 import { Routes } from '../navigation/routes.ts';
 import { addError } from '../error-handling/error-slice.ts';
 import ErrorViewModels from '../error-handling/error-view-models.ts';
 import ErrorViewModel from '../error-handling/error-view-model.ts';
 
-export function getBaseQuery(baseUrl: string, includeAuthHeaders: boolean = false) {
+export type AppBaseQuery = BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError>;
+
+export function getBaseQuery(baseUrl: string, includeAuthHeaders: boolean = false): AppBaseQuery {
   return async (args, api, extraOptions) => {
     const baseResult = await fetchBaseQuery({
       baseUrl: baseUrl,
@@ -20,7 +27,8 @@ export function getBaseQuery(baseUrl: string, includeAuthHeaders: boolean = fals
     })(args, api, extraOptions);
 
     if (baseResult?.error) {
-      const error = baseResult.error;
+      //TODO: Refactor
+      const error = baseResult.error as { status: number | string; data?: { errors?: unknown } };
 
       if (error.status === 401) {
         await logoutAsync(Routes.Unauthorized);
@@ -30,10 +38,12 @@ export function getBaseQuery(baseUrl: string, includeAuthHeaders: boolean = fals
         api.dispatch(addError(ErrorViewModels.serverUnavailable));
       } else if (
         error.status === 400 &&
-        !!error.data.errors &&
-        error.data.errors instanceof Array<string>
+        error.data?.errors &&
+        Array.isArray(error.data.errors) &&
+        error.data.errors.every((_) => typeof _ === 'string')
       ) {
         const errorsViewModels: ErrorViewModel[] = error.data.errors.map((error) => ({
+          id: 0,
           title: 'Validation error',
           description: error
         }));

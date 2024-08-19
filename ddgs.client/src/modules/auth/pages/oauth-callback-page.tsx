@@ -32,4 +32,6 @@ export default function OauthCallbackPage() {
 
     processOAuthResponse();
   });
+
+  return <></>;
 }
