@@ -1,4 +1,5 @@
 using DDGS.Api.Configuration;
+using DDGS.Api.DataGrid.Configuration;
 using DDGS.Api.Utils;
 using DDGS.Infrastructure;
 using DDGS.Infrastructure.Configuration;
@@ -8,7 +9,7 @@ using Mapster;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddMapster();
+var typeAdapterConfig = new TypeAdapterConfig();
 
 builder.Services
     .AddMongoDb()
@@ -16,10 +17,12 @@ builder.Services
     .AddOpenIddictAuthentication()
     .AddAuthorization()
     .AddDdgsCors()
-    .AddScoped<IEntityIdGenerator, EntityIdGenerator>()//TODO: Refactor, maybe change this service
+    .AddScoped<IEntityIdGenerator, EntityIdGenerator>() //TODO: Refactor, maybe change this service
     .AddTestServices()
+    .AddDataGrid(typeAdapterConfig)
     .AddEndpointsApiExplorer()
-    .AddSwaggerGen();
+    .AddSwaggerGen()
+    .AddMapper(typeAdapterConfig);
 
 builder.Services.AddControllers();
 
