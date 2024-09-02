@@ -1,5 +1,5 @@
-﻿using DDGS.Core.Identity.Entities;
-using DDGS.Core.Identity.Interfaces;
+﻿using DDGS.Core.Identity.Interfaces;
+using DDGS.Core.Identity.Models;
 
 namespace DDGS.Api.Cotext
 {
@@ -12,7 +12,7 @@ namespace DDGS.Api.Cotext
             _identityService = identityService;
         }
 
-        public async Task<User> GetCurrentUserAsync()
+        public async Task<UserEntity> GetCurrentUserAsync()
         {
             return (await _identityService.GetByEmailAsync("verbiloyegor@gmail.com"))!;
         }

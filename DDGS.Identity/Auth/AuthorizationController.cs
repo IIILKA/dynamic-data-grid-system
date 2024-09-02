@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
-using DDGS.Core.Identity.Entities.Payloads;
 using DDGS.Core.Identity.Interfaces;
+using DDGS.Core.Identity.Models;
+using DDGS.Core.Identity.Models.Payloads;
 using DDGS.Identity.Auth.Dto;
 using DDGS.Identity.Auth.Interfaces;
 using DDGS.Identity.Core;
@@ -218,7 +219,7 @@ namespace DDGS.Identity.Auth
             return destinations;
         }
 
-        private async Task<Result<DDGS.Core.Identity.Entities.User>> EnsureUserRegisteredAsync(string email, string username)
+        private async Task<Result<UserEntity>> EnsureUserRegisteredAsync(string email, string username)
         {
             var user = await _identityService.GetByEmailAsync(email);
             if (user != null)
@@ -238,7 +239,7 @@ namespace DDGS.Identity.Auth
             return user;
         }
 
-        private async Task<Result> EnsureUserExternalLoginRegisteredAsync(DDGS.Core.Identity.Entities.User user, string externalLoginProviderName, string externalLoginUserId)
+        private async Task<Result> EnsureUserExternalLoginRegisteredAsync(UserEntity user, string externalLoginProviderName, string externalLoginUserId)
         {
             if (await _identityService.DoesExternalLoginRegisteredAsync(user, externalLoginProviderName, externalLoginUserId))
             {

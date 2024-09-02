@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace DDGS.Infrastructure.Migrations
 {
-    [DbContext(typeof(DdgsPostgresDbContext))]
+    [DbContext(typeof(DdgsDbContext))]
     [Migration("20240812070104_AddIdentity")]
     partial class AddIdentity
     {

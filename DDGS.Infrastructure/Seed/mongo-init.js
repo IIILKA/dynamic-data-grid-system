@@ -6,6 +6,12 @@ db.createUser(
             {
                 role: "readWrite",
                 db: "DynamicDataGridSystemMongoDb"
+            },
+            {
+                role: "clusterAdmin", db: "admin"
+            },
+            {
+                role: "root", db: "admin"
             }
         ]
     }

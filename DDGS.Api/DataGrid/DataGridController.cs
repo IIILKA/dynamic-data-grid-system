@@ -1,26 +1,24 @@
 ﻿using DDGS.Api.Core;
 using DDGS.Api.DataGrid.Dto;
-using DDGS.Api.Utils;
-using DDGS.Core.DataGrid.Interfaces;
-using DDGS.Core.DataGrid.Models;
+using DDGS.Api.Error;
+using DDGS.Api.Error.Dto;
+using DDGS.Core.DataGrid.Interfaces.Services;
+using DDGS.Core.DataGrid.Models.Payloads;
 using MapsterMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DDGS.Api.DataGrid
 {
     [Route("data-grid")]
-    [ApiController]
     //[Authorize]
-    public class DataGridController : ControllerBase
+    public class DataGridController : DdgsControllerBase
     {
         private readonly IDataGridService _dataGridService;
-        private readonly IMapper _mapper;
 
         public DataGridController(IDataGridService dataGridService, IMapper mapper)
+            : base(mapper)
         {
             _dataGridService = dataGridService;
-            _mapper = mapper;
         }
 
         [HttpGet]
@@ -28,7 +26,7 @@ namespace DDGS.Api.DataGrid
         {
             var dataGrids = await _dataGridService.GetAllAsync();
 
-            var dataGridDtos = _mapper.Map<List<DataGridIndexDto>>(dataGrids);
+            var dataGridDtos = Mapper.Map<List<DataGridIndexDto>>(dataGrids);
 
             return Ok(dataGridDtos);
         }
@@ -40,10 +38,10 @@ namespace DDGS.Api.DataGrid
 
             if (dataGrid == null)
             {
-                return BadRequest(new ErrorResponseDto("Data grid not found"));
+                return BadRequest(new ErrorResponseDto(ErrorMessages.DataGrid.NotExist));
             }
 
-            var dataGridDto = _mapper.Map<DataGridDetailsDto>(dataGrid);
+            var dataGridDto = Mapper.Map<DataGridDetailsDto>(dataGrid);
 
             return Ok(dataGridDto);
         }
@@ -51,67 +49,47 @@ namespace DDGS.Api.DataGrid
         [HttpPost]
         public async Task<IActionResult> CreateDataGridAsync([FromBody] DataGridCreateDto dto)
         {
-            var payload = _mapper.Map<DatGridCreatePayload>(dto);
+            var payload = Mapper.Map<DatGridCreatePayload>(dto);
 
             var result = await _dataGridService.CreateAsync(payload);
 
-            if (result.IsFailed)
-            {
-                return BadRequest(result.ToErrorResponseDto());
-            }
-
-            return Ok();
+            return HandleResult(result);
         }
 
-        [HttpPatch("rename/{dataGridId}")]
+        [HttpPatch("{dataGridId}/rename")]
         public async Task<IActionResult> RenameDataGridAsync(Guid dataGridId, [FromBody] DataGridRenameDto dto)
         {
-            var payload = _mapper.Map<DataGridRenamePayload>(dto);
+            var payload = Mapper.Map<DataGridRenamePayload>(dto);
 
             var result = await _dataGridService.RenameAsync(dataGridId, payload);
 
-            if (result.IsFailed)
-            {
-                return BadRequest(result.ToErrorResponseDto());
-            }
-
-            return Ok();
+            return HandleResult(result);
         }
 
-        [HttpPatch("add-col/{dataGridId}")]
+        [HttpPatch("{dataGridId}/add-col")]
         public async Task<IActionResult> AddColumnAsync(Guid dataGridId, [FromBody] DataGridAddColumnDto dto)
         {
-            var payload = _mapper.Map<DataGridColumnCreatePayload>(dto);
+            var payload = Mapper.Map<DataGridColumnCreatePayload>(dto);
 
             var result = await _dataGridService.AddColumnAsync(dataGridId, payload);
 
-            if (result.IsFailed)
-            {
-                return BadRequest(result.ToErrorResponseDto());
-            }
-
-            return Ok();
+            return HandleResult(result);
         }
 
-        [HttpPatch("remove-col/{dataGridId}/{colName}")]
+        [HttpPatch("{dataGridId}/remove-col/{colName}")]
         public async Task<IActionResult> RemoveColumnAsync(Guid dataGridId, string colName)
         {
             var result = await _dataGridService.RemoveColumnAsync(dataGridId, colName);
 
-            if (result.IsFailed)
-            {
-                return BadRequest(result.ToErrorResponseDto());
-            }
-
-            return Ok();
+            return HandleResult(result);
         }
 
         [HttpDelete("{dataGridId}")]
         public async Task<IActionResult> DeleteAsync(Guid dataGridId)
         {
-            await _dataGridService.DeleteAsync(dataGridId);
+            var result = await _dataGridService.DeleteAsync(dataGridId);
 
-            return Ok();
+            return HandleResult(result);
         }
     }
 }

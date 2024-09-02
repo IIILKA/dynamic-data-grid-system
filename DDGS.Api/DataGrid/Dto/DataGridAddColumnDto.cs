@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using DDGS.Core.DataGrid.Models;
+using DDGS.Core.DataGrid.Models.Constraints;
 
 namespace DDGS.Api.DataGrid.Dto
 {

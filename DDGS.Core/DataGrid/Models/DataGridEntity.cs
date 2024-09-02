@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using DDGS.Core.Core;
-using DDGS.Core.Identity.Entities;
+using DDGS.Core.DataGrid.Models.Constraints;
+using DDGS.Core.Identity.Models;
 
 namespace DDGS.Core.DataGrid.Models
 {
@@ -11,7 +12,7 @@ namespace DDGS.Core.DataGrid.Models
         [MaxLength(DataGridConstraints.NameMaxLength)]
         public required string Name { get; set; }
 
-        public required User Owner { get; set; }
+        public required UserEntity Owner { get; set; }
 
         public required DateTimeOffset DateCreated { get; set; }
 

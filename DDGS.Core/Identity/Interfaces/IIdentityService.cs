@@ -1,28 +1,28 @@
-﻿using DDGS.Core.Identity.Entities;
-using DDGS.Core.Identity.Entities.Payloads;
+﻿using DDGS.Core.Identity.Models;
+using DDGS.Core.Identity.Models.Payloads;
 using FluentResults;
 
 namespace DDGS.Core.Identity.Interfaces
 {
     public interface IIdentityService
     {
-        Task<Result<User>> RegisterAsync(UserRegisterPayload payload);
+        Task<Result<UserEntity>> RegisterAsync(UserRegisterPayload payload);
 
-        Task<Result<User>> RegisterAsync(UserRegisterPayload payload, string userPassword);
+        Task<Result<UserEntity>> RegisterAsync(UserRegisterPayload payload, string userPassword);
 
-        Task<User?> GetAsync(Guid id);
+        Task<UserEntity?> GetAsync(Guid id);
 
-        Task<User?> GetByEmailAsync(string email);
+        Task<UserEntity?> GetByEmailAsync(string email);
 
-        Task<List<User>> GetAllAsync();
+        Task<List<UserEntity>> GetAllAsync();
 
-        Task<Result> AddExternalLoginAsync(User user, UserAddExternalLoginPayload payload);
+        Task<Result> AddExternalLoginAsync(UserEntity userEntity, UserAddExternalLoginPayload payload);
 
         Task<bool> DoesExternalLoginRegisteredAsync(
-            User user,
+            UserEntity userEntity,
             string externalLoginProviderName,
             string externalLoginProviderUserId);
 
-        Task<bool> CheckUserPasswordAsync(User user, string userPassword);
+        Task<bool> CheckUserPasswordAsync(UserEntity userEntity, string userPassword);
     }
 }

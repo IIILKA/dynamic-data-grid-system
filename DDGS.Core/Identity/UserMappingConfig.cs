@@ -1,5 +1,5 @@
-﻿using DDGS.Core.Identity.Entities;
-using DDGS.Core.Identity.Entities.Payloads;
+﻿using DDGS.Core.Identity.Models;
+using DDGS.Core.Identity.Models.Payloads;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 
@@ -9,7 +9,7 @@ namespace DDGS.Core.Identity
     {
         public void Register(TypeAdapterConfig config)
         {
-            config.NewConfig<UserRegisterPayload, User>()
+            config.NewConfig<UserRegisterPayload, UserEntity>()
                 .Map(dest => dest.UserName, src => src.Username);
 
             config.NewConfig<UserAddExternalLoginPayload, UserLoginInfo>()

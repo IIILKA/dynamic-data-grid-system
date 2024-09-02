@@ -1,29 +1,37 @@
-﻿using DDGS.Core.DataGrid.Interfaces;
+﻿using DDGS.Core.Core;
+using DDGS.Core.Core.Interfaces;
+using DDGS.Core.DataGrid.Errors;
+using DDGS.Core.DataGrid.Interfaces.Repositories;
+using DDGS.Core.DataGrid.Interfaces.Services;
 using DDGS.Core.DataGrid.Models;
-using DDGS.Core.Identity.Entities;
+using DDGS.Core.DataGrid.Models.Constraints;
+using DDGS.Core.DataGrid.Models.Payloads;
 using DDGS.Core.Identity.Interfaces;
+using DDGS.Core.Identity.Models;
 using FluentResults;
 using MapsterMapper;
 
 namespace DDGS.Core.DataGrid
 {
-    public class DataGridService : IDataGridService
+    public class DataGridService : ServiceBase, IDataGridService
     {
         private readonly IDataGridRepository _dataGridRepository;
         private readonly IDataGridColumnRepository _dataGridColumnRepository;
+        private readonly IDataGridCollectionRepository _dataGridCollectionRepository;
         private readonly IUserContextService _userContextService;
-        private readonly IMapper _mapper;
 
         public DataGridService(
             IDataGridRepository dataGridRepository,
             IDataGridColumnRepository dataGridColumnRepository,
+            IDataGridCollectionRepository dataGridCollectionRepository,
             IUserContextService userContextService,
-            IMapper mapper)
+            IUnitOfWork unitOfWork,
+            IMapper mapper) : base(unitOfWork, mapper)
         {
             _dataGridRepository = dataGridRepository;
             _dataGridColumnRepository = dataGridColumnRepository;
+            _dataGridCollectionRepository = dataGridCollectionRepository;
             _userContextService = userContextService;
-            _mapper = mapper;
         }
 
         public async Task<DataGridEntity?> GetAsync(Guid id)
@@ -31,9 +39,9 @@ namespace DDGS.Core.DataGrid
             return await _dataGridRepository.GetAsync(id);
         }
 
-        public async Task<List<DataGridEntity>> GetByUserAsync(User user)
+        public async Task<List<DataGridEntity>> GetByUserAsync(UserEntity userEntity)
         {
-            return await _dataGridRepository.GetByUserAsync(user.Id);
+            return await _dataGridRepository.GetManyByUserAsync(userEntity.Id);
         }
 
         public async Task<List<DataGridEntity>> GetAllAsync()
@@ -53,35 +61,68 @@ namespace DDGS.Core.DataGrid
             };
             dataGrid.Columns = GetDefaultColumns(dataGrid);
 
-            return await _dataGridRepository.CreateAsync(dataGrid);
+            return await ExecuteInTransactionAsync(async () =>
+            {
+                var result = await _dataGridRepository.CreateAsync(dataGrid);
+                if (result.IsFailed)
+                {
+                    return result;
+                }
+
+                return await _dataGridCollectionRepository.CreateAsync(dataGrid);
+            });
         }
 
-        public async Task<Result> AddColumnAsync(Guid id, DataGridColumnCreatePayload payload)
+        public async Task<Result> AddColumnAsync(Guid dataGridId, DataGridColumnCreatePayload payload)
         {
-            var dataGrid = await _dataGridRepository.GetAsync(id);
-            //var dataGrid = new DataGridEntity { Id = id };
+            var dataGrid = await _dataGridRepository.GetAsync(dataGridId);
 
             if (dataGrid == null)
             {
-                return Result.Fail("Data grid does not exist");
+                return Result.Fail(new DataGridNotExistError());
             }
 
-            var dataGridColumn = _mapper.Map<DataGridColumnEntity>(payload);
+            var dataGridColumn = Mapper.Map<DataGridColumnEntity>(payload);
             dataGridColumn.DataGrid = dataGrid;
 
-            return await _dataGridColumnRepository.CreateAsync(dataGridColumn);
+            return await ExecuteInTransactionAsync(async () =>
+            {
+                var result = await _dataGridColumnRepository.CreateAsync(dataGridColumn);
+                if (result.IsFailed)
+                {
+                    return result;
+                }
+
+                return await _dataGridCollectionRepository.AddElementToAllDocumentsInCollectionAsync(dataGrid, dataGridColumn);
+            });
         }
 
         public async Task<Result> RemoveColumnAsync(Guid dataGridId, string columnName)
         {
-            var dataGridColumn = await _dataGridColumnRepository.GetByDataGridAndNameAsync(dataGridId, columnName);
+            var dataGrid = await _dataGridRepository.GetAsync(dataGridId);
+
+            if (dataGrid == null)
+            {
+                return Result.Fail(new DataGridNotExistError());
+            }
+
+            var dataGridColumn = await _dataGridColumnRepository.GetByDataGridAndNameAsync(dataGrid, columnName);
 
             if (dataGridColumn == null)
             {
-                return Result.Fail("Data grid column does not exist");
+                return Result.Fail(new DataGridColumnNotExistError());
             }
 
-            return await _dataGridColumnRepository.DeleteAsync(dataGridColumn.Id);
+            return await ExecuteInTransactionAsync(async () =>
+            {
+                var result = await _dataGridColumnRepository.DeleteAsync(dataGridColumn);
+                if (result.IsFailed)
+                {
+                    return result;
+                }
+
+                return await _dataGridCollectionRepository.RemoveElementFromAllDocumentsInCollectionAsync(dataGrid, dataGridColumn);
+            });
         }
 
         public async Task<Result> RenameAsync(Guid id, DataGridRenamePayload payload)
@@ -90,7 +131,7 @@ namespace DDGS.Core.DataGrid
 
             if (dataGrid == null)
             {
-                return Result.Fail("Data grid does not exist");
+                return Result.Fail(new DataGridNotExistError());
             }
 
             dataGrid.Name = payload.Name;
@@ -100,14 +141,31 @@ namespace DDGS.Core.DataGrid
 
         public async Task<Result> DeleteAsync(Guid id)
         {
-            return await _dataGridRepository.DeleteAsync(id);
+            var dataGrid = await _dataGridRepository.GetAsync(id);
+
+            if (dataGrid == null)
+            {
+                return Result.Fail(new DataGridNotExistError());
+            }
+
+            return await ExecuteInTransactionAsync(async () =>
+            {
+                var result = await _dataGridRepository.DeleteAsync(dataGrid);
+
+                if (result.IsFailed)
+                {
+                    return result;
+                }
+
+                return await _dataGridCollectionRepository.DeleteAsync(dataGrid);
+            });
         }
 
         private List<DataGridColumnEntity> GetDefaultColumns(DataGridEntity dataGrid)
         {
             return new List<DataGridColumnEntity>
             {
-                new DataGridColumnEntity
+                new()
                 {
                     Id = Guid.Empty,
                     Name = "Name",
@@ -115,7 +173,7 @@ namespace DDGS.Core.DataGrid
                     Index = DataGridColumnConstraints.IndexMinValue,
                     DataGrid = dataGrid
                 },
-                new DataGridColumnEntity
+                new()
                 {
                     Id = Guid.Empty,
                     Name = "Age",
@@ -123,7 +181,7 @@ namespace DDGS.Core.DataGrid
                     Index = DataGridColumnConstraints.IndexMinValue + 1,
                     DataGrid = dataGrid
                 },
-                new DataGridColumnEntity
+                new()
                 {
                     Id = Guid.Empty,
                     Name = "Done",

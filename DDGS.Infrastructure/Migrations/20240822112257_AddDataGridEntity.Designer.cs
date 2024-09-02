@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace DDGS.Infrastructure.Migrations
 {
-    [DbContext(typeof(DdgsPostgresDbContext))]
+    [DbContext(typeof(DdgsDbContext))]
     [Migration("20240822112257_AddDataGridEntity")]
     partial class AddDataGridEntity
     {
