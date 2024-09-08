@@ -12,9 +12,9 @@ namespace DDGS.Api.Cotext
             _identityService = identityService;
         }
 
-        public async Task<UserEntity> GetCurrentUserAsync()
+        public async Task<UserEntity?> GetCurrentUserAsync()
         {
-            return (await _identityService.GetByEmailAsync("verbiloyegor@gmail.com"))!;
+            return await _identityService.GetByEmailAsync("verbiloyegor@gmail.com");
         }
     }
 }

@@ -8,6 +8,7 @@ import SignupPage from './modules/auth/pages/signup-page.tsx';
 import ErrorPage from './modules/error-handling/components/error-page.tsx';
 import OauthCallbackPage from './modules/auth/pages/oauth-callback-page.tsx';
 import OauthExternalProviderCallbackPage from './modules/auth/pages/oauth-external-provider-callback-page.tsx';
+import DataGridsPage from './modules/data-grids/data-grids-page.tsx';
 
 const baseLayoutRoutes: RouteObject[] = [
   {
@@ -59,11 +60,15 @@ const baseLayoutRoutes: RouteObject[] = [
 const layoutWithContextElementsRoutes: RouteObject[] = [
   {
     index: true,
-    element: <Navigate to={Routes.Test} />
+    element: <Navigate to={Routes.DataGrids} />
   },
   {
     path: Routes.Test,
     element: <TestPage />
+  },
+  {
+    path: Routes.DataGrids,
+    element: <DataGridsPage />
   }
 ];
 

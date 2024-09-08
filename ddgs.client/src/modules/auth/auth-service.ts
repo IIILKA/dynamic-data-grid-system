@@ -19,6 +19,7 @@ export async function getUserAsync() {
   return await userManager.getUser();
 }
 
+//TODO: Use redux
 export async function getUserInfoAsync(): Promise<UserInfo | undefined> {
   const accessToken = await getAccessTokenAsync();
   if (accessToken) {

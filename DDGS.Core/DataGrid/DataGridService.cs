@@ -6,6 +6,7 @@ using DDGS.Core.DataGrid.Interfaces.Services;
 using DDGS.Core.DataGrid.Models;
 using DDGS.Core.DataGrid.Models.Constraints;
 using DDGS.Core.DataGrid.Models.Payloads;
+using DDGS.Core.Identity.Error;
 using DDGS.Core.Identity.Interfaces;
 using DDGS.Core.Identity.Models;
 using FluentResults;
@@ -51,12 +52,18 @@ namespace DDGS.Core.DataGrid
 
         public async Task<Result> CreateAsync(DatGridCreatePayload payload)
         {
+            var owner = await _userContextService.GetCurrentUserAsync();
+            if (owner == null)
+            {
+                return Result.Fail(new UserUnauthorizedError());
+            }
+
             var dataGrid = new DataGridEntity
             {
                 Id = Guid.Empty,
                 Name = payload.Name,
                 DateCreated = DateTimeOffset.Now,
-                Owner = await _userContextService.GetCurrentUserAsync(),
+                Owner = owner,
                 Columns = new List<DataGridColumnEntity>()
             };
             dataGrid.Columns = GetDefaultColumns(dataGrid);

@@ -4,6 +4,6 @@ namespace DDGS.Core.Identity.Interfaces
 {
     public interface IUserContextService
     {
-        Task<UserEntity> GetCurrentUserAsync();
+        Task<UserEntity?> GetCurrentUserAsync();
     }
 }

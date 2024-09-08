@@ -6,7 +6,17 @@ import { RootState } from '../../app/store';
 import { loadingSlice } from '../loading/loading-slice.ts';
 import { AppBaseQuery, getBaseQuery } from './api-utils.ts';
 
-interface NormalizedDataGridEntitiesCache {
+export interface DataGridEntity {
+  id: string;
+  name: string;
+  ownerUsername: string;
+}
+
+export interface DataGridCreatePayload {
+  name: string;
+}
+
+interface NormalizedTestEntitiesCache {
   ids: string[];
   entities: { [id: string]: TableEntity };
 }
@@ -26,17 +36,65 @@ export const tableEntityAdapter = createEntityAdapter<TableEntity>({
   sortComparer: (a, b) => a.index - b.index
 });
 
-const dataGridInitialState = tableEntityAdapter.getInitialState();
+const testInitialState = tableEntityAdapter.getInitialState();
 
 export const resourceApiSlice = createApi({
   reducerPath: 'resourceApi',
   baseQuery: getBaseQuery(import.meta.env.VITE_API_URL, true),
-  tagTypes: ['Tests'],
+  tagTypes: ['Tests', 'DataGrids'],
   endpoints: (builder: EndpointBuilder<AppBaseQuery, string, 'resourceApi'>) => ({
-    getTests: builder.query<NormalizedDataGridEntitiesCache, void>({
+    getDataGrids: builder.query<DataGridEntity[], void>({
+      query: () => '/data-grid',
+      providesTags: ['DataGrids']
+    }),
+    createDataGrid: builder.mutation<void, DataGridCreatePayload>({
+      query: (entityCreatePayload) => ({
+        url: '/data-grid',
+        method: 'POST',
+        body: entityCreatePayload
+      }),
+      invalidatesTags: ['DataGrids']
+    }),
+    deleteDataGrid: builder.mutation<void, string>({
+      query: (dataGridId) => ({
+        url: '/data-grid/' + dataGridId,
+        method: 'DELETE'
+      }),
+      async onQueryStarted(dataGridId, { dispatch, queryFulfilled }) {
+        const deleteResult = dispatch(
+          resourceApiSlice.util?.updateQueryData<DataGridEntity[], void>(
+            'getDataGrids',
+            undefined,
+            (draft) => {
+              dispatch(loadingSlice.actions.queryStarted());
+
+              const draftDataGrids = draft as DataGridEntity[];
+
+              const index = draftDataGrids?.findIndex(
+                (dataGrid: DataGridEntity) => dataGrid.id === dataGridId
+              );
+              if (index && index !== -1) {
+                draftDataGrids.splice(index, 1);
+              } else {
+                console.error('DataGrid not found or draft is undefined');
+              }
+            }
+          )
+        );
+        try {
+          await queryFulfilled;
+          dispatch(loadingSlice.actions.queryFinished());
+        } catch {
+          deleteResult.undo();
+          dispatch(loadingSlice.actions.queryFinished());
+        }
+      },
+      invalidatesTags: ['DataGrids']
+    }),
+    getTests: builder.query<NormalizedTestEntitiesCache, void>({
       query: () => '/test',
       transformResponse(baseQueryReturnValue: TableEntity[]) {
-        return tableEntityAdapter.setAll(dataGridInitialState, baseQueryReturnValue);
+        return tableEntityAdapter.setAll(testInitialState, baseQueryReturnValue);
       },
       providesTags: ['Tests']
     }),
@@ -117,7 +175,10 @@ export const {
   useGetTestsQuery,
   useCreateTestMutation,
   useUpdateTestMutation,
-  useDeleteTestMutation
+  useDeleteTestMutation,
+  useGetDataGridsQuery,
+  useCreateDataGridMutation,
+  useDeleteDataGridMutation
 } = resourceApiSlice;
 
 const selectTestsData = createSelector(
@@ -126,6 +187,14 @@ const selectTestsData = createSelector(
 );
 
 export const { selectAll: selectAllTests, selectById: selectTestById } =
-  tableEntityAdapter.getSelectors<RootState>(
-    (state) => selectTestsData(state) ?? dataGridInitialState
+  tableEntityAdapter.getSelectors<RootState>((state) => selectTestsData(state) ?? testInitialState);
+
+const selectDataGridsData = createSelector(
+  resourceApiSlice.endpoints?.getDataGrids.select(),
+  (dataGridResult) => dataGridResult.data ?? []
+);
+
+export const selectDataGridById = (id: string) =>
+  createSelector(selectDataGridsData, (dataGrids: DataGridEntity[]) =>
+    dataGrids.find((dataGrid) => dataGrid.id === id)
   );

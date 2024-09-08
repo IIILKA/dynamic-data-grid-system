@@ -1,4 +1,5 @@
 ﻿using DDGS.Api.Error.Maps;
+using DDGS.Core.Identity.Error;
 using FluentResults;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +20,11 @@ namespace DDGS.Api.Core
         {
             if (result.IsFailed)
             {
+                if (result.Errors.Any(resultError => resultError.GetType() == typeof(UserUnauthorizedError)))
+                {
+                    return Unauthorized();
+                }
+
                 return BadRequest(ErrorMapper.MapErrorsToErrorResponseDto(result));
             }
 
@@ -29,6 +35,11 @@ namespace DDGS.Api.Core
         {
             if (result.IsFailed)
             {
+                if (result.Errors.Any(resultError => resultError.GetType() == typeof(UserUnauthorizedError)))
+                {
+                    return Unauthorized();
+                }
+
                 return BadRequest(ErrorMapper.MapErrorsToErrorResponseDto(result));
             }
 
