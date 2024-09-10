@@ -8,7 +8,7 @@ import Logo from '../../../public/ddgs-logo.svg?react';
 import UserWidgetMenu, { UserWidgetMenuRef } from './user-widget-menu.tsx';
 import { getUserInfoAsync, UserInfo } from '../auth/auth-service.ts';
 import { Routes } from '../navigation/routes.ts';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export function Header(): ReactElement {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
@@ -40,7 +40,7 @@ export function Header(): ReactElement {
           style={() => {
             isDarkTheme ? { color: 'var(--mantine-color-dark-6)' } : null;
           }}
-          onClick={() => navigate(Routes.DataGrids)}>
+          onClick={() => navigate(Routes.Home)}>
           DDGS
         </Text>
       </Flex>

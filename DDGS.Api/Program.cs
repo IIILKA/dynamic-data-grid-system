@@ -2,8 +2,6 @@ using DDGS.Api.Configuration;
 using DDGS.Api.DataGrid.Configuration;
 using DDGS.Api.Utils;
 using DDGS.Infrastructure;
-using DDGS.Infrastructure.Core;
-using DDGS.Infrastructure.Core.Interfaces;
 using DDGS.Infrastructure.MongoDb;
 using DDGS.Infrastructure.PostgresDb;
 using Mapster;
@@ -19,8 +17,6 @@ builder.Services
     .AddOpenIddictAuthentication()
     .AddAuthorization()
     .AddDdgsCors()
-    .AddScoped<IEntityIdGenerator, EntityIdGenerator>() //TODO: Refactor, maybe change this service
-    //.AddTestServices()
     .AddDdgsIdentity()
     .AddDataGrid(typeAdapterConfig)
     .AddEndpointsApiExplorer()

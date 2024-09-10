@@ -1,8 +1,6 @@
 import { createApi, EndpointBuilder } from '@reduxjs/toolkit/query/react';
-import OldTableEntity from '../seed-data/old-table-entity.ts';
 import { createEntityAdapter, createSelector } from '@reduxjs/toolkit';
 import { DataGridCellType } from '../seed-data/data-grid-cell-type.ts';
-import { RootState } from '../../app/store';
 import { loadingSlice } from '../loading/loading-slice.ts';
 import { AppBaseQuery, getBaseQuery } from './api-utils.ts';
 
@@ -62,34 +60,12 @@ interface DataGridRowPayload {
   //index: number;
 }
 
-interface NormalizedTestEntitiesCache {
-  ids: string[];
-  entities: { [id: string]: OldTableEntity };
-}
-
-interface UpdateDataGridEntityArgs {
-  id: string;
-  entityUpdatePayload: DataGridEntityPayload;
-}
-
-interface DataGridEntityPayload {
-  [key: string]: DataGridCellType;
-
-  index: number;
-}
-
-export const tableEntityAdapter = createEntityAdapter<OldTableEntity>({
-  sortComparer: (a, b) => a.index - b.index
-});
-
-const testInitialState = tableEntityAdapter.getInitialState();
-
 export const dataGridRowAdapter = createEntityAdapter<DataGridRowDto>();
 
 export const resourceApiSlice = createApi({
   reducerPath: 'resourceApi',
   baseQuery: getBaseQuery(import.meta.env.VITE_API_URL, true),
-  tagTypes: ['Tests', 'DataGrids'],
+  tagTypes: ['DataGrids'],
   endpoints: (builder: EndpointBuilder<AppBaseQuery, string, 'resourceApi'>) => ({
     getDataGrids: builder.query<DataGridItemDto[], void>({
       query: () => '/data-grid',
@@ -233,92 +209,11 @@ export const resourceApiSlice = createApi({
         }
       },
       invalidatesTags: ['DataGrids']
-    }),
-    getTests: builder.query<NormalizedTestEntitiesCache, void>({
-      query: () => '/test',
-      transformResponse(baseQueryReturnValue: OldTableEntity[]) {
-        return tableEntityAdapter.setAll(testInitialState, baseQueryReturnValue);
-      },
-      providesTags: ['Tests']
-    }),
-    createTest: builder.mutation<void, DataGridEntityPayload>({
-      query: (entityCreatePayload) => ({
-        url: '/test',
-        method: 'POST',
-        body: entityCreatePayload
-      }),
-      async onQueryStarted(entityCreatePayload, { dispatch, queryFulfilled }) {
-        const createResult = dispatch(
-          resourceApiSlice.util?.updateQueryData('getTests', undefined, (draft) => {
-            dispatch(loadingSlice.actions.queryStarted());
-
-            tableEntityAdapter.addOne(draft, { ...entityCreatePayload, id: '' });
-          })
-        );
-        try {
-          await queryFulfilled;
-          dispatch(loadingSlice.actions.queryFinished());
-        } catch {
-          createResult.undo();
-          dispatch(loadingSlice.actions.queryFinished());
-        }
-      },
-      invalidatesTags: ['Tests']
-    }),
-    updateTest: builder.mutation<void, UpdateDataGridEntityArgs>({
-      query: ({ id, entityUpdatePayload }) => ({
-        url: '/test/' + id,
-        method: 'PUT',
-        body: entityUpdatePayload
-      }),
-      async onQueryStarted({ id, entityUpdatePayload }, { dispatch, queryFulfilled }) {
-        const updateResult = dispatch(
-          resourceApiSlice.util?.updateQueryData('getTests', undefined, (draft) => {
-            dispatch(loadingSlice.actions.queryStarted());
-
-            tableEntityAdapter.updateOne(draft, { id, changes: entityUpdatePayload });
-          })
-        );
-        try {
-          await queryFulfilled;
-          dispatch(loadingSlice.actions.queryFinished());
-        } catch {
-          updateResult.undo();
-          dispatch(loadingSlice.actions.queryFinished());
-        }
-      },
-      invalidatesTags: ['Tests']
-    }),
-    deleteTest: builder.mutation({
-      query: (testId) => ({
-        url: '/test/' + testId,
-        method: 'DELETE'
-      }),
-      async onQueryStarted(testId, { dispatch, queryFulfilled }) {
-        const deleteResult = dispatch(
-          resourceApiSlice.util?.updateQueryData('getTests', undefined, (draft) => {
-            dispatch(loadingSlice.actions.queryStarted());
-            tableEntityAdapter.removeOne(draft, testId);
-          })
-        );
-        try {
-          await queryFulfilled;
-          dispatch(loadingSlice.actions.queryFinished());
-        } catch {
-          deleteResult.undo();
-          dispatch(loadingSlice.actions.queryFinished());
-        }
-      },
-      invalidatesTags: ['Tests']
     })
   })
 });
 
 export const {
-  useGetTestsQuery,
-  useCreateTestMutation,
-  useUpdateTestMutation,
-  useDeleteTestMutation,
   useGetDataGridsQuery,
   useGetDataGridQuery,
   useCreateDataGridMutation,
@@ -328,14 +223,6 @@ export const {
   useUpdateDataGridRowMutation,
   useDeleteDataGridRowMutation
 } = resourceApiSlice;
-
-const selectTestsData = createSelector(
-  resourceApiSlice.endpoints?.getTests.select(),
-  (testsResult) => testsResult.data
-);
-
-export const { selectAll: selectAllTests, selectById: selectTestById } =
-  tableEntityAdapter.getSelectors<RootState>((state) => selectTestsData(state) ?? testInitialState);
 
 const selectDataGridsData = createSelector(
   resourceApiSlice.endpoints?.getDataGrids.select(),

@@ -1,5 +1,4 @@
 import { Table } from '@mantine/core';
-import { ReactNode, useEffect } from 'react';
 import { styled } from 'styled-components';
 import { nameOf } from '../../../utils/name-of-helper.ts';
 import { selectSelectedCell } from '../data-grid-slice.ts';

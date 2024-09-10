@@ -25,7 +25,7 @@ export default function DataGridBody({ dataGrid, sortedIds, dataGridRows }: Data
       sortedIds.map((rowId) => (
         <DadaGridBodyRow key={rowId} dataGrid={dataGrid} rowData={dataGridRows[rowId]} />
       )),
-    [dataGridRows, sortedIds]
+    [dataGridRows, sortedIds] // eslint-disable-line
   );
 
   return (

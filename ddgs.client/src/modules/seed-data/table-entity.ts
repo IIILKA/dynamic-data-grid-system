@@ -1,8 +1,0 @@
-import { DataGridCellType } from './data-grid-cell-type.ts';
-
-export default interface TableEntity {
-  [key: string]: DataGridCellType;
-
-  _id: string;
-  //index: number;
-}
