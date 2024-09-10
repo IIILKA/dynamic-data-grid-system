@@ -1,19 +1,21 @@
 import { Table } from '@mantine/core';
 import DaraGridBodyMenu, { DaraGridBodyMenuRef } from './data-grid-body-menu.tsx';
+import OldDadaGridBodyRow from './old-data-grid-body-row.tsx';
 import { useMemo, useRef } from 'react';
 import { useClickOutside } from '@mantine/hooks';
+import OldTableEntity from '../../seed-data/old-table-entity.ts';
 import { selectCell } from '../data-grid-slice.ts';
 import { useAppDispatch } from '../../../app/hooks.ts';
-import { DataGridDto, DataGridRowDto } from '../../api/resource-api-slice.ts';
-import DadaGridBodyRow from './data-grid-body-row.tsx';
 
-interface DataGridBodyProps {
-  dataGrid: DataGridDto;
+interface DataGridBodyProps<T extends OldTableEntity> {
   sortedIds: string[];
-  dataGridRows: { [key: string]: DataGridRowDto };
+  dataGridRows: { [key: string]: T };
 }
 
-export default function DataGridBody({ dataGrid, sortedIds, dataGridRows }: DataGridBodyProps) {
+export default function OldDataGridBody<T extends OldTableEntity>({
+  sortedIds,
+  dataGridRows
+}: DataGridBodyProps<T>) {
   const dispatch = useAppDispatch();
 
   const tableRef = useClickOutside(() => dispatch(selectCell(null)), ['click']);
@@ -21,18 +23,12 @@ export default function DataGridBody({ dataGrid, sortedIds, dataGridRows }: Data
   const menuRef = useRef<DaraGridBodyMenuRef | null>(null);
 
   const rows = useMemo(
-    () =>
-      sortedIds.map((rowId) => (
-        <DadaGridBodyRow key={rowId} dataGrid={dataGrid} rowData={dataGridRows[rowId]} />
-      )),
+    () => sortedIds.map((rowId) => <OldDadaGridBodyRow key={rowId} rowData={dataGridRows[rowId]} />),
     [dataGridRows, sortedIds]
   );
 
   return (
-    <DaraGridBodyMenu
-      ref={menuRef}
-      disableAddNewItemButtons={sortedIds.some((id) => id === '')}
-      dataGrid={dataGrid}>
+    <DaraGridBodyMenu ref={menuRef} disableAddNewItemButtons={sortedIds.some((id) => id === '')}>
       <Table.Tbody
         ref={tableRef}
         onContextMenu={(e) => {

@@ -120,19 +120,19 @@ namespace DDGS.Core.DataGridRow
 
         private Result ValidateRow(DataGridEntity dataGrid, DataGridRowEntity row)
         {
-            if (row.Elements.Count > dataGrid.Columns.Count)
+            if (row.RowData.Count > dataGrid.Columns.Count)
             {
                 return Result.Fail(new DataGridRowInvalidStructureError());
             }
 
             foreach (var column in dataGrid.Columns)
             {
-                if (!row.Elements.ContainsKey(column.Name.ToLower()))
+                if (!row.RowData.ContainsKey(column.Name))
                 {
                     return Result.Fail(new DataGridRowInvalidStructureError());
                 }
 
-                var value = row.Elements[column.Name.ToLower()];
+                var value = row.RowData[column.Name];
                 var jsonElement = (JsonElement)value;
                 var isValid = column.Type switch
                 {

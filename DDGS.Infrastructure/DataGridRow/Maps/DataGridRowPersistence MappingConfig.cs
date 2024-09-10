@@ -11,7 +11,7 @@ namespace DDGS.Infrastructure.DataGridRow.Maps
         {
             config.NewConfig<DataGridRowEntity, BsonDocument>()
                 .ConstructUsing(src =>
-                    new BsonDocument(src.Elements.ToDictionary(
+                    new BsonDocument(src.RowData.ToDictionary(
                         kvp => kvp.Key,
                         kvp => ConvertJsonElementToBsonValue((JsonElement)kvp.Value))));
         }

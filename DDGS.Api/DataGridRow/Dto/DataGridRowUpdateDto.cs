@@ -5,6 +5,6 @@ namespace DDGS.Api.DataGridRow.Dto
     public record DataGridRowUpdateDto
     {
         [Required]
-        public required string JsonRow { get; init; }
+        public required Dictionary<string, object> RowData { get; init; }
     }
 }

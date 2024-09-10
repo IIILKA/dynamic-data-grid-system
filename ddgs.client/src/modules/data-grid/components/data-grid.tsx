@@ -1,28 +1,27 @@
-import { Table, Button } from '@mantine/core';
-import TableEntity from '../../seed-data/table-entity.ts';
+import { Button, Table } from '@mantine/core';
+import {
+  DataGridColumnDto,
+  DataGridColumnType,
+  DataGridDto,
+  DataGridRowDto,
+  useCreateDataGridRowMutation
+} from '../../api/resource-api-slice.ts';
 import DataGridHead from './data-grid-head.tsx';
 import DataGridBody from './data-grid-body.tsx';
-import { useCreateTestMutation } from '../../api/resource-api-slice.ts';
-import { resetObject } from '../../../utils/reset-object-helper.ts';
+import { DataGridCellType } from '../../seed-data/data-grid-cell-type.ts';
 
-interface DataGridProps<T extends TableEntity> {
+interface DataGridProps {
+  dataGrid: DataGridDto;
   sortedIds: string[];
-  dataGridRows: { [key: string]: T };
+  dataGridRows: { [key: string]: DataGridRowDto };
 }
 
-export default function DataGrid<T extends TableEntity>({
-  sortedIds,
-  dataGridRows
-}: DataGridProps<T>) {
-  const [createRow] = useCreateTestMutation();
+export default function DataGrid({ dataGrid, sortedIds, dataGridRows }: DataGridProps) {
+  const [createDataGridRow] = useCreateDataGridRowMutation();
 
   async function handleAddEntityClicked() {
-    const resetRow = resetObject({ ...dataGridRows[sortedIds[0]] });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { id, ...entityCreatePayload } = resetRow;
-    //TODO: fix
-    entityCreatePayload.index = sortedIds.length + 1;
-    await createRow(entityCreatePayload);
+    const defaultRow = createDefaultRow(dataGrid.columns);
+    await createDataGridRow({ dataGridId: dataGrid.id, payload: defaultRow });
   }
 
   return (
@@ -33,8 +32,12 @@ export default function DataGrid<T extends TableEntity>({
         withRowBorders
         withTableBorder
         style={{ marginBottom: '0.5rem' }}>
-        <DataGridHead propNames={Object.getOwnPropertyNames(dataGridRows[sortedIds[0]])} />
-        <DataGridBody sortedIds={sortedIds} dataGridRows={dataGridRows} />
+        <DataGridHead
+          propNames={[...dataGrid.columns]
+            .sort((a, b) => a.index - b.index)
+            .map(({ name }) => name)}
+        />
+        <DataGridBody dataGrid={dataGrid} sortedIds={sortedIds} dataGridRows={dataGridRows} />
       </Table>
       <Button
         variant='filled'
@@ -45,4 +48,24 @@ export default function DataGrid<T extends TableEntity>({
       </Button>
     </>
   );
+}
+
+function createDefaultRow(columns: DataGridColumnDto[]): { [key: string]: DataGridCellType } {
+  const defaultRow: { [key: string]: DataGridCellType } = {};
+
+  columns.forEach((column) => {
+    switch (column.type) {
+      case DataGridColumnType.Text:
+        defaultRow[column.name] = '';
+        break;
+      case DataGridColumnType.Number:
+        defaultRow[column.name] = 0;
+        break;
+      case DataGridColumnType.Boolean:
+        defaultRow[column.name] = false;
+        break;
+    }
+  });
+
+  return defaultRow;
 }

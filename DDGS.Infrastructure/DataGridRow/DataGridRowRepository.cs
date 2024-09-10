@@ -34,7 +34,7 @@ namespace DDGS.Infrastructure.DataGridRow
 
             var expando = CreateExpandoFromBsonDocument(document);
 
-            return new DataGridRowEntity { Elements = expando };
+            return new DataGridRowEntity { RowData = expando };
         }
 
         public async Task<List<DataGridRowEntity>> GetByDataGridAsync(DataGridEntity dataGrid)
@@ -43,7 +43,7 @@ namespace DDGS.Infrastructure.DataGridRow
             var documents = await collection.Find("{}").ToListAsync();
 
             var result = documents
-                .Select(_ => new DataGridRowEntity { Elements = CreateExpandoFromBsonDocument(_) })
+                .Select(_ => new DataGridRowEntity { RowData = CreateExpandoFromBsonDocument(_) })
                 .ToList();
 
             return result;
@@ -87,9 +87,14 @@ namespace DDGS.Infrastructure.DataGridRow
             var expando = new ExpandoObject() as IDictionary<string, object>;
             foreach (var element in document.Elements)
             {
+                if (element.Value.GetType() == typeof(BsonObjectId))
+                {
+                    expando["id"] = element.Value.ToString()!;
+                    continue;
+                }
+                
                 expando[element.Name] = element.Value switch
                 {
-                    BsonObjectId id => id.ToString(),
                     BsonString str => str.ToString(),
                     BsonInt32 num => num.ToInt32(),
                     BsonBoolean b => b.ToBoolean(),

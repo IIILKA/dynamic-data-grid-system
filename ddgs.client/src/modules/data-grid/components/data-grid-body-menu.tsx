@@ -9,13 +9,14 @@ import {
   useImperativeHandle,
   useState
 } from 'react';
-import { useDeleteTestMutation } from '../../api/resource-api-slice.ts';
+import { DataGridDto, useDeleteDataGridRowMutation } from '../../api/resource-api-slice.ts';
 import { useAppSelector } from '../../../app/hooks.ts';
 import { selectSelectedCell } from '../data-grid-slice.ts';
 
 interface DaraGridBodyMenuProps {
   children: ReactElement;
   disableAddNewItemButtons: boolean;
+  dataGrid: DataGridDto;
 }
 
 interface MenuProps {
@@ -29,7 +30,7 @@ export interface DaraGridBodyMenuRef {
 }
 
 export default forwardRef(function DaraGridBodyMenu(
-  { disableAddNewItemButtons, children }: DaraGridBodyMenuProps,
+  { disableAddNewItemButtons, children, dataGrid }: DaraGridBodyMenuProps,
   ref: ForwardedRef<DaraGridBodyMenuRef>
 ) {
   const selectedCell = useAppSelector(selectSelectedCell);
@@ -42,11 +43,11 @@ export default forwardRef(function DaraGridBodyMenu(
 
   const menuRef = useClickOutside(() => setMenu({ isOpened: false }));
 
-  const [deleteRow] = useDeleteTestMutation();
+  const [deleteDataGridRow] = useDeleteDataGridRowMutation();
 
   const onDeleteTestClicked = async () => {
     setMenu({ isOpened: false });
-    await deleteRow(selectedCell!.rowId);
+    await deleteDataGridRow({ id: selectedCell!.rowId, dataGridId: dataGrid.id });
   };
 
   return (

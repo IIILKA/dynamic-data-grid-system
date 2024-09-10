@@ -2,52 +2,74 @@ import { NumberInput, Table, TextInput, Checkbox, Center } from '@mantine/core';
 import { styled } from 'styled-components';
 import { selectCell } from '../data-grid-slice.ts';
 import {
-  DataGridDto,
-  dataGridRowAdapter,
-  DataGridRowDto,
   resourceApiSlice,
-  useUpdateDataGridRowMutation
+  selectTestById,
+  tableEntityAdapter,
+  useUpdateTestMutation
 } from '../../api/resource-api-slice.ts';
 import { DataGridCellType } from '../../seed-data/data-grid-cell-type.ts';
-import { useEffect, useMemo, useState } from 'react';
+import { RootState } from '../../../app/store.ts';
+import { useEffect, useState } from 'react';
 import { useDebounce } from '../../hooks/debounce.ts';
-import { useAppDispatch } from '../../../app/hooks.ts';
+import { useAppDispatch, useAppSelector } from '../../../app/hooks.ts';
+
+const DataGridCellContainer = styled.div`
+  cursor: default;
+  border: 1px solid transparent;
+
+  & {
+    input {
+      cursor: default;
+      padding-left: 0.5rem;
+
+      &[type='checkbox'] {
+        cursor: pointer;
+      }
+    }
+  }
+
+  &.active {
+    input {
+      cursor: text;
+
+      &[type='checkbox'] {
+        cursor: pointer;
+      }
+    }
+
+    border: 1px solid dodgerblue;
+    background-color: var(--mantine-color-default);
+  }
+`;
 
 interface DataGridBodyCellProps {
-  dataGrid: DataGridDto;
-  row: DataGridRowDto;
+  rowId: string;
   colName: string;
   isActive: boolean;
 }
 
-export default function DataGridBodyCell({
-  dataGrid,
-  row,
-  colName,
-  isActive
-}: DataGridBodyCellProps) {
+export default function OldDataGridBodyCell({ rowId, colName, isActive }: DataGridBodyCellProps) {
   const dispatch = useAppDispatch();
-  const [updateDataGridRow] = useUpdateDataGridRowMutation();
-  const dataGridRow = useMemo(() => ({ ...row }), [row]);
-  const debounce = useDebounce(dataGridRow[colName]);
+  const [updateRow] = useUpdateTestMutation();
+  const entity = useAppSelector((state: RootState) => selectTestById(state, rowId));
+  const debounce = useDebounce(entity[colName]);
   const [changeValueServerHandled, setChangeValueServerHandled] = useState(true);
 
   useEffect(() => {
     if (!changeValueServerHandled) {
-      const { id, ...payload } = dataGridRow;
-      updateDataGridRow({ id, dataGridId: dataGrid.id, payload }).then(() =>
-        setChangeValueServerHandled(true)
-      );
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { id, ...entityUpdatePayload } = entity;
+      updateRow({ id: rowId, entityUpdatePayload }).then(() => setChangeValueServerHandled(true));
     }
   }, [debounce]); // eslint-disable-line
 
   async function handleChangeValue(newValue: DataGridCellType) {
     setChangeValueServerHandled(false);
-    const { id, ...payload } = dataGridRow;
-    payload[colName] = newValue;
+    const { id, ...entityUpdatePayload } = entity;
+    entityUpdatePayload[colName] = newValue;
     dispatch(
-      resourceApiSlice.util?.updateQueryData('getDataGridRows', dataGrid.id, (draft) => {
-        dataGridRowAdapter.updateOne(draft, { id, changes: payload });
+      resourceApiSlice.util?.updateQueryData('getTests', undefined, (draft) => {
+        tableEntityAdapter.updateOne(draft, { id, changes: entityUpdatePayload });
       })
     );
   }
@@ -93,38 +115,9 @@ export default function DataGridBodyCell({
   return (
     <Table.Td
       style={{ padding: 0 }}
-      onClick={() => dispatch(selectCell({ rowId: row.id, colName: colName }))}
-      onContextMenu={() => dispatch(selectCell({ rowId: row.id, colName: colName }))}>
-      {getCellControl(dataGridRow[colName])}
+      onClick={() => dispatch(selectCell({ rowId: rowId, colName: colName }))}
+      onContextMenu={() => dispatch(selectCell({ rowId: rowId, colName: colName }))}>
+      {getCellControl(entity[colName])}
     </Table.Td>
   );
 }
-
-const DataGridCellContainer = styled.div`
-  cursor: default;
-  border: 1px solid transparent;
-
-  & {
-    input {
-      cursor: default;
-      padding-left: 0.5rem;
-
-      &[type='checkbox'] {
-        cursor: pointer;
-      }
-    }
-  }
-
-  &.active {
-    input {
-      cursor: text;
-
-      &[type='checkbox'] {
-        cursor: pointer;
-      }
-    }
-
-    border: 1px solid dodgerblue;
-    background-color: var(--mantine-color-default);
-  }
-`;

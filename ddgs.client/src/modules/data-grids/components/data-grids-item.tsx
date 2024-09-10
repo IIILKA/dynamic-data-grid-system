@@ -2,12 +2,16 @@ import { selectDataGridById, useDeleteDataGridMutation } from '../../api/resourc
 import { ActionIcon, Avatar, Card, Flex, Group, Menu, rem, Text } from '@mantine/core';
 import { IconCopy, IconDots, IconShare2, IconPencil, IconTrash } from '@tabler/icons-react';
 import { useAppSelector } from '../../../app/hooks.ts';
+import { generatePath, useNavigate } from 'react-router-dom';
+import { Routes } from '../../navigation/routes.ts';
 
 export interface DataGridsItemProps {
   dataGridId: string;
 }
 
 export default function DataGridsItem({ dataGridId }: DataGridsItemProps) {
+  const navigate = useNavigate();
+
   const dataGrid = useAppSelector(selectDataGridById(dataGridId))!;
   const [deleteDataGrid] = useDeleteDataGridMutation();
 
@@ -16,7 +20,13 @@ export default function DataGridsItem({ dataGridId }: DataGridsItemProps) {
   }
 
   return (
-    <Card withBorder shadow='sm' radius='md' py={24} style={{ cursor: 'pointer' }}>
+    <Card
+      withBorder
+      shadow='sm'
+      radius='md'
+      py={24}
+      style={{ cursor: 'pointer' }}
+      onClick={() => navigate(generatePath(Routes.DataGrid, { id: dataGridId }))}>
       <Flex direction='row' w='100%' justify='space-between' align='stretch' gap={16}>
         <Avatar src={null} size={64} radius='sm' name={dataGrid.name} color='initials' />
         <Flex direction='column' justify='space-between' flex='1 0 auto'>
@@ -24,12 +34,12 @@ export default function DataGridsItem({ dataGridId }: DataGridsItemProps) {
             <Text fw={700}>{dataGrid.name}</Text>
             <Menu withinPortal position='bottom-end' shadow='sm'>
               <Menu.Target>
-                <ActionIcon variant='subtle' color='gray'>
+                <ActionIcon variant='subtle' color='gray' onClick={(e) => e.stopPropagation()}>
                   <IconDots style={{ width: rem(16), height: rem(16) }} />
                 </ActionIcon>
               </Menu.Target>
 
-              <Menu.Dropdown>
+              <Menu.Dropdown onClick={(e) => e.stopPropagation()}>
                 <Menu.Item leftSection={<IconPencil style={{ width: rem(14), height: rem(14) }} />}>
                   Rename data grid
                 </Menu.Item>

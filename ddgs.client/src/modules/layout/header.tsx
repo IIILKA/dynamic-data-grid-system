@@ -7,10 +7,14 @@ import HeaderLoader from '../loading/header-loader.tsx';
 import Logo from '../../../public/ddgs-logo.svg?react';
 import UserWidgetMenu, { UserWidgetMenuRef } from './user-widget-menu.tsx';
 import { getUserInfoAsync, UserInfo } from '../auth/auth-service.ts';
+import { Routes } from '../navigation/routes.ts';
+import { Link, useNavigate } from 'react-router-dom';
 
 export function Header(): ReactElement {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const isDarkTheme = colorScheme === 'dark';
+
+  const navigate = useNavigate();
 
   const [userInfo, setUserInfo] = useState<UserInfo>();
 
@@ -35,7 +39,8 @@ export function Header(): ReactElement {
           fw='700'
           style={() => {
             isDarkTheme ? { color: 'var(--mantine-color-dark-6)' } : null;
-          }}>
+          }}
+          onClick={() => navigate(Routes.DataGrids)}>
           DDGS
         </Text>
       </Flex>

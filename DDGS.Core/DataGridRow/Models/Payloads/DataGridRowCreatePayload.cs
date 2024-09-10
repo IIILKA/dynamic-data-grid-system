@@ -1,4 +1,4 @@
 ﻿namespace DDGS.Core.DataGridRow.Models.Payloads
 {
-    public record DataGridRowCreatePayload(string JsonRow);
+    public record DataGridRowCreatePayload(Dictionary<string, object> RowData);
 }

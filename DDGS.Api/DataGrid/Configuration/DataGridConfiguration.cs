@@ -2,7 +2,6 @@
 using DDGS.Core.DataGrid;
 using DDGS.Core.DataGrid.Interfaces.Repositories;
 using DDGS.Core.DataGrid.Interfaces.Services;
-using DDGS.Core.DataGrid.Maps;
 using DDGS.Core.DataGridRow;
 using DDGS.Core.DataGridRow.Interfaces.Repositories;
 using DDGS.Core.DataGridRow.Interfaces.Services;
@@ -18,7 +17,6 @@ namespace DDGS.Api.DataGrid.Configuration
         public static IServiceCollection AddDataGrid(this IServiceCollection services, TypeAdapterConfig typeAdapterConfig)
         {
             new DataGridDtoMappingConfig().Register(typeAdapterConfig);
-            new DataGridRowMappingConfig().Register(typeAdapterConfig);
             new DataGridRowPersistenceMappingConfig().Register(typeAdapterConfig);
 
             services.AddScoped<IDataGridRepository, DataGridRepository>();

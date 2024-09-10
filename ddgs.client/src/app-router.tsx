@@ -9,6 +9,7 @@ import ErrorPage from './modules/error-handling/components/error-page.tsx';
 import OauthCallbackPage from './modules/auth/pages/oauth-callback-page.tsx';
 import OauthExternalProviderCallbackPage from './modules/auth/pages/oauth-external-provider-callback-page.tsx';
 import DataGridsPage from './modules/data-grids/data-grids-page.tsx';
+import DataGridPage from './modules/data-grid/data-grid-page.tsx';
 
 const baseLayoutRoutes: RouteObject[] = [
   {
@@ -69,6 +70,10 @@ const layoutWithContextElementsRoutes: RouteObject[] = [
   {
     path: Routes.DataGrids,
     element: <DataGridsPage />
+  },
+  {
+    path: Routes.DataGrid,
+    element: <DataGridPage />
   }
 ];
 

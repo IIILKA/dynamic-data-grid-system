@@ -2,6 +2,6 @@
 {
     public class DataGridRowEntity
     {
-        public required IDictionary<string, object> Elements { get; set; }
+        public required IDictionary<string, object> RowData { get; set; }
     }
 }

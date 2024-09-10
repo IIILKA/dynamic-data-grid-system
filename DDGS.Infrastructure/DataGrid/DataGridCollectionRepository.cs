@@ -39,7 +39,7 @@ namespace DDGS.Infrastructure.DataGrid
             await UpdateManyAsync(
                 collection,
                 new BsonDocument(),
-                new BsonDocument("$set", new BsonDocument(dataGridColumn.Name.ToLower(), bsonValue)));
+                new BsonDocument("$set", new BsonDocument(dataGridColumn.Name, bsonValue)));
 
             return Result.Ok();
         }
@@ -51,7 +51,7 @@ namespace DDGS.Infrastructure.DataGrid
             await UpdateManyAsync(
                 collection,
                 new BsonDocument(),
-                new BsonDocument("$unset", new BsonDocument(dataGridColumn.Name.ToLower(), 1)));
+                new BsonDocument("$unset", new BsonDocument(dataGridColumn.Name, 1)));
 
             return Result.Ok();
         }
