@@ -62,25 +62,25 @@ export default forwardRef(function DaraGridBodyMenu(
         <Menu.Item
           leftSection={<IconArrowUp style={{ width: rem(14), height: rem(14) }} />}
           disabled={disableAddNewItemButtons}>
-          Insert test above
+          Insert row above
         </Menu.Item>
         <Menu.Item
           leftSection={<IconArrowDown style={{ width: rem(14), height: rem(14) }} />}
           disabled={disableAddNewItemButtons}>
-          Insert test above
+          Insert row above
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item
           leftSection={<IconCopy style={{ width: rem(14), height: rem(14) }} />}
           disabled={disableAddNewItemButtons}>
-          Duplicate test
+          Duplicate row
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item
           color='red'
           leftSection={<IconTrash style={{ width: rem(14), height: rem(14) }} />}
           onClick={onDeleteTestClicked}>
-          Delete test
+          Delete row
         </Menu.Item>
       </Menu.Dropdown>
     </Menu>

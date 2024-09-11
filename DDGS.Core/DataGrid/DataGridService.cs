@@ -89,8 +89,10 @@ namespace DDGS.Core.DataGrid
                 return Result.Fail(new DataGridNotExistError());
             }
 
+            //TODO: Use fabric
             var dataGridColumn = Mapper.Map<DataGridColumnEntity>(payload);
             dataGridColumn.DataGrid = dataGrid;
+            dataGridColumn.Index = dataGrid.Columns.Count;
 
             return await ExecuteInTransactionAsync(async () =>
             {

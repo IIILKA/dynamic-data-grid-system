@@ -11,9 +11,8 @@ namespace DDGS.Api.DataGrid.Dto
         [MaxLength(DataGridColumnConstraints.NameMaxLength)]
         public required string Name { get; init; }
 
+        //TODO: do validation with custom converter https://stackoverflow.com/questions/54202864/enum-as-required-field-in-asp-net-core-webapi
+        [Required]
         public DataGridColumnType Type { get; init; }
-
-        [Range(DataGridColumnConstraints.IndexMinValue, DataGridColumnConstraints.IndexMaxValue)]
-        public int Index { get; init; }
     }
 }

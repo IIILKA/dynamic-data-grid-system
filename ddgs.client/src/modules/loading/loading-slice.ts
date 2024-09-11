@@ -3,10 +3,12 @@ import { RootState } from '../../app/store.ts';
 
 interface LoadingState {
   fetchingQueriesCount: number;
+  fetchingColumn: boolean;
 }
 
 const initialState: LoadingState = {
-  fetchingQueriesCount: 0
+  fetchingQueriesCount: 0,
+  fetchingColumn: false
 };
 
 export const loadingSlice = createSlice({
@@ -18,6 +20,14 @@ export const loadingSlice = createSlice({
     },
     queryFinished: (state) => {
       state.fetchingQueriesCount--;
+    },
+    columnQueryStarted: (state) => {
+      state.fetchingQueriesCount++;
+      state.fetchingAddColumn = true;
+    },
+    columnQueryFinished: (state) => {
+      state.fetchingQueriesCount--;
+      state.fetchingAddColumn = false;
     }
   }
 });
@@ -25,6 +35,11 @@ export const loadingSlice = createSlice({
 export const selectIsLoading = createSelector(
   (state: RootState) => state.loading.fetchingQueriesCount,
   (fetchingQueriesCount) => fetchingQueriesCount > 0
+);
+
+export const selectDataGridColumnIsLoading = createSelector(
+  (state: RootState) => state.loading.fetchingAddColumn,
+  (fetchingQueriesCount) => fetchingQueriesCount
 );
 
 export const { queryStarted, queryFinished } = loadingSlice.actions;

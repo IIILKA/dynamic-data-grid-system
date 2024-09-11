@@ -34,6 +34,21 @@ export interface DataGridCreatePayload {
   name: string;
 }
 
+export interface DataGridAddColumnArgs {
+  dataGridId: string;
+  payload: DataGridAddColumnPayload;
+}
+
+export interface DataGridAddColumnPayload {
+  name: string;
+  type: DataGridColumnType;
+}
+
+export interface DataGridRemoveColumnArgs {
+  dataGridId: string;
+  colName: string;
+}
+
 export interface DataGridRowDto {
   id: string;
   [key: string]: DataGridCellType;
@@ -131,6 +146,39 @@ export const resourceApiSlice = createApi({
       },
       invalidatesTags: ['DataGrids']
     }),
+    addColumnToDataGrid: builder.mutation<void, DataGridAddColumnArgs>({
+      query: ({ dataGridId, payload }) => ({
+        url: `/data-grid/${dataGridId}/add-col`,
+        method: 'PATCH',
+        body: payload
+      }),
+      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+        dispatch(loadingSlice.actions.columnQueryStarted());
+        try {
+          await queryFulfilled;
+          dispatch(loadingSlice.actions.columnQueryFinished());
+        } catch {
+          dispatch(loadingSlice.actions.columnQueryFinished());
+        }
+      },
+      invalidatesTags: ['DataGrids']
+    }),
+    removeColumnFromDataGrid: builder.mutation<void, DataGridRemoveColumnArgs>({
+      query: ({ dataGridId, colName }) => ({
+        url: `/data-grid/${dataGridId}/remove-col/${colName}`,
+        method: 'PATCH'
+      }),
+      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+        dispatch(loadingSlice.actions.columnQueryStarted());
+        try {
+          await queryFulfilled;
+          dispatch(loadingSlice.actions.columnQueryFinished());
+        } catch {
+          dispatch(loadingSlice.actions.columnQueryFinished());
+        }
+      },
+      invalidatesTags: ['DataGrids']
+    }),
     getDataGridRows: builder.query<NormalizedDataGridRowsCache, string>({
       query: (dataGridId: string) => `/data-grid/${dataGridId}/row`,
       transformResponse(baseQueryReturnValue: DataGridRowDto[]) {
@@ -218,6 +266,8 @@ export const {
   useGetDataGridQuery,
   useCreateDataGridMutation,
   useDeleteDataGridMutation,
+  useAddColumnToDataGridMutation,
+  useRemoveColumnFromDataGridMutation,
   useGetDataGridRowsQuery,
   useCreateDataGridRowMutation,
   useUpdateDataGridRowMutation,

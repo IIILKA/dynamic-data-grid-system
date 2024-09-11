@@ -5,6 +5,7 @@ import { selectSelectedCell } from '../data-grid-slice.ts';
 import { useAppSelector } from '../../../app/hooks.ts';
 import { DataGridDto, DataGridRowDto } from '../../api/resource-api-slice.ts';
 import DataGridBodyCell from './data-grid-body-cell.tsx';
+import { ReactNode } from 'react';
 
 interface DadaGridBodyRowProps {
   dataGrid: DataGridDto;
@@ -24,7 +25,7 @@ export default function DadaGridBodyRow({ dataGrid, rowData }: DadaGridBodyRowPr
       .sort((a, b) => {
         const colA = dataGrid.columns.find((col) => col.name === a);
         const colB = dataGrid.columns.find((col) => col.name === b);
-        return (colA?.index ?? 0) - (colB?.index ?? 0); // Сортировка по index
+        return (colA?.index ?? 0) - (colB?.index ?? 0);
       })
       .map((colName) => (
         <DataGridBodyCell
