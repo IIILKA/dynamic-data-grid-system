@@ -7,11 +7,13 @@ import DataGridRowDto from '../dto/data-grid-row-dto.ts';
 function createDataGridRowModelMetadata() {
   PojosMetadataMap.create<DataGridRowModel>('DataGridRowModel', {
     id: String,
+    index: Number,
     rowData: Object
   });
 
   PojosMetadataMap.create<DataGridRowDto>('DataGridRowDto', {
     id: String,
+    index: Number,
     rowData: Object
   });
 }

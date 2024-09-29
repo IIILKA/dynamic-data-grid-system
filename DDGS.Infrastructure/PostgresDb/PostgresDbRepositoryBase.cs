@@ -59,6 +59,13 @@ namespace DDGS.Infrastructure.PostgresDb
             return Result.Ok();
         }
 
+        public virtual async Task<Result> UpdateManyAsync(List<TEntity> entities)
+        {
+            EntitySet.UpdateRange(entities);
+            await DbContext.SaveChangesAsync();
+            return Result.Ok();
+        }
+
         public virtual async Task<Result> DeleteAsync(TEntity entity)
         {
             EntitySet.Remove(entity);

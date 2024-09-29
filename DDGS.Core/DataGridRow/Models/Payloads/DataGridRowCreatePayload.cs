@@ -1,4 +1,4 @@
 ﻿namespace DDGS.Core.DataGridRow.Models.Payloads
 {
-    public record DataGridRowCreatePayload(Dictionary<string, object> RowData);
+    public record DataGridRowCreatePayload(int Index, Dictionary<string, object> RowData);
 }

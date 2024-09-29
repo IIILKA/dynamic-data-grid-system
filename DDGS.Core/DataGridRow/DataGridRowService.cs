@@ -46,10 +46,16 @@ namespace DDGS.Core.DataGridRow
             {
                 var dataGridRow = _mapper.Map<DataGridRowEntity>(payload);
 
-                var validationResult = ValidateCreateRow(dataGrid, dataGridRow);
+                var validationResult = ValidateRow(dataGrid, dataGridRow);
                 if (validationResult.IsFailed)
                 {
                     return validationResult;
+                }
+
+                var incrementIndexesResult = await _dataGridRowRepository.IncrementIndexesAfterRowAsync(dataGrid, payload.Index);
+                if (incrementIndexesResult.IsFailed)
+                {
+                    return incrementIndexesResult;
                 }
 
                 return await _dataGridRowRepository.CreateAsync(dataGrid, dataGridRow);
@@ -67,15 +73,18 @@ namespace DDGS.Core.DataGridRow
                     return Result.Fail(new DataGridRowNotExistError());
                 }
 
-                var dataGridRow = _mapper.Map<DataGridRowEntity>(payload);
+                // TODO: хз, или юзать фабрику, или перенести rowId в payload. есть смысл рассмотреть внедрения PersisteceEntity
+                // так как rowId не нужен (так как предаётся в качестве аргумента) и index тоже не нужен (так не подразумевается возможность измеения индекста строки)
+                var partialDataGridRow = _mapper.Map<DataGridRowEntity>(payload);
+                partialDataGridRow.Id = rowId;
 
-                var validationResult = ValidateUpdateRow(dataGrid, dataGridRow);
+                var validationResult = ValidatePartialRow(dataGrid, partialDataGridRow);
                 if (validationResult.IsFailed)
                 {
                     return validationResult;
                 }
 
-                return await _dataGridRowRepository.UpdateAsync(dataGrid, rowId, dataGridRow);
+                return await _dataGridRowRepository.UpdateAsync(dataGrid, rowId, partialDataGridRow);
             });
         }
 
@@ -84,20 +93,24 @@ namespace DDGS.Core.DataGridRow
             return await ExecuteWithDataGridAsync(dataGridId, async dataGrid =>
             {
                 var row = await _dataGridRowRepository.GetAsync(dataGrid, rowId);
-
                 if (row == null)
                 {
                     return Result.Fail(new DataGridRowNotExistError());
                 }
 
-                return await _dataGridRowRepository.DeleteAsync(dataGrid, rowId);
+                var deleteResult = await _dataGridRowRepository.DeleteAsync(dataGrid, rowId);
+                if (deleteResult.IsFailed)
+                {
+                    return deleteResult;
+                }
+                
+                return await _dataGridRowRepository.DecrementIndexesAfterRowAsync(dataGrid, row.Index);
             });
         }
 
         private async Task<Result> ExecuteWithDataGridAsync(Guid dataGridId, Func<DataGridEntity, Task<Result>> action)
         {
             var dataGrid = await _dataGridRepository.GetAsync(dataGridId);
-
             if (dataGrid == null)
             {
                 return Result.Fail(new DataGridNotExistError());
@@ -109,7 +122,6 @@ namespace DDGS.Core.DataGridRow
         private async Task<Result<T>> ExecuteWithDataGridAsync<T>(Guid dataGridId, Func<DataGridEntity, Task<Result<T>>> action)
         {
             var dataGrid = await _dataGridRepository.GetAsync(dataGridId);
-
             if (dataGrid == null)
             {
                 return Result.Fail<T>(new DataGridNotExistError());
@@ -118,7 +130,7 @@ namespace DDGS.Core.DataGridRow
             return await action(dataGrid);
         }
 
-        private Result ValidateCreateRow(DataGridEntity dataGrid, DataGridRowEntity row)
+        private Result ValidateRow(DataGridEntity dataGrid, DataGridRowEntity row)
         {
             if (row.RowData.Count > dataGrid.Columns.Count)
             {
@@ -151,7 +163,7 @@ namespace DDGS.Core.DataGridRow
             return Result.Ok();
         }
 
-        private Result ValidateUpdateRow(DataGridEntity dataGrid, DataGridRowEntity row)
+        private Result ValidatePartialRow(DataGridEntity dataGrid, DataGridRowEntity row)
         {
             foreach (var rowDataItem in row.RowData)
             {

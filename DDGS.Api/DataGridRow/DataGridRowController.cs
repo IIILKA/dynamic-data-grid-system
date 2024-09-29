@@ -34,7 +34,8 @@ namespace DDGS.Api.DataGridRow
                 return BadRequest(ErrorMapper.MapErrorsToErrorResponseDto(result));
             }
 
-            var rows = result.Value.Select(_ => new DataGridRowResponseDto(_.Id, _.RowData)).ToList();
+            //TODO: Mapper
+            var rows = result.Value.Select(_ => new DataGridRowResponseDto(_.Id, _.Index, _.RowData)).ToList();
 
             return Ok(rows);
         }
@@ -52,8 +53,11 @@ namespace DDGS.Api.DataGridRow
             {
                 return BadRequest(new ErrorResponseDto(ErrorMessages.DataGridRow.NotExist));
             }
-
-            return Ok(result.Value != null ? new DataGridRowResponseDto(result.Value.Id, result.Value.RowData) : null);
+            
+            //TODO: Mapper
+            return Ok(result.Value != null
+                ? new DataGridRowResponseDto(result.Value.Id, result.Value.Index, result.Value.RowData)
+                : null);
         }
 
         [HttpPost]

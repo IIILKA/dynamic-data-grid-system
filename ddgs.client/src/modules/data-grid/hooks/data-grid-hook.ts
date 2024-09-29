@@ -12,9 +12,10 @@ import DataGridRowData from '../models/data-grid-row-data.ts';
 
 type DataGridHookProps = {
   dataGrid: DataGridModel;
+  rowsCount: number;
 };
 
-export function useDataGrid({ dataGrid }: DataGridHookProps) {
+export function useDataGrid({ dataGrid, rowsCount }: DataGridHookProps) {
   const [createDataGridRow] = useCreateDataGridRowMutation();
   const popoverRef = useRef<PopoverRef | null>(null);
   const isAddColumnLoading = useAppSelector(selectDataGridColumnIsLoading);
@@ -24,6 +25,7 @@ export function useDataGrid({ dataGrid }: DataGridHookProps) {
     await createDataGridRow({
       dataGridId: dataGrid.id,
       body: {
+        index: rowsCount,
         rowData: defaultRow
       }
     } satisfies DataGridRowCreateArgs);

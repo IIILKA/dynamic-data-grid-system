@@ -14,7 +14,8 @@ type DataGridProps = {
 export default function DataGrid({ dataGrid, normalizedDataGridRows }: DataGridProps) {
   const { handleAddNewRowButtonClick, isAddColumnLoading, popoverRef, handleAddColumnButtonClick } =
     useDataGrid({
-      dataGrid
+      dataGrid,
+      rowsCount: normalizedDataGridRows.ids.length
     });
 
   return (

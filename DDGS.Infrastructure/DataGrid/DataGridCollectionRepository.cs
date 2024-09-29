@@ -1,5 +1,6 @@
 ﻿using DDGS.Core.DataGrid.Interfaces.Repositories;
 using DDGS.Core.DataGrid.Models;
+using DDGS.Core.DataGridRow.Models;
 using DDGS.Infrastructure.MongoDb;
 using DDGS.Infrastructure.MongoDb.Interfaces;
 using FluentResults;
@@ -22,6 +23,27 @@ namespace DDGS.Infrastructure.DataGrid
         public async Task<Result> CreateAsync(DataGridEntity dataGrid)
         {
             await CreateCollectionAsync(dataGrid.Id.ToString());
+
+            var collection = Database.GetCollection<BsonDocument>(dataGrid.Id.ToString());
+            var options = new CreateIndexOptions { Unique = true };
+
+            var session = DbSessionProvider.GetCurrentSession();
+#pragma warning disable CS0618 // Type or member is obsolete
+            if (session != null)
+            {
+                await collection.Indexes.CreateOneAsync(
+                    session,
+                    $"{{ {nameof(DataGridRowEntity.Index)} : 1 }}",
+                    options);
+            }
+            else
+            {
+                await collection.Indexes.CreateOneAsync(
+                    $"{{ {nameof(DataGridRowEntity.Index)} : 1 }}",
+                    options);
+            }
+#pragma warning restore CS0618 // Type or member is obsolete
+           
             return Result.Ok();
         }
 

@@ -11,10 +11,5 @@ namespace DDGS.Infrastructure.DataGrid
 
         protected override IQueryable<DataGridColumnEntity> SingleEntityQuery => EntitySet
             .Include(_ => _.DataGrid);
-
-        public async Task<DataGridColumnEntity?> GetByDataGridAndNameAsync(DataGridEntity dataGrid, string name)
-        {
-            return await GetAsync(_ => _.DataGrid.Id == dataGrid.Id && _.Name == name);
-        }
     }
 }

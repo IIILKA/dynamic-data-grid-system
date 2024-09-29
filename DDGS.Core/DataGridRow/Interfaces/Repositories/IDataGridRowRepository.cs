@@ -13,9 +13,12 @@ namespace DDGS.Core.DataGridRow.Interfaces.Repositories
         Task<Result> CreateAsync(DataGridEntity dataGrid, DataGridRowEntity dataGridRow);
 
         //TODO: maybe remove rowId
-        Task<Result> UpdateAsync(DataGridEntity dataGrid, string rowId, DataGridRowEntity dataGridRow);
+        Task<Result> UpdateAsync(DataGridEntity dataGrid, string rowId, DataGridRowEntity partialDataGridRow);
 
-        //TODO: maybe remove rowId
+        Task<Result> IncrementIndexesAfterRowAsync(DataGridEntity dataGrid, int index);
+
+        Task<Result> DecrementIndexesAfterRowAsync(DataGridEntity dataGrid, int index);
+
         Task<Result> DeleteAsync(DataGridEntity dataGrid, string rowId);
     }
 }

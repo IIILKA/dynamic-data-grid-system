@@ -115,16 +115,31 @@ namespace DDGS.Core.DataGrid
                 return Result.Fail(new DataGridNotExistError());
             }
 
-            var dataGridColumn = await _dataGridColumnRepository.GetByDataGridAndNameAsync(dataGrid, columnName);
+            var dataGridColumn =
+                await _dataGridColumnRepository.GetAsync(_ => _.DataGrid.Id == dataGrid.Id && _.Name == columnName);
 
             if (dataGridColumn == null)
             {
                 return Result.Fail(new DataGridColumnNotExistError());
             }
 
+            var dataGridColumnsWithGreaterIndex =
+                await _dataGridColumnRepository.GetManyAsync(_ => _.Index > dataGridColumn.Index);
+
+            foreach (var dataGridColumnWithGreaterIndex in dataGridColumnsWithGreaterIndex)
+            {
+                dataGridColumnWithGreaterIndex.Index--;
+            }
+
             return await ExecuteInTransactionAsync(async () =>
             {
                 var result = await _dataGridColumnRepository.DeleteAsync(dataGridColumn);
+                if (result.IsFailed)
+                {
+                    return result;
+                }
+
+                result = await _dataGridColumnRepository.UpdateManyAsync(dataGridColumnsWithGreaterIndex);
                 if (result.IsFailed)
                 {
                     return result;
