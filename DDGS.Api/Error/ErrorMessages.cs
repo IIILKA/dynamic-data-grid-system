@@ -18,6 +18,8 @@
 
             public const string InvalidStructure = "Data grid row does not match the expected structure";
 
+            public const string InvalidElement = "Invalid row element name '{0}'";
+
             public const string InvalidValue = "Invalid value for column '{0}'";
         }
 

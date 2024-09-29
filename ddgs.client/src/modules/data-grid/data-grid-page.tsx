@@ -1,21 +1,16 @@
-import { useParams } from 'react-router-dom';
-import { useGetDataGridQuery, useGetDataGridRowsQuery } from '../api/resource-api-slice.ts';
 import { Center, Loader } from '@mantine/core';
 import DataGrid from './components/data-grid.tsx';
+import useDataGridPage from './hooks/data-grid-page-hook.ts';
 
 export default function DataGridPage() {
-  const { id } = useParams();
-
   const {
-    data: dataGrid,
-    isLoading: isDatGridLoading,
-    isSuccess: isDataGridSuccess
-  } = useGetDataGridQuery(id)!;
-  const {
-    data: normalizedDataGridRows,
-    isLoading: isDataGridRowsLoading,
-    isSuccess: isDataGridRowsSuccess
-  } = useGetDataGridRowsQuery(id)!;
+    dataGrid,
+    isDatGridLoading,
+    isDataGridSuccess,
+    normalizedDataGridRows,
+    isDataGridRowsLoading,
+    isDataGridRowsSuccess
+  } = useDataGridPage();
 
   return (
     <>
@@ -25,11 +20,7 @@ export default function DataGridPage() {
         </Center>
       )}
       {isDataGridSuccess && isDataGridRowsSuccess && (
-        <DataGrid
-          dataGrid={dataGrid!}
-          sortedIds={normalizedDataGridRows.ids}
-          dataGridRows={normalizedDataGridRows.entities}
-        />
+        <DataGrid dataGrid={dataGrid} normalizedDataGridRows={normalizedDataGridRows} />
       )}
     </>
   );

@@ -1,4 +1,6 @@
-﻿namespace DDGS.Core.DataGrid.Errors
+﻿using FluentResults;
+
+namespace DDGS.Core.DataGrid.Errors
 {
-    public class DataGridNotExistError : FluentResults.Error { }
+    public class DataGridNotExistError : Error { }
 }

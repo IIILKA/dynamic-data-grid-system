@@ -46,7 +46,7 @@ namespace DDGS.Core.DataGridRow
             {
                 var dataGridRow = _mapper.Map<DataGridRowEntity>(payload);
 
-                var validationResult = ValidateRow(dataGrid, dataGridRow);
+                var validationResult = ValidateCreateRow(dataGrid, dataGridRow);
                 if (validationResult.IsFailed)
                 {
                     return validationResult;
@@ -69,7 +69,7 @@ namespace DDGS.Core.DataGridRow
 
                 var dataGridRow = _mapper.Map<DataGridRowEntity>(payload);
 
-                var validationResult = ValidateRow(dataGrid, dataGridRow);
+                var validationResult = ValidateUpdateRow(dataGrid, dataGridRow);
                 if (validationResult.IsFailed)
                 {
                     return validationResult;
@@ -118,7 +118,7 @@ namespace DDGS.Core.DataGridRow
             return await action(dataGrid);
         }
 
-        private Result ValidateRow(DataGridEntity dataGrid, DataGridRowEntity row)
+        private Result ValidateCreateRow(DataGridEntity dataGrid, DataGridRowEntity row)
         {
             if (row.RowData.Count > dataGrid.Columns.Count)
             {
@@ -141,6 +141,35 @@ namespace DDGS.Core.DataGridRow
                     DataGridColumnType.Boolean when jsonElement.ValueKind is JsonValueKind.True or JsonValueKind.False => true,
                     _ => false
                 };
+
+                if (!isValid)
+                {
+                    return Result.Fail(new DataGridRowInvalidValueError(column.Name));
+                }
+            }
+
+            return Result.Ok();
+        }
+
+        private Result ValidateUpdateRow(DataGridEntity dataGrid, DataGridRowEntity row)
+        {
+            foreach (var rowDataItem in row.RowData)
+            {
+                var column = dataGrid.Columns.FirstOrDefault(c => c.Name == rowDataItem.Key);
+                if (column == null)
+                {
+                    return Result.Fail(new DataGridRowInvalidElementError(rowDataItem.Key));
+                }
+
+                var jsonElement = (JsonElement)rowDataItem.Value;
+                var isValid = column.Type switch
+                {
+                    DataGridColumnType.Text when jsonElement.ValueKind is JsonValueKind.String => true,
+                    DataGridColumnType.Number when jsonElement.ValueKind is JsonValueKind.Number => true,
+                    DataGridColumnType.Boolean when jsonElement.ValueKind is JsonValueKind.True or JsonValueKind.False => true,
+                    _ => false
+                };
+
 
                 if (!isValid)
                 {

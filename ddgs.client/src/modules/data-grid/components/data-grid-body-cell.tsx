@@ -1,104 +1,48 @@
-import { NumberInput, Table, TextInput, Checkbox, Center } from '@mantine/core';
+import { Table } from '@mantine/core';
 import { styled } from 'styled-components';
-import { selectCell } from '../data-grid-slice.ts';
-import {
-  DataGridDto,
-  dataGridRowAdapter,
-  DataGridRowDto,
-  resourceApiSlice,
-  useUpdateDataGridRowMutation
-} from '../../api/resource-api-slice.ts';
-import { DataGridCellType } from '../../seed-data/data-grid-cell-type.ts';
-import { useEffect, useMemo, useState } from 'react';
-import { useDebounce } from '../../hooks/debounce.ts';
-import { useAppDispatch } from '../../../app/hooks.ts';
+import { useDataGridBodyCell } from '../hooks/data-grid-body-cell-hook.ts';
+import DataGridCellValueType from '../models/data-grid-cell-value-type.ts';
+import DataGridModel from '../models/data-grid-model.ts';
+import DataGridRowIdType from '../models/data-grid-row-id-type.ts';
+import DataGridBodyBooleanCell from './data-grid-body-boolean-cell.tsx';
+import DataGridBodyNumberCell from './data-grid-body-number-cell.tsx';
+import DataGridBodyTextCell from './data-grid-body-text-cell.tsx';
 
-interface DataGridBodyCellProps {
-  dataGrid: DataGridDto;
-  row: DataGridRowDto;
+type DataGridBodyCellProps = {
+  dataGrid: DataGridModel;
+  rowId: DataGridRowIdType;
+  cellValue: DataGridCellValueType;
   colName: string;
-  isActive: boolean;
-}
+};
 
 export default function DataGridBodyCell({
   dataGrid,
-  row,
-  colName,
-  isActive
+  rowId,
+  cellValue,
+  colName
 }: DataGridBodyCellProps) {
-  const dispatch = useAppDispatch();
-  const [updateDataGridRow] = useUpdateDataGridRowMutation();
-  const dataGridRow = useMemo(() => ({ ...row }), [row]);
-  const debounce = useDebounce(dataGridRow[colName]);
-  const [changeValueServerHandled, setChangeValueServerHandled] = useState(true);
+  const { value, isActive, handleChangeValue, handleSelectCell } = useDataGridBodyCell({
+    dataGrid,
+    rowId,
+    cellValue,
+    colName
+  });
 
-  useEffect(() => {
-    if (!changeValueServerHandled) {
-      const { id, ...payload } = dataGridRow;
-      updateDataGridRow({ id, dataGridId: dataGrid.id, payload }).then(() =>
-        setChangeValueServerHandled(true)
-      );
-    }
-  }, [debounce]); // eslint-disable-line
-
-  async function handleChangeValue(newValue: DataGridCellType) {
-    setChangeValueServerHandled(false);
-    const { id, ...payload } = dataGridRow;
-    payload[colName] = newValue;
-    dispatch(
-      resourceApiSlice.util?.updateQueryData('getDataGridRows', dataGrid.id, (draft) => {
-        dataGridRowAdapter.updateOne(draft, { id, changes: payload });
-      })
-    );
-  }
-
-  function getCellControl(value: DataGridCellType) {
-    switch (typeof value) {
-      case 'string':
-        return (
-          <DataGridCellContainer className={isActive ? 'active' : ''}>
-            <TextInput
-              variant='unstyled'
-              value={value}
-              onChange={(e) => handleChangeValue(e.currentTarget.value)}
-            />
-          </DataGridCellContainer>
-        );
-      case 'number':
-        return (
-          <DataGridCellContainer className={isActive ? 'active' : ''}>
-            <NumberInput
-              variant='unstyled'
-              value={value}
-              defaultValue={0}
-              onChange={(value) => handleChangeValue(typeof value === 'number' ? value : 0)}
-            />
-          </DataGridCellContainer>
-        );
-      case 'boolean':
-        return (
-          <DataGridCellContainer className={isActive ? 'active' : ''}>
-            <Center style={{ padding: '0.5rem' }}>
-              <Checkbox
-                color='teal'
-                checked={value}
-                onChange={(e) => handleChangeValue(e.currentTarget.checked)}
-              />
-            </Center>
-          </DataGridCellContainer>
-        );
-    }
-  }
-
+  const CellComponent = CellComponents[typeof value];
   return (
-    <Table.Td
-      style={{ padding: 0 }}
-      onClick={() => dispatch(selectCell({ rowId: row.id, colName: colName }))}
-      onContextMenu={() => dispatch(selectCell({ rowId: row.id, colName: colName }))}>
-      {getCellControl(dataGridRow[colName])}
+    <Table.Td p={0} onClick={handleSelectCell} onContextMenu={handleSelectCell}>
+      <DataGridCellContainer className={isActive ? 'active' : ''}>
+        {CellComponent && <CellComponent value={value} onChange={handleChangeValue} />}
+      </DataGridCellContainer>
     </Table.Td>
   );
 }
+
+const CellComponents = {
+  string: DataGridBodyTextCell,
+  number: DataGridBodyNumberCell,
+  boolean: DataGridBodyBooleanCell
+};
 
 const DataGridCellContainer = styled.div`
   cursor: default;

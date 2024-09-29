@@ -1,10 +1,10 @@
 import { createSelector, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store.ts';
 
-interface LoadingState {
+type LoadingState = {
   fetchingQueriesCount: number;
   fetchingColumn: boolean;
-}
+};
 
 const initialState: LoadingState = {
   fetchingQueriesCount: 0,
@@ -39,7 +39,7 @@ export const selectIsLoading = createSelector(
 
 export const selectDataGridColumnIsLoading = createSelector(
   (state: RootState) => state.loading.fetchingAddColumn,
-  (fetchingQueriesCount) => fetchingQueriesCount
+  (fetchingAddColumn) => fetchingAddColumn
 );
 
 export const { queryStarted, queryFinished } = loadingSlice.actions;

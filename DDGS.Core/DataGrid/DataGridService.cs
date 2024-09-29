@@ -6,7 +6,7 @@ using DDGS.Core.DataGrid.Interfaces.Services;
 using DDGS.Core.DataGrid.Models;
 using DDGS.Core.DataGrid.Models.Constraints;
 using DDGS.Core.DataGrid.Models.Payloads;
-using DDGS.Core.Identity.Error;
+using DDGS.Core.Identity.Errors;
 using DDGS.Core.Identity.Interfaces;
 using DDGS.Core.Identity.Models;
 using FluentResults;

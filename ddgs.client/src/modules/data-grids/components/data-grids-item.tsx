@@ -1,23 +1,16 @@
-import { selectDataGridById, useDeleteDataGridMutation } from '../../api/resource-api-slice.ts';
 import { ActionIcon, Avatar, Card, Flex, Group, Menu, rem, Text } from '@mantine/core';
-import { IconCopy, IconDots, IconShare2, IconPencil, IconTrash } from '@tabler/icons-react';
-import { useAppSelector } from '../../../app/hooks.ts';
-import { generatePath, useNavigate } from 'react-router-dom';
-import { Routes } from '../../navigation/routes.ts';
+import { IconCopy, IconDots, IconPencil, IconShare2, IconTrash } from '@tabler/icons-react';
+import useDataGridsItem from '../hooks/data-grids-item-hook.ts';
+import DataGridLightModel from '../models/data-grid-light-model.ts';
 
-export interface DataGridsItemProps {
-  dataGridId: string;
-}
+export type DataGridsItemProps = {
+  lightDataGrid: DataGridLightModel;
+};
 
-export default function DataGridsItem({ dataGridId }: DataGridsItemProps) {
-  const navigate = useNavigate();
-
-  const dataGrid = useAppSelector(selectDataGridById(dataGridId))!;
-  const [deleteDataGrid] = useDeleteDataGridMutation();
-
-  if (!dataGrid) {
-    return null;
-  }
+export default function DataGridsItem({ lightDataGrid }: DataGridsItemProps) {
+  const { handleCardClick, handleDeleteClickAsync } = useDataGridsItem({
+    lightDataGrid
+  });
 
   return (
     <Card
@@ -26,12 +19,13 @@ export default function DataGridsItem({ dataGridId }: DataGridsItemProps) {
       radius='md'
       py={24}
       style={{ cursor: 'pointer' }}
-      onClick={() => navigate(generatePath(Routes.DataGrid, { id: dataGridId }))}>
+      onClick={handleCardClick}>
       <Flex direction='row' w='100%' justify='space-between' align='stretch' gap={16}>
-        <Avatar src={null} size={64} radius='sm' name={dataGrid.name} color='initials' />
+        <Avatar src={null} size={64} radius='sm' name={lightDataGrid.name} color='initials' />
         <Flex direction='column' justify='space-between' flex='1 0 auto'>
           <Group justify='space-between'>
-            <Text fw={700}>{dataGrid.name}</Text>
+            <Text fw={700}>{lightDataGrid.name}</Text>
+            {/*TODO: вынести в отдельную компоненту*/}
             <Menu withinPortal position='bottom-end' shadow='sm'>
               <Menu.Target>
                 <ActionIcon variant='subtle' color='gray' onClick={(e) => e.stopPropagation()}>
@@ -53,14 +47,14 @@ export default function DataGridsItem({ dataGridId }: DataGridsItemProps) {
                 <Menu.Item
                   color='red'
                   leftSection={<IconTrash style={{ width: rem(14), height: rem(14) }} />}
-                  onClick={() => deleteDataGrid(dataGrid.id)}>
+                  onClick={handleDeleteClickAsync}>
                   Delete data grid
                 </Menu.Item>
               </Menu.Dropdown>
             </Menu>
           </Group>
           <Flex direction='row-reverse'>
-            <Text size='xs'>{dataGrid.ownerUsername}</Text>
+            <Text size='xs'>{lightDataGrid.ownerUsername}</Text>
           </Flex>
         </Flex>
       </Flex>

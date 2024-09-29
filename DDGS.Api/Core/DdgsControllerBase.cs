@@ -1,5 +1,5 @@
 ﻿using DDGS.Api.Error.Maps;
-using DDGS.Core.Identity.Error;
+using DDGS.Core.Identity.Errors;
 using FluentResults;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;

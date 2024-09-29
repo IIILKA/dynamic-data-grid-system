@@ -1,45 +1,11 @@
-import {
-  Button,
-  Card,
-  Divider,
-  Flex,
-  Input,
-  LoadingOverlay,
-  Text,
-  useMantineColorScheme
-} from '@mantine/core';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import Logo from '../../../../public/ddgs-logo.svg?react';
-import { Link } from 'react-router-dom';
-import { Routes } from '../../navigation/routes.ts';
-import { IconBrandGoogleFilled } from '@tabler/icons-react';
-import { logInWithExternalProvider } from '../auth-service.ts';
-import { AuthProvider } from '../auth-provider.ts';
-import { useLogInMutation } from '../../api/auth-api-slice.ts';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { loginFormSchema, LoginFormSchema } from '../forms/login-form-schema.ts';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { selectIsLoading } from '../../loading/loading-slice.ts';
-import { useAppSelector } from '../../../app/hooks.ts';
-import LoginRequestDto from '../../api/dto/login-request-dto.ts';
+import { Card, Divider, Flex, LoadingOverlay } from '@mantine/core';
+import AuthFormHeadSection from '../components/auth-form-head-section.tsx';
+import LoginWithGoogleButton from '../components/login-with-google-button.tsx';
+import LoginForm from '../forms/login-form.tsx';
+import useLoginPage from '../hooks/login-page-hook.ts';
 
 export default function LoginPage() {
-  const { colorScheme } = useMantineColorScheme();
-  const isDarkTheme = colorScheme === 'dark';
-
-  const [logInAsync] = useLogInMutation<LoginRequestDto>();
-  const isLoading = useAppSelector(selectIsLoading);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors }
-  } = useForm<LoginFormSchema>({ resolver: zodResolver(loginFormSchema) });
-
-  const onSubmit: SubmitHandler<LoginFormSchema> = async (data) => {
-    await logInAsync({ email: data.email, password: data.password });
-  };
+  const { isLoading, submitForm, formMethods } = useLoginPage();
 
   return (
     <Flex justify='center' align='center' h='100%'>
@@ -53,58 +19,14 @@ export default function LoginPage() {
         pos='relative'>
         <LoadingOverlay visible={isLoading} overlayProps={{ radius: 'md', blur: 1 }} />
         <Card.Section withBorder>
-          <Flex justify='center' align='center' gap='xs' style={{ cursor: 'pointer' }}>
-            <Logo style={{ height: '40px', width: '40px', color: 'teal' }} />
-            <Text
-              mt='10px'
-              mb='10px'
-              fz='28px'
-              fw={700}
-              style={() => {
-                isDarkTheme ? { color: 'var(--mantine-color-dark-6)' } : null;
-              }}>
-              DDGS
-            </Text>
-          </Flex>
+          <AuthFormHeadSection />
         </Card.Section>
         <Card.Section>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Flex direction='column' align='center' p='20px' pb='60px'>
-              <Flex direction='column' align='center' mb='20px'>
-                <h1 style={{ margin: 0 }}>Log in</h1>
-                <Text>
-                  or <Link to={Routes.Signup}>create account</Link>
-                </Text>
-              </Flex>
-              <Input.Wrapper
-                label='Email'
-                size='md'
-                w='100%'
-                mb='10px'
-                error={errors.email ? errors.email.message : null}>
-                <Input {...register('email')} placeholder='Your email adress' />
-              </Input.Wrapper>
-              <Input.Wrapper
-                label='Password'
-                size='md'
-                w='100%'
-                mb='20px'
-                error={errors.password ? errors.password.message : null}>
-                <Input {...register('password')} type='password' placeholder='Your password' />
-              </Input.Wrapper>
-              <Button fullWidth color='teal' type='submit'>
-                Continue
-              </Button>
-              <Divider my='sm' label='or' labelPosition='center' w='100%' />
-              <Button
-                leftSection={<IconBrandGoogleFilled size={18} />}
-                color='gray'
-                fullWidth
-                onClick={() => logInWithExternalProvider(AuthProvider.Google)}>
-                Log in with Google
-              </Button>
-            </Flex>
-          </form>
+          <Flex direction='column' align='center' p={20} pb={60}>
+            <LoginForm formMethods={formMethods} onSubmit={submitForm} />
+            <Divider my='sm' label='or' labelPosition='center' w='100%' />
+            <LoginWithGoogleButton />
+          </Flex>
         </Card.Section>
       </Card>
     </Flex>

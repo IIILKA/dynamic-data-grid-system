@@ -1,22 +1,22 @@
 import { createApi, EndpointBuilder } from '@reduxjs/toolkit/query/react';
 import { sendOAuthRequestAsync } from '../auth/auth-service.ts';
 import { loadingSlice } from '../loading/loading-slice.ts';
-import LoginRequestDto from './dto/login-request-dto.ts';
-import SignupRequestDto from './dto/signup-request-dto.ts';
 import { AppBaseQuery, getBaseQuery } from './api-utils.ts';
+import LoginArgs from './args/login-args.ts';
+import SignupArgs from './args/signup-args.ts';
 
 export const authApiSlice = createApi({
   reducerPath: 'authApi',
   baseQuery: getBaseQuery(import.meta.env.VITE_AUTH_AUTHORITY),
   endpoints: (builder: EndpointBuilder<AppBaseQuery, string, 'authApi'>) => ({
-    logIn: builder.mutation<void, LoginRequestDto>({
-      query: (loginRequestDto) => ({
+    logIn: builder.mutation<void, LoginArgs>({
+      query: (args: LoginArgs) => ({
         url: '/authenticate',
         method: 'POST',
-        body: loginRequestDto,
+        body: args.body,
         credentials: 'include'
       }),
-      async onQueryStarted(loginRequestDto, { dispatch, queryFulfilled }) {
+      async onQueryStarted(args: LoginArgs, { dispatch, queryFulfilled }) {
         dispatch(loadingSlice.actions.queryStarted());
         try {
           await queryFulfilled;
@@ -26,13 +26,13 @@ export const authApiSlice = createApi({
         }
       }
     }),
-    signUp: builder.mutation<void, SignupRequestDto>({
-      query: (signupRequestDto) => ({
+    signUp: builder.mutation<void, SignupArgs>({
+      query: (args: SignupArgs) => ({
         url: '/user/register',
         method: 'POST',
-        body: signupRequestDto
+        body: args.body
       }),
-      async onQueryStarted(signupRequestDto, { dispatch, queryFulfilled }) {
+      async onQueryStarted(args: SignupArgs, { dispatch, queryFulfilled }) {
         dispatch(loadingSlice.actions.queryStarted());
         try {
           await queryFulfilled;

@@ -1,52 +1,36 @@
 import { Table } from '@mantine/core';
-import { styled } from 'styled-components';
-import { nameOf } from '../../../utils/name-of-helper.ts';
-import { selectSelectedCell } from '../data-grid-slice.ts';
-import { useAppSelector } from '../../../app/hooks.ts';
-import { DataGridDto, DataGridRowDto } from '../../api/resource-api-slice.ts';
+import { useDataGridBodyRow } from '../hooks/data-grid-body-row-hook.ts';
+import DataGridModel from '../models/data-grid-model.ts';
+import DataGridRowModel from '../models/data-grid-row-model.ts';
 import DataGridBodyCell from './data-grid-body-cell.tsx';
-import { ReactNode } from 'react';
 
-interface DadaGridBodyRowProps {
-  dataGrid: DataGridDto;
-  rowData: DataGridRowDto;
-}
+type DadaGridBodyRowProps = {
+  dataGrid: DataGridModel;
+  dataGridRow: DataGridRowModel;
+  sortedColumnNames: string[];
+};
 
-export default function DadaGridBodyRow({ dataGrid, rowData }: DadaGridBodyRowProps) {
-  const selectedCell = useAppSelector(selectSelectedCell);
+export default function DadaGridBodyRow({
+  dataGrid,
+  dataGridRow,
+  sortedColumnNames
+}: DadaGridBodyRowProps) {
+  const { sortedCells, isActiveRow } = useDataGridBodyRow({
+    dataGridRow,
+    sortedColumnNames
+  });
 
-  function getBodyCells(row: DataGridRowDto): ReactNode[] {
-    const dtoPropertyNames = Object.getOwnPropertyNames(row);
-    return dtoPropertyNames
-      .filter(
-        (propName) =>
-          propName !== nameOf<DataGridRowDto>('id') && propName !== nameOf<DataGridRowDto>('index')
-      )
-      .sort((a, b) => {
-        const colA = dataGrid.columns.find((col) => col.name === a);
-        const colB = dataGrid.columns.find((col) => col.name === b);
-        return (colA?.index ?? 0) - (colB?.index ?? 0);
-      })
-      .map((colName) => (
+  return (
+    <Table.Tr bg={isActiveRow ? 'var(--mantine-color-default-hover)' : ''}>
+      {sortedCells.map(({ colName, cellValue }) => (
         <DataGridBodyCell
           key={colName}
           dataGrid={dataGrid}
-          row={row}
+          rowId={dataGridRow.id}
+          cellValue={cellValue}
           colName={colName}
-          isActive={rowData.id === selectedCell?.rowId && colName === selectedCell.colName}
         />
-      ));
-  }
-
-  return (
-    <TableStyledTr className={rowData.id === selectedCell?.rowId ? 'active' : ''}>
-      {getBodyCells(rowData)}
-    </TableStyledTr>
+      ))}
+    </Table.Tr>
   );
 }
-
-const TableStyledTr = styled(Table.Tr)`
-  &.active {
-    background-color: var(--mantine-color-default-hover);
-  }
-`;

@@ -1,15 +1,11 @@
-import { UserManager } from 'oidc-client-ts';
-import { ddgsConfig } from './auth-config.ts';
 import { jwtDecode } from 'jwt-decode';
+import { UserManager } from 'oidc-client-ts';
 import { Routes } from '../navigation/routes.ts';
+import { ddgsConfig } from './auth-config.ts';
 import { AuthProvider } from './auth-provider.ts';
+import UserInfoModel from './models/user-info-model.ts';
 
 const userManager = new UserManager(ddgsConfig.settings);
-
-export interface UserInfo {
-  name: string;
-  email: string;
-}
 
 export function logInWithExternalProvider(provider: AuthProvider) {
   window.location.href = `${import.meta.env.VITE_AUTH_AUTHORITY}/challenge/${provider}`;
@@ -20,10 +16,10 @@ export async function getUserAsync() {
 }
 
 //TODO: Use redux
-export async function getUserInfoAsync(): Promise<UserInfo | undefined> {
+export async function getUserInfoAsync(): Promise<UserInfoModel | undefined> {
   const accessToken = await getAccessTokenAsync();
   if (accessToken) {
-    return jwtDecode<UserInfo>(accessToken);
+    return jwtDecode<UserInfoModel>(accessToken);
   }
   return undefined;
 }

@@ -1,17 +1,8 @@
 import { Avatar, Flex, Stack, Text } from '@mantine/core';
-import { useEffect, useState } from 'react';
-import { getUserInfoAsync, UserInfo } from '../../auth/auth-service.ts';
+import useDataGridsOwners from '../hooks/data-grids-owners-hook.ts';
 
 export default function DataGridsOwners() {
-  const [userInfo, setUserInfo] = useState<UserInfo>();
-
-  useEffect(() => {
-    const loadUserInfo = async () => {
-      setUserInfo(await getUserInfoAsync());
-    };
-
-    loadUserInfo();
-  }, []);
+  const { userInfo } = useDataGridsOwners();
 
   return (
     <Stack gap='xs'>

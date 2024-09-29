@@ -1,54 +1,21 @@
 import { Menu, rem } from '@mantine/core';
 import { IconArrowDown, IconArrowUp, IconCopy, IconTrash } from '@tabler/icons-react';
-import { useClickOutside } from '@mantine/hooks';
-import {
-  ForwardedRef,
-  forwardRef,
-  ReactElement,
-  SetStateAction,
-  useImperativeHandle,
-  useState
-} from 'react';
-import { DataGridDto, useDeleteDataGridRowMutation } from '../../api/resource-api-slice.ts';
-import { useAppSelector } from '../../../app/hooks.ts';
-import { selectSelectedCell } from '../data-grid-slice.ts';
+import { ForwardedRef, forwardRef, ReactElement } from 'react';
+import { MenuRef } from '../../core/hooks/menu-hook.ts';
+import useDataGridBodyMenu from '../hooks/data-grid-body-menu-hook.ts';
+import DataGridModel from '../models/data-grid-model.ts';
 
-interface DaraGridBodyMenuProps {
+type DaraGridBodyMenuProps = {
   children: ReactElement;
   disableAddNewItemButtons: boolean;
-  dataGrid: DataGridDto;
-}
-
-interface MenuProps {
-  isOpened: boolean;
-  offsetX?: number;
-  offsetY?: number;
-}
-
-export interface DaraGridBodyMenuRef {
-  setMenu(value: SetStateAction<MenuProps>): void;
-}
+  dataGrid: DataGridModel;
+};
 
 export default forwardRef(function DaraGridBodyMenu(
   { disableAddNewItemButtons, children, dataGrid }: DaraGridBodyMenuProps,
-  ref: ForwardedRef<DaraGridBodyMenuRef>
+  ref: ForwardedRef<MenuRef>
 ) {
-  const selectedCell = useAppSelector(selectSelectedCell);
-
-  const [menu, setMenu] = useState<MenuProps>({
-    isOpened: false
-  });
-
-  useImperativeHandle<DaraGridBodyMenuRef, DaraGridBodyMenuRef>(ref, () => ({ setMenu }));
-
-  const menuRef = useClickOutside(() => setMenu({ isOpened: false }));
-
-  const [deleteDataGridRow] = useDeleteDataGridRowMutation();
-
-  const onDeleteTestClicked = async () => {
-    setMenu({ isOpened: false });
-    await deleteDataGridRow({ id: selectedCell!.rowId, dataGridId: dataGrid.id });
-  };
+  const { menu, menuRef, handleDeleteRowClick } = useDataGridBodyMenu({ dataGrid, ref });
 
   return (
     <Menu opened={menu.isOpened}>
@@ -67,7 +34,7 @@ export default forwardRef(function DaraGridBodyMenu(
         <Menu.Item
           leftSection={<IconArrowDown style={{ width: rem(14), height: rem(14) }} />}
           disabled={disableAddNewItemButtons}>
-          Insert row above
+          Insert row below
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item
@@ -79,7 +46,7 @@ export default forwardRef(function DaraGridBodyMenu(
         <Menu.Item
           color='red'
           leftSection={<IconTrash style={{ width: rem(14), height: rem(14) }} />}
-          onClick={onDeleteTestClicked}>
+          onClick={handleDeleteRowClick}>
           Delete row
         </Menu.Item>
       </Menu.Dropdown>

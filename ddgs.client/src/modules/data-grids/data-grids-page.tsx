@@ -1,15 +1,20 @@
-import { useGetDataGridsQuery } from '../api/resource-api-slice.ts';
-import { Button, Center, Flex, Loader, Stack, Text, useMantineColorScheme } from '@mantine/core';
-import DataGridsItem from './components/data-grids-item.tsx';
+import { Button, Center, Flex, Loader, Stack, Text } from '@mantine/core';
 import { styled } from 'styled-components';
-import { useDisclosure } from '@mantine/hooks';
+import useTheme from '../core/hooks/theme-hook.ts';
 import DataGridsCreateModal from './components/data-grids-create-modal.tsx';
+import DataGridsItem from './components/data-grids-item.tsx';
 import DataGridsOwners from './components/data-grids-owners.tsx';
+import useDataGridsPage from './hooks/data-grids-page-hook.ts';
 
 export default function DataGridsPage() {
-  const [opened, { open, close }] = useDisclosure(false);
-
-  const { data: dataGrids, isLoading, isSuccess } = useGetDataGridsQuery();
+  const {
+    modalOpened,
+    handleCreateDataGridButtonClick,
+    handleModalClose,
+    dataGridItems,
+    isLoading,
+    isSuccess
+  } = useDataGridsPage();
 
   return (
     <>
@@ -23,15 +28,15 @@ export default function DataGridsPage() {
       )}
       {isSuccess && (
         <>
-          <DataGridsCreateModal opened={opened} onClose={close} />
-          <Flex gap='32px'>
+          <DataGridsCreateModal opened={modalOpened} onClose={handleModalClose} />
+          <Flex gap={32}>
             <Stack flex='1 0 auto' maw='calc(85% - 32px)'>
               <PageTitle title={'Data grids'} />
-              {dataGrids.length > 0 ? (
+              {dataGridItems.length > 0 ? (
                 <DataGridContainer>
-                  {dataGrids.map((dataGrid) => (
-                    <div key={dataGrid.id} className='data-grid-item'>
-                      <DataGridsItem dataGridId={dataGrid.id} />
+                  {dataGridItems.map((dataGridItem) => (
+                    <div key={dataGridItem.id} className='data-grid-item'>
+                      <DataGridsItem lightDataGrid={dataGridItem} />
                     </div>
                   ))}
                 </DataGridContainer>
@@ -40,7 +45,7 @@ export default function DataGridsPage() {
               )}
             </Stack>
             <Stack flex='0 0 15%'>
-              <Button fullWidth color='teal' onClick={open}>
+              <Button fullWidth color='teal' onClick={handleCreateDataGridButtonClick}>
                 Create data grid
               </Button>
               <DataGridsOwners />
@@ -52,9 +57,8 @@ export default function DataGridsPage() {
   );
 }
 
-const PageTitle = ({ title }: { title: string }) => {
-  const { colorScheme } = useMantineColorScheme();
-  const isDarkTheme = colorScheme === 'dark';
+function PageTitle({ title }: { title: string }) {
+  const { isDarkTheme } = useTheme();
 
   return (
     <h1 style={{ margin: 0 }}>
@@ -68,7 +72,7 @@ const PageTitle = ({ title }: { title: string }) => {
       </Text>
     </h1>
   );
-};
+}
 
 const DataGridContainer = styled.div`
   --gap: 8px;

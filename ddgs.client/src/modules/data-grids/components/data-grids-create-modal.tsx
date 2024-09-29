@@ -1,49 +1,25 @@
-import { Button, Flex, Input, Modal } from '@mantine/core';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import {
-  dataGridsCreateFormSchema,
-  DataGridsCreateFormSchema
-} from '../forms/data-grids-create-form-schema.ts';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useCreateDataGridMutation } from '../../api/resource-api-slice.ts';
+import { Modal } from '@mantine/core';
+import DataGridsCreateForm from '../forms/data-grids-create-form.tsx';
+import useDataGridsCreateModal from '../hooks/data-grids-create-modal-hook.ts';
 
-export interface CreateDataGridsModalProps {
+export type DataGridsCreateModalProps = {
   opened: boolean;
   onClose: () => void;
-}
+};
 
-export default function DataGridsCreateModal({ opened, onClose }: CreateDataGridsModalProps) {
-  const [createDataGrid] = useCreateDataGridMutation();
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    getValues
-  } = useForm<DataGridsCreateFormSchema>({ resolver: zodResolver(dataGridsCreateFormSchema) });
-
-  const onSubmit: SubmitHandler<DataGridsCreateFormSchema> = async () => {
-    await createDataGrid({ name: getValues().name });
-    onClose();
-  };
+export default function DataGridsCreateModal({ opened, onClose }: DataGridsCreateModalProps) {
+  const { handleSubmitForm, formMethods, handleCancelButtonClick, handleModalClose } =
+    useDataGridsCreateModal({
+      close: onClose
+    });
 
   return (
-    <Modal opened={opened} onClose={onClose} title='Create data grid' centered>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Flex direction='column' align='center'>
-          <Input.Wrapper
-            label='Data grid name'
-            size='md'
-            w='100%'
-            mb='10px'
-            error={errors.name?.message}>
-            <Input {...register('name')} placeholder='Data grid name' error={!!errors.name} />
-          </Input.Wrapper>
-          <Button color='teal' mt='10px' type='submit'>
-            Create
-          </Button>
-        </Flex>
-      </form>
+    <Modal opened={opened} onClose={handleModalClose} title='Create data grid' centered>
+      <DataGridsCreateForm
+        formMethods={formMethods}
+        onSubmit={handleSubmitForm}
+        onCancelButtonClick={handleCancelButtonClick}
+      />
     </Modal>
   );
 }

@@ -1,7 +1,7 @@
 import { createBrowserRouter, Navigate, RouteObject } from 'react-router-dom';
 import { Routes } from './modules/navigation/routes.ts';
-import BaseLayout from './modules/layout/base-layout.tsx';
-import LayoutWithRequiredAuth from './modules/layout/layout-with-required-auth.tsx';
+import BaseLayout from './modules/layout/components/base-layout.tsx';
+import LayoutWithRequiredAuth from './modules/layout/components/layout-with-required-auth.tsx';
 import LoginPage from './modules/auth/pages/login-page.tsx';
 import SignupPage from './modules/auth/pages/signup-page.tsx';
 import ErrorPage from './modules/error-handling/components/error-page.tsx';

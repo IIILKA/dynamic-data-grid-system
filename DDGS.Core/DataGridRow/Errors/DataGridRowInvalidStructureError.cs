@@ -1,4 +1,6 @@
-﻿namespace DDGS.Core.DataGridRow.Errors
+﻿using FluentResults;
+
+namespace DDGS.Core.DataGridRow.Errors
 {
-    public class DataGridRowInvalidStructureError : FluentResults.Error { }
+    public class DataGridRowInvalidStructureError : Error { }
 }

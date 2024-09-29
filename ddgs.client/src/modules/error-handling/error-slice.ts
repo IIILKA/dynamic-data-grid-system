@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import ErrorViewModel from '../error-handling/error-view-model.ts';
-import { getUniqueId } from '../../utils/unique-id.ts';
 import { RootState } from '../../app/store.ts';
+import { getUniqueId } from '../core/utils/unique-id.ts';
+import ErrorModel from './models/error-model.ts';
 
-interface ErrorState {
-  errors: ErrorViewModel[];
-}
+type ErrorState = {
+  errors: ErrorModel[];
+};
 
 const initialState: ErrorState = {
   errors: []
@@ -15,7 +15,7 @@ export const errorSlice = createSlice({
   name: 'errors',
   initialState,
   reducers: {
-    addError: (state, action: PayloadAction<ErrorViewModel>) => {
+    addError: (state, action: PayloadAction<ErrorModel>) => {
       const error = { ...action.payload, id: getUniqueId() };
       state.errors.push(error);
     },
@@ -28,5 +28,5 @@ export const errorSlice = createSlice({
   }
 });
 
-export const selectErrors = (state: RootState): ErrorViewModel[] => state.errors.errors;
+export const selectErrors = (state: RootState): ErrorModel[] => state.errors.errors;
 export const { addError, removeError } = errorSlice.actions;

@@ -39,6 +39,8 @@ namespace DDGS.Api.Error.Maps
                     return new FluentResults.Error(ErrorMessages.DataGridRow.NotExist);
                 case DataGridRowInvalidStructureError _:
                     return new FluentResults.Error(ErrorMessages.DataGridRow.InvalidStructure);
+                case DataGridRowInvalidElementError dataGridRowInvalidElementError:
+                    return new FluentResults.Error(string.Format(ErrorMessages.DataGridRow.InvalidValue, dataGridRowInvalidElementError.InvalidElementName));
                 case DataGridRowInvalidValueError dataGridRowInvalidValueError:
                     return new FluentResults.Error(string.Format(ErrorMessages.DataGridRow.InvalidValue, dataGridRowInvalidValueError.InvalidValueElementName));
                 case FluentResults.Error when !string.IsNullOrEmpty(error.Message):

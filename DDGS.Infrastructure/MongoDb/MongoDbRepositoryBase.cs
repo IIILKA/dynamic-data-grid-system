@@ -51,16 +51,16 @@ namespace DDGS.Infrastructure.MongoDb
             }
         }
 
-        protected async Task ReplaceOneAsync(IMongoCollection<BsonDocument> collection, BsonDocument filter, BsonDocument bsonDocument)
+        protected async Task UpdateOneAsync(IMongoCollection<BsonDocument> collection, BsonDocument filter, BsonDocument bsonDocument)
         {
             var session = DbSessionProvider.GetCurrentSession();
             if (session == null)
             {
-                await collection.ReplaceOneAsync(filter, bsonDocument);
+                await collection.UpdateOneAsync(filter, bsonDocument);
             }
             else
             {
-                await collection.ReplaceOneAsync(session, filter, bsonDocument);
+                await collection.UpdateOneAsync(session, filter, bsonDocument);
             }
         }
 

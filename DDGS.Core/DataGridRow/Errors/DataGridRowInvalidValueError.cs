@@ -1,6 +1,8 @@
-﻿namespace DDGS.Core.DataGridRow.Errors
+﻿using FluentResults;
+
+namespace DDGS.Core.DataGridRow.Errors
 {
-    public class DataGridRowInvalidValueError : FluentResults.Error
+    public class DataGridRowInvalidValueError : Error
     {
         public DataGridRowInvalidValueError(string invalidValueElementName)
         {

@@ -1,18 +1,19 @@
 import { Table } from '@mantine/core';
-import { DataGridDto } from '../../api/resource-api-slice.ts';
+import { useDataGridHead } from '../hooks/data-grid-head-hook.ts';
+import DataGridModel from '../models/data-grid-model.ts';
 import DataGridHeadCell from './data-grid-head-cell.tsx';
 
-interface DataGridHeadProps {
-  dataGrid: DataGridDto;
-}
+type DataGridHeadProps = {
+  dataGrid: DataGridModel;
+};
 
 export default function DataGridHead({ dataGrid }: DataGridHeadProps) {
-  const sortedColumns = [...dataGrid.columns].sort((a, b) => a.index - b.index);
+  const { sortedCells } = useDataGridHead({ dataGrid });
 
   return (
     <Table.Thead>
       <Table.Tr bg={'var(--mantine-color-default-hover)'}>
-        {sortedColumns.map((column) => (
+        {sortedCells.map((column) => (
           <DataGridHeadCell key={column.name} dataGrid={dataGrid} dataGridColumn={column} />
         ))}
       </Table.Tr>

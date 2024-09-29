@@ -3,58 +3,33 @@ import {
   IconArrowLeft,
   IconArrowRight,
   IconCopy,
-  IconTrash,
-  IconPencil
+  IconPencil,
+  IconTrash
 } from '@tabler/icons-react';
-import { useClickOutside } from '@mantine/hooks';
-import {
-  ForwardedRef,
-  forwardRef,
-  ReactElement,
-  SetStateAction,
-  useImperativeHandle,
-  useState
-} from 'react';
-import {
-  DataGridColumnDto,
-  DataGridDto,
-  useRemoveColumnFromDataGridMutation
-} from '../../api/resource-api-slice.ts';
+import { ForwardedRef, forwardRef, ReactElement } from 'react';
+import { MenuRef } from '../../core/hooks/menu-hook.ts';
+import useDataGridHeadMenu from '../hooks/data-grid-head-menu-hook.ts';
+import DataGridColumnModel from '../models/data-grid-column-model.ts';
+import DataGridModel from '../models/data-grid-model.ts';
 
-interface DaraGridHeadMenuProps {
+type DaraGridHeadMenuProps = {
   children: ReactElement;
-  dataGrid: DataGridDto;
-  dataGridColumn: DataGridColumnDto;
-}
-
-interface MenuProps {
-  isOpened: boolean;
-  offsetX?: number;
-}
-
-export interface DaraGridHeadMenuRef {
-  setMenu(value: SetStateAction<MenuProps>): void;
-}
+  dataGrid: DataGridModel;
+  dataGridColumn: DataGridColumnModel;
+};
 
 export default forwardRef(function DaraGridHeadMenu(
   { children, dataGrid, dataGridColumn }: DaraGridHeadMenuProps,
-  ref: ForwardedRef<DaraGridHeadMenuRef>
+  ref: ForwardedRef<MenuRef>
 ) {
-  const [menu, setMenu] = useState<MenuProps>({
-    isOpened: false
+  const { menu, menuRef, handleDeleteColumnClick } = useDataGridHeadMenu({
+    dataGrid,
+    dataGridColumn,
+    ref
   });
-  useImperativeHandle<DaraGridHeadMenuRef, DaraGridHeadMenuRef>(ref, () => ({ setMenu }));
-  const menuRef = useClickOutside(() => setMenu({ isOpened: false }));
-
-  const [removeColumnFromDataGrid] = useRemoveColumnFromDataGridMutation();
-
-  const onDeleteTestClicked = async () => {
-    setMenu({ isOpened: false });
-    await removeColumnFromDataGrid({ dataGridId: dataGrid.id, colName: dataGridColumn.name });
-  };
 
   return (
-    <Menu opened={menu.isOpened} offset={0}>
+    <Menu opened={menu.isOpened} offset={0} shadow='md'>
       <Menu.Target>{children}</Menu.Target>
       <Menu.Dropdown
         ref={menuRef}
@@ -79,7 +54,7 @@ export default forwardRef(function DaraGridHeadMenu(
         <Menu.Item
           color='red'
           leftSection={<IconTrash style={{ width: rem(14), height: rem(14) }} />}
-          onClick={onDeleteTestClicked}>
+          onClick={handleDeleteColumnClick}>
           Delete column
         </Menu.Item>
       </Menu.Dropdown>

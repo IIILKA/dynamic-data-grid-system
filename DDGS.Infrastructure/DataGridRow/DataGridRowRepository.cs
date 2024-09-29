@@ -32,9 +32,12 @@ namespace DDGS.Infrastructure.DataGridRow
                 return null;
             }
 
+            var id = document["_id"].AsObjectId.ToString()!;
+            document.Remove("_id");
+
             var expando = CreateExpandoFromBsonDocument(document);
 
-            return new DataGridRowEntity { RowData = expando };
+            return new DataGridRowEntity { Id = id, RowData = expando };
         }
 
         public async Task<List<DataGridRowEntity>> GetByDataGridAsync(DataGridEntity dataGrid)
@@ -43,7 +46,14 @@ namespace DDGS.Infrastructure.DataGridRow
             var documents = await collection.Find("{}").ToListAsync();
 
             var result = documents
-                .Select(_ => new DataGridRowEntity { RowData = CreateExpandoFromBsonDocument(_) })
+                .Select(document =>
+                {
+                    var id = document["_id"].AsObjectId.ToString()!;
+                    document.Remove("_id");
+
+                    var expando = CreateExpandoFromBsonDocument(document);
+                    return new DataGridRowEntity { Id = id, RowData = expando };
+                })
                 .ToList();
 
             return result;
@@ -62,13 +72,12 @@ namespace DDGS.Infrastructure.DataGridRow
         public async Task<Result> UpdateAsync(DataGridEntity dataGrid, string rowId, DataGridRowEntity dataGridRow)
         {
             var bsonDoc = Mapper.Map<BsonDocument>(dataGridRow);
-            bsonDoc["_id"] = new BsonObjectId(new ObjectId(rowId));
             var collection = Database.GetCollection<BsonDocument>(dataGrid.Id.ToString());
 
-            await ReplaceOneAsync(
+            await UpdateOneAsync(
                 collection,
                 new BsonDocument { { "_id", new BsonObjectId(new ObjectId(rowId)) } },
-                bsonDoc);
+                new BsonDocument("$set", bsonDoc));
 
             return Result.Ok();
         }
@@ -87,12 +96,6 @@ namespace DDGS.Infrastructure.DataGridRow
             var expando = new ExpandoObject() as IDictionary<string, object>;
             foreach (var element in document.Elements)
             {
-                if (element.Value.GetType() == typeof(BsonObjectId))
-                {
-                    expando["id"] = element.Value.ToString()!;
-                    continue;
-                }
-                
                 expando[element.Name] = element.Value switch
                 {
                     BsonString str => str.ToString(),
