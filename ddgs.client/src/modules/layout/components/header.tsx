@@ -29,7 +29,7 @@ export function Header(): ReactElement {
         </Text>
       </Flex>
       <Flex gap={4}>
-        <HeaderLoader isDarkTheme={isDarkTheme} />
+        <HeaderLoader />
         <Center>
           <ActionIcon
             variant='subtle'
@@ -37,7 +37,11 @@ export function Header(): ReactElement {
             color={isDarkTheme ? 'yellow' : 'blue'}
             onClick={handleThemeClick}
             title='Toggle color scheme'>
-            {isDarkTheme ? <IconSunFilled w='80%' h='80%' /> : <IconMoonFilled w='80%' h='80%' />}
+            {isDarkTheme ? (
+              <IconSunFilled width='80%' height='80%' />
+            ) : (
+              <IconMoonFilled width='80%' height='80%' />
+            )}
           </ActionIcon>
         </Center>
         <UserWidgetMenu ref={menuRef} userInfo={userInfo!}>

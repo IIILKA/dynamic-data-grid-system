@@ -23,11 +23,11 @@ export const loadingSlice = createSlice({
     },
     columnQueryStarted: (state) => {
       state.fetchingQueriesCount++;
-      state.fetchingAddColumn = true;
+      state.fetchingColumn = true;
     },
     columnQueryFinished: (state) => {
       state.fetchingQueriesCount--;
-      state.fetchingAddColumn = false;
+      state.fetchingColumn = false;
     }
   }
 });
@@ -38,8 +38,6 @@ export const selectIsLoading = createSelector(
 );
 
 export const selectDataGridColumnIsLoading = createSelector(
-  (state: RootState) => state.loading.fetchingAddColumn,
-  (fetchingAddColumn) => fetchingAddColumn
+  (state: RootState) => state.loading.fetchingColumn,
+  (fetchingColumn) => fetchingColumn
 );
-
-export const { queryStarted, queryFinished } = loadingSlice.actions;

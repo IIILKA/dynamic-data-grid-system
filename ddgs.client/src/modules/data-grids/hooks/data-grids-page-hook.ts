@@ -20,7 +20,7 @@ export default function useDataGridsPage(): DataGridsPageHookReturnType {
     modalOpened,
     handleCreateDataGridButtonClick: open,
     handleModalClose: close,
-    dataGridItems,
+    dataGridItems: dataGridItems as DataGridLightModel[],
     isLoading,
     isSuccess
   };

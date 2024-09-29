@@ -1,13 +1,13 @@
 import { Flex, Menu, rem, Text } from '@mantine/core';
 import { IconUserFilled, IconLogout } from '@tabler/icons-react';
 import { ForwardedRef, forwardRef, ReactElement } from 'react';
-import { UserInfo } from '../../auth/auth-service.ts';
+import UserInfoModel from '../../auth/models/user-info-model.ts';
 import useUserWidgetMenu from '../hooks/user-widget-menu-hook.ts';
 import { MenuRef } from '../../core/hooks/menu-hook.ts';
 
 type UserWidgetMenuProps = {
   children: ReactElement;
-  userInfo: UserInfo;
+  userInfo: UserInfoModel;
 };
 
 export default forwardRef(function UserWidgetMenu(

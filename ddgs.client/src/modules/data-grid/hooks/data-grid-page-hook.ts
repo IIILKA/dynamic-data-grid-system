@@ -31,10 +31,10 @@ export default function useDataGridPage(): DataGridPageHookReturnType {
   } = useGetDataGridRowsQuery({ dataGridId: id } satisfies DataGridRowGetArgs);
 
   return {
-    dataGrid,
+    dataGrid: dataGrid as DataGridModel,
     isDatGridLoading,
     isDataGridSuccess,
-    normalizedDataGridRows,
+    normalizedDataGridRows: normalizedDataGridRows as NormalizedDataGridRowModels,
     isDataGridRowsLoading,
     isDataGridRowsSuccess
   };

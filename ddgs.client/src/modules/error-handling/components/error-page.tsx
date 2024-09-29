@@ -16,7 +16,6 @@ export default function ErrorPage({
   buttonText,
   buttonHref
 }: ErrorPageProps) {
-  //TODO: use error page hook
   const navigate = useNavigate();
 
   return (

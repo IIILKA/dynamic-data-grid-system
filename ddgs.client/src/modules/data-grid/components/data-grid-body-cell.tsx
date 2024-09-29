@@ -28,21 +28,25 @@ export default function DataGridBodyCell({
     colName
   });
 
-  const CellComponent = CellComponents[typeof value];
+  function getCellComponent() {
+    switch (typeof value) {
+      case 'string':
+        return <DataGridBodyTextCell value={value} onChange={handleChangeValue} />;
+      case 'number':
+        return <DataGridBodyNumberCell value={value} onChange={handleChangeValue} />;
+      case 'boolean':
+        return <DataGridBodyBooleanCell value={value} onChange={handleChangeValue} />;
+    }
+  }
+
   return (
     <Table.Td p={0} onClick={handleSelectCell} onContextMenu={handleSelectCell}>
       <DataGridCellContainer className={isActive ? 'active' : ''}>
-        {CellComponent && <CellComponent value={value} onChange={handleChangeValue} />}
+        {getCellComponent()}
       </DataGridCellContainer>
     </Table.Td>
   );
 }
-
-const CellComponents = {
-  string: DataGridBodyTextCell,
-  number: DataGridBodyNumberCell,
-  boolean: DataGridBodyBooleanCell
-};
 
 const DataGridCellContainer = styled.div`
   cursor: default;

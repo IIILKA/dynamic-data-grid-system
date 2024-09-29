@@ -36,9 +36,10 @@ export default function useDataGridAddColumnPopover({
       id: dataGrid.id,
       body: {
         name: getValues().name,
-        type: DataGridColumnType[getValues().type]
+        type: DataGridColumnType[getValues().type as keyof typeof DataGridColumnType]
       }
     } satisfies DataGridAddColumnArgs);
+    reset();
   });
 
   return {

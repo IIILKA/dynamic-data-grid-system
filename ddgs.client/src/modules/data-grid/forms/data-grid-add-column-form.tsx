@@ -40,7 +40,9 @@ export default function DataGridAddColumnForm({
           ]}
           defaultValue=''
           onChange={(value) => {
-            setValue('type', value, { shouldValidate: true, shouldDirty: true });
+            if (value) {
+              setValue('type', value, { shouldValidate: true, shouldDirty: true });
+            }
           }}
         />
 
