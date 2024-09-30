@@ -30,8 +30,8 @@ export default function DataGridBody({ dataGrid, normalizedDataGridRows }: DataG
   return (
     <DaraGridBodyMenu
       ref={menuRef}
-      disableAddNewItemButtons={normalizedDataGridRows.ids.some((id) => id === '')}
-      dataGrid={dataGrid}>
+      dataGrid={dataGrid}
+      normalizedDataGridRows={normalizedDataGridRows}>
       <Table.Tbody ref={tableRef} onContextMenu={handleContextMenu}>
         {rows}
       </Table.Tbody>

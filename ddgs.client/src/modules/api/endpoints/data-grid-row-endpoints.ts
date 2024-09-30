@@ -12,12 +12,13 @@ import DataGridRowUpdateArgs from '../args/data-grid-row-update-args.ts';
 import { resourceApiSlice } from '../resource-api-slice.ts';
 import DataGridRowDto from './../dto/data-grid-row-dto.ts';
 
+export const dataGridRowAdapter = createEntityAdapter<DataGridRowModel>({
+  sortComparer: (a, b) => a.index - b.index
+});
+
 export default function dataGridRowEndpoints(
   builder: EndpointBuilder<BaseQueryFn, string, 'resourceApi'>
 ) {
-  const dataGridRowAdapter = createEntityAdapter<DataGridRowModel>({
-    sortComparer: (a, b) => a.index - b.index
-  });
   return {
     getDataGridRows: builder.query<NormalizedDataGridRowModels, DataGridRowGetArgs>({
       query: (args: DataGridRowGetArgs) => `/data-grid/${args.dataGridId}/row`,
@@ -51,7 +52,7 @@ export default function dataGridRowEndpoints(
             (draft) => {
               dataGridRowAdapter.addOne(draft, {
                 id: '',
-                index: args.body.index,
+                index: args.body.index - 0.5,
                 rowData: args.body.rowData
               });
             }

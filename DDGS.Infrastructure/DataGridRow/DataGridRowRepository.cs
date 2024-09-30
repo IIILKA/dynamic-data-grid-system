@@ -74,10 +74,25 @@ namespace DDGS.Infrastructure.DataGridRow
         {
             var collection = Database.GetCollection<BsonDocument>(dataGrid.Id.ToString());
 
-            await UpdateManyAsync(
-                collection,
-                new BsonDocument { { nameof(DataGridRowEntity.Index), new BsonDocument("$gt", index) } },
-                new BsonDocument("$inc", new BsonDocument(nameof(DataGridRowEntity.Index), 1)));
+            //TODO: надо заюзать в Builders и в других местах
+            var filter = Builders<BsonDocument>.Filter.Gte(nameof(DataGridRowEntity.Index), index);
+            var sort = Builders<BsonDocument>.Sort.Descending(nameof(DataGridRowEntity.Index));
+
+            var documents = await collection
+                .Find(filter)
+                .Sort(sort)
+                .ToListAsync();
+
+            foreach (var doc in documents)
+            {
+                var currentIndex = doc[nameof(DataGridRowEntity.Index)].AsInt32;
+                var newIndex = currentIndex + 1;
+
+                var update = Builders<BsonDocument>.Update.Set(nameof(DataGridRowEntity.Index), newIndex);
+                var idFilter = Builders<BsonDocument>.Filter.Eq("_id", doc["_id"]);
+
+                await collection.UpdateOneAsync(idFilter, update);
+            }
 
             return Result.Ok();
         }
