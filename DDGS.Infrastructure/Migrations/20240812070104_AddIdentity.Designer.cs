@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace DDGS.Infrastructure.Migrations
 {
-    [DbContext(typeof(DdgsPostgresDbContext))]
+    [DbContext(typeof(DdgsDbContext))]
     [Migration("20240812070104_AddIdentity")]
     partial class AddIdentity
     {
@@ -25,7 +25,7 @@ namespace DDGS.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("DDGS.Core.Identity.Entities.Role", b =>
+            modelBuilder.Entity("DDGS.Core.Identity.Models.RoleEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -52,7 +52,7 @@ namespace DDGS.Infrastructure.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
-            modelBuilder.Entity("DDGS.Core.Identity.Entities.User", b =>
+            modelBuilder.Entity("DDGS.Core.Identity.Models.UserEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -433,7 +433,7 @@ namespace DDGS.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.HasOne("DDGS.Core.Identity.Entities.Role", null)
+                    b.HasOne("DDGS.Core.Identity.Models.RoleEntity", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -442,7 +442,7 @@ namespace DDGS.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("DDGS.Core.Identity.Entities.User", null)
+                    b.HasOne("DDGS.Core.Identity.Models.UserEntity", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -451,7 +451,7 @@ namespace DDGS.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("DDGS.Core.Identity.Entities.User", null)
+                    b.HasOne("DDGS.Core.Identity.Models.UserEntity", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -460,13 +460,13 @@ namespace DDGS.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.HasOne("DDGS.Core.Identity.Entities.Role", null)
+                    b.HasOne("DDGS.Core.Identity.Models.RoleEntity", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DDGS.Core.Identity.Entities.User", null)
+                    b.HasOne("DDGS.Core.Identity.Models.UserEntity", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -475,7 +475,7 @@ namespace DDGS.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("DDGS.Core.Identity.Entities.User", null)
+                    b.HasOne("DDGS.Core.Identity.Models.UserEntity", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

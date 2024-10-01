@@ -1,53 +1,29 @@
 import { Menu, rem } from '@mantine/core';
 import { IconArrowDown, IconArrowUp, IconCopy, IconTrash } from '@tabler/icons-react';
-import { useClickOutside } from '@mantine/hooks';
-import {
-  ForwardedRef,
-  forwardRef,
-  ReactElement,
-  SetStateAction,
-  useImperativeHandle,
-  useState
-} from 'react';
-import { useDeleteTestMutation } from '../../api/resource-api-slice.ts';
-import { useAppSelector } from '../../../app/hooks.ts';
-import { selectSelectedCell } from '../data-grid-slice.ts';
+import { ForwardedRef, forwardRef, ReactElement } from 'react';
+import { MenuRef } from '../../core/hooks/menu-hook.ts';
+import useDataGridBodyMenu from '../hooks/data-grid-body-menu-hook.ts';
+import DataGridModel from '../models/data-grid-model.ts';
+import NormalizedDataGridRowModels from '../models/normalized-data-grid-row-models.ts';
 
-interface DaraGridBodyMenuProps {
+type DaraGridBodyMenuProps = {
   children: ReactElement;
-  disableAddNewItemButtons: boolean;
-}
-
-interface MenuProps {
-  isOpened: boolean;
-  offsetX?: number;
-  offsetY?: number;
-}
-
-export interface DaraGridBodyMenuRef {
-  setMenu(value: SetStateAction<MenuProps>): void;
-}
+  dataGrid: DataGridModel;
+  normalizedDataGridRows: NormalizedDataGridRowModels;
+};
 
 export default forwardRef(function DaraGridBodyMenu(
-  { disableAddNewItemButtons, children }: DaraGridBodyMenuProps,
-  ref: ForwardedRef<DaraGridBodyMenuRef>
+  { children, dataGrid, normalizedDataGridRows }: DaraGridBodyMenuProps,
+  ref: ForwardedRef<MenuRef>
 ) {
-  const selectedCell = useAppSelector(selectSelectedCell);
-
-  const [menu, setMenu] = useState<MenuProps>({
-    isOpened: false
-  });
-
-  useImperativeHandle<DaraGridBodyMenuRef, DaraGridBodyMenuRef>(ref, () => ({ setMenu }));
-
-  const menuRef = useClickOutside(() => setMenu({ isOpened: false }));
-
-  const [deleteRow] = useDeleteTestMutation();
-
-  const onDeleteTestClicked = async () => {
-    setMenu({ isOpened: false });
-    await deleteRow(selectedCell!.rowId);
-  };
+  const {
+    menu,
+    menuRef,
+    areAddNewItemButtonsDisabled,
+    handleDeleteRowClickAsync,
+    handleDuplicateRowClickAsync,
+    handleInsertRowClickAsync
+  } = useDataGridBodyMenu({ dataGrid, normalizedDataGridRows, ref });
 
   return (
     <Menu opened={menu.isOpened}>
@@ -60,26 +36,29 @@ export default forwardRef(function DaraGridBodyMenu(
         }}>
         <Menu.Item
           leftSection={<IconArrowUp style={{ width: rem(14), height: rem(14) }} />}
-          disabled={disableAddNewItemButtons}>
-          Insert test above
+          disabled={areAddNewItemButtonsDisabled}
+          onClick={() => handleInsertRowClickAsync(true)}>
+          Insert row above
         </Menu.Item>
         <Menu.Item
           leftSection={<IconArrowDown style={{ width: rem(14), height: rem(14) }} />}
-          disabled={disableAddNewItemButtons}>
-          Insert test above
+          disabled={areAddNewItemButtonsDisabled}
+          onClick={() => handleInsertRowClickAsync(false)}>
+          Insert row below
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item
           leftSection={<IconCopy style={{ width: rem(14), height: rem(14) }} />}
-          disabled={disableAddNewItemButtons}>
-          Duplicate test
+          disabled={areAddNewItemButtonsDisabled}
+          onClick={handleDuplicateRowClickAsync}>
+          Duplicate row
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item
           color='red'
           leftSection={<IconTrash style={{ width: rem(14), height: rem(14) }} />}
-          onClick={onDeleteTestClicked}>
-          Delete test
+          onClick={handleDeleteRowClickAsync}>
+          Delete row
         </Menu.Item>
       </Menu.Dropdown>
     </Menu>

@@ -1,10 +1,6 @@
-import { useEffect } from 'react';
-import { sendOAuthRequestAsync } from '../auth-service.ts';
+import useOauthExternalProviderCallbackPage from '../hooks/oauth-external-provider-callback-page-hook.ts';
 
 export default function OauthExternalProviderCallbackPage() {
-  useEffect(() => {
-    sendOAuthRequestAsync();
-  });
-
+  useOauthExternalProviderCallbackPage();
   return <></>;
 }

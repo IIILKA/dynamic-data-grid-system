@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "VITE_API_URL=https://localhost:4430/api VITE_PORT=3000 VITE_SSL_CERTIFICATE_CRYPTIC_PASSWORD=ddgs-client-cryptic-password@123 VITE_AUTH_AUTHORITY=https://localhost:4431 VITE_AUTH_CLIENT_ID=web-client VITE_AUTH_CLIENT_SECRET=901564A5-E7FE-42CB-B10D-61EF6A8F3654 VITE_SELF_URL=https://localhost:3000 vite",
+    "dev": "VITE_API_URL=https://localhost:4430 VITE_PORT=3000 VITE_SSL_CERTIFICATE_CRYPTIC_PASSWORD=ddgs-client-cryptic-password@123 VITE_AUTH_AUTHORITY=https://localhost:4431 VITE_AUTH_CLIENT_ID=web-client VITE_AUTH_CLIENT_SECRET=901564A5-E7FE-42CB-B10D-61EF6A8F3654 VITE_SELF_URL=https://localhost:3000 vite",
     "local": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
@@ -12,6 +12,8 @@
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
   },
   "dependencies": {
+    "@automapper/core": "^8.8.1",
+    "@automapper/pojos": "^8.8.1",
     "@hookform/resolvers": "^3.9.0",
     "@mantine/code-highlight": "^7.10.2",
     "@mantine/core": "7.11.1",

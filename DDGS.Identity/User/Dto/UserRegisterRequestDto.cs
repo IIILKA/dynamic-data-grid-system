@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using DDGS.Core.Identity.Entities.Constraints;
+using DDGS.Core.Identity.Models.Constraints;
 
 namespace DDGS.Identity.User.Dto
 {

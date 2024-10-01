@@ -13,7 +13,7 @@ namespace DDGS.Identity.Auth.Configuration
             services.AddOpenIddict()
                 .AddCore(opts =>
                 {
-                    opts.UseEntityFrameworkCore().UseDbContext<DdgsPostgresDbContext>();
+                    opts.UseEntityFrameworkCore().UseDbContext<DdgsDbContext>();
                 })
                 .AddServer(opts =>
                 {

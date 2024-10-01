@@ -1,12 +1,14 @@
 import { createSelector, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store.ts';
 
-interface LoadingState {
+type LoadingState = {
   fetchingQueriesCount: number;
-}
+  fetchingColumn: boolean;
+};
 
 const initialState: LoadingState = {
-  fetchingQueriesCount: 0
+  fetchingQueriesCount: 0,
+  fetchingColumn: false
 };
 
 export const loadingSlice = createSlice({
@@ -18,6 +20,14 @@ export const loadingSlice = createSlice({
     },
     queryFinished: (state) => {
       state.fetchingQueriesCount--;
+    },
+    columnQueryStarted: (state) => {
+      state.fetchingQueriesCount++;
+      state.fetchingColumn = true;
+    },
+    columnQueryFinished: (state) => {
+      state.fetchingQueriesCount--;
+      state.fetchingColumn = false;
     }
   }
 });
@@ -27,4 +37,7 @@ export const selectIsLoading = createSelector(
   (fetchingQueriesCount) => fetchingQueriesCount > 0
 );
 
-export const { queryStarted, queryFinished } = loadingSlice.actions;
+export const selectDataGridColumnIsLoading = createSelector(
+  (state: RootState) => state.loading.fetchingColumn,
+  (fetchingColumn) => fetchingColumn
+);

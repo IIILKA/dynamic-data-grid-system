@@ -1,6 +1,6 @@
-﻿using DDGS.Core.Identity.Entities;
-using DDGS.Core.Identity.Entities.Payloads;
-using DDGS.Core.Identity.Interfaces;
+﻿using DDGS.Core.Identity.Interfaces;
+using DDGS.Core.Identity.Models;
+using DDGS.Core.Identity.Models.Payloads;
 using FluentResults;
 using MapsterMapper;
 using Microsoft.AspNetCore.Identity;
@@ -18,9 +18,9 @@ namespace DDGS.Core.Identity
             _mapper = mapper;
         }
 
-        public async Task<Result<User>> RegisterAsync(UserRegisterPayload payload, string userPassword)
+        public async Task<Result<UserEntity>> RegisterAsync(UserRegisterPayload payload, string userPassword)
         {
-            var result = await _repository.RegisterUserAsync(_mapper.Map<User>(payload), userPassword);
+            var result = await _repository.RegisterUserAsync(_mapper.Map<UserEntity>(payload), userPassword);
 
             if (result.IsFailed)
             {
@@ -32,9 +32,9 @@ namespace DDGS.Core.Identity
             return Result.Ok(user!);
         }
 
-        public async Task<Result<User>> RegisterAsync(UserRegisterPayload payload)
+        public async Task<Result<UserEntity>> RegisterAsync(UserRegisterPayload payload)
         {
-            var result = await _repository.RegisterUserAsync(_mapper.Map<User>(payload));
+            var result = await _repository.RegisterUserAsync(_mapper.Map<UserEntity>(payload));
 
             if (result.IsFailed)
             {
@@ -46,32 +46,32 @@ namespace DDGS.Core.Identity
             return Result.Ok(user!);
         }
 
-        public async Task<User?> GetAsync(Guid id)
+        public async Task<UserEntity?> GetAsync(Guid id)
         {
             return await _repository.GetUserAsync(id);
         }
 
-        public async Task<User?> GetByEmailAsync(string email)
+        public async Task<UserEntity?> GetByEmailAsync(string email)
         {
             return await _repository.GetUserByEmailAsync(email);
         }
 
-        public async Task<List<User>> GetAllAsync()
+        public async Task<List<UserEntity>> GetAllAsync()
         {
             return await _repository.GetAllUsersAsync();
         }
 
-        public async Task<Result> AddExternalLoginAsync(User user, UserAddExternalLoginPayload payload)
+        public async Task<Result> AddExternalLoginAsync(UserEntity userEntity, UserAddExternalLoginPayload payload)
         {
-            return await _repository.AddUserExternalLoginAsync(user, _mapper.Map<UserLoginInfo>(payload));
+            return await _repository.AddUserExternalLoginAsync(userEntity, _mapper.Map<UserLoginInfo>(payload));
         }
 
         public async Task<bool> DoesExternalLoginRegisteredAsync(
-            User user,
+            UserEntity userEntity,
             string externalLoginProviderName,
             string externalLoginProviderUserId)
         {
-            var userLogins = await _repository.GetUserLoginsAsync(user);
+            var userLogins = await _repository.GetUserLoginsAsync(userEntity);
 
             var externalLogin = userLogins.FirstOrDefault(_ =>
                 _.LoginProvider == externalLoginProviderName && _.ProviderKey == externalLoginProviderUserId);
@@ -79,9 +79,9 @@ namespace DDGS.Core.Identity
             return externalLogin != null;
         }
 
-        public async Task<bool> CheckUserPasswordAsync(User user, string userPassword)
+        public async Task<bool> CheckUserPasswordAsync(UserEntity userEntity, string userPassword)
         {
-            return await _repository.CheckUserPasswordAsync(user, userPassword);
+            return await _repository.CheckUserPasswordAsync(userEntity, userPassword);
         }
     }
 }

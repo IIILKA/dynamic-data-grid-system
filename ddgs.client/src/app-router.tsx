@@ -1,13 +1,14 @@
 import { createBrowserRouter, Navigate, RouteObject } from 'react-router-dom';
 import { Routes } from './modules/navigation/routes.ts';
-import BaseLayout from './modules/layout/base-layout.tsx';
-import LayoutWithRequiredAuth from './modules/layout/layout-with-required-auth.tsx';
-import TestPage from './modules/data-grid/test-page.tsx';
+import BaseLayout from './modules/layout/components/base-layout.tsx';
+import LayoutWithRequiredAuth from './modules/layout/components/layout-with-required-auth.tsx';
 import LoginPage from './modules/auth/pages/login-page.tsx';
 import SignupPage from './modules/auth/pages/signup-page.tsx';
 import ErrorPage from './modules/error-handling/components/error-page.tsx';
 import OauthCallbackPage from './modules/auth/pages/oauth-callback-page.tsx';
 import OauthExternalProviderCallbackPage from './modules/auth/pages/oauth-external-provider-callback-page.tsx';
+import DataGridsPage from './modules/data-grids/data-grids-page.tsx';
+import DataGridPage from './modules/data-grid/data-grid-page.tsx';
 
 const baseLayoutRoutes: RouteObject[] = [
   {
@@ -59,11 +60,15 @@ const baseLayoutRoutes: RouteObject[] = [
 const layoutWithContextElementsRoutes: RouteObject[] = [
   {
     index: true,
-    element: <Navigate to={Routes.Test} />
+    element: <Navigate to={Routes.DataGrids} />
   },
   {
-    path: Routes.Test,
-    element: <TestPage />
+    path: Routes.DataGrids,
+    element: <DataGridsPage />
+  },
+  {
+    path: Routes.DataGrid,
+    element: <DataGridPage />
   }
 ];
 

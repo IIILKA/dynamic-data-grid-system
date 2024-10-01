@@ -1,11 +1,9 @@
-import { ReactElement } from 'react';
 import { Notification, Stack } from '@mantine/core';
-import { removeError, selectErrors } from '../error-slice.ts';
-import { useAppDispatch, useAppSelector } from '../../../app/hooks.ts';
+import { ReactElement } from 'react';
+import useErrorNotification from '../hooks/error-notification-hook.ts';
 
 export default function ErrorNotification(): ReactElement {
-  const dispatch = useAppDispatch();
-  const errors = useAppSelector(selectErrors);
+  const { errors, handleClose } = useErrorNotification();
 
   function getNotifications() {
     return (
@@ -15,7 +13,7 @@ export default function ErrorNotification(): ReactElement {
             key={error.id}
             color='red'
             title={error.title}
-            onClose={() => dispatch(removeError(error.id))}
+            onClose={() => handleClose(error.id)}
             closeButtonProps={{ 'aria-label': 'Hide notification' }}>
             {error.description}
           </Notification>

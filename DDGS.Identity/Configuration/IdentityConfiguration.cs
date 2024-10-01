@@ -1,10 +1,10 @@
 ﻿using DDGS.Core.Identity;
-using DDGS.Core.Identity.Entities;
-using DDGS.Core.Identity.Entities.Constraints;
 using DDGS.Core.Identity.Interfaces;
-using DDGS.Infrastructure.Repositories;
+using DDGS.Core.Identity.Models;
+using DDGS.Core.Identity.Models.Constraints;
 using DDGS.Infrastructure;
 using Mapster;
+using DDGS.Infrastructure.Identity;
 
 namespace DDGS.Identity.Configuration
 {
@@ -12,7 +12,7 @@ namespace DDGS.Identity.Configuration
     {
         public static IServiceCollection AddDdgsIdentity(this IServiceCollection services, TypeAdapterConfig typeAdapterConfig)
         {
-            services.AddIdentity<DDGS.Core.Identity.Entities.User, Role>(opts =>
+            services.AddIdentity<UserEntity, RoleEntity>(opts =>
             {
                 opts.Password.RequireDigit = true;
                 opts.Password.RequireLowercase = true;
@@ -28,7 +28,7 @@ namespace DDGS.Identity.Configuration
                 opts.User.AllowedUserNameCharacters =
                     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+абвгдеёжзийклмнопрстуфхцчшщыэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЫЭЮЯ ";
                 opts.User.RequireUniqueEmail = true;
-            }).AddEntityFrameworkStores<DdgsPostgresDbContext>();
+            }).AddEntityFrameworkStores<DdgsDbContext>();
 
             new UserMappingConfig().Register(typeAdapterConfig);
 

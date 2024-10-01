@@ -1,5 +1,5 @@
-﻿using DDGS.Core.Identity.Entities.Payloads;
-using DDGS.Core.Identity.Interfaces;
+﻿using DDGS.Core.Identity.Interfaces;
+using DDGS.Core.Identity.Models.Payloads;
 using DDGS.Identity.Core;
 using DDGS.Identity.User.Dto;
 using MapsterMapper;

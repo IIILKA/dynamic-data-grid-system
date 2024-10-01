@@ -1,0 +1,35 @@
+﻿using DDGS.Api.DataGrid.Maps;
+using DDGS.Core.DataGrid;
+using DDGS.Core.DataGrid.Interfaces.Repositories;
+using DDGS.Core.DataGrid.Interfaces.Services;
+using DDGS.Core.DataGridRow;
+using DDGS.Core.DataGridRow.Interfaces.Repositories;
+using DDGS.Core.DataGridRow.Interfaces.Services;
+using DDGS.Infrastructure.DataGrid;
+using DDGS.Infrastructure.DataGridRow;
+using DDGS.Infrastructure.DataGridRow.Factories;
+using DDGS.Infrastructure.DataGridRow.Interfaces;
+using Mapster;
+
+namespace DDGS.Api.DataGrid.Configuration
+{
+    public static class DataGridConfiguration
+    {
+        public static IServiceCollection AddDataGrid(this IServiceCollection services, TypeAdapterConfig typeAdapterConfig)
+        {
+            new DataGridDtoMappingConfig().Register(typeAdapterConfig);
+
+            services.AddSingleton<IDataGridRowFactory, DataGridRowFactory>();
+
+            services.AddScoped<IDataGridRepository, DataGridRepository>();
+            services.AddScoped<IDataGridColumnRepository, DataGridColumnRepository>();
+            services.AddScoped<IDataGridCollectionRepository, DataGridCollectionRepository>();
+            services.AddScoped<IDataGridRowRepository, DataGridRowRepository>();
+
+            services.AddScoped<IDataGridService, DataGridService>();
+            services.AddScoped<IDataGridRowService, DataGridRowService>();
+
+            return services;
+        }
+    }
+}

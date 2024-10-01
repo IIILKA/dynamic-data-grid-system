@@ -1,4 +1,4 @@
-﻿using DDGS.Core.Identity.Entities;
+﻿using DDGS.Core.Identity.Models;
 using FluentResults;
 using Microsoft.AspNetCore.Identity;
 
@@ -6,20 +6,20 @@ namespace DDGS.Core.Identity.Interfaces
 {
     public interface IIdentityRepository
     {
-        Task<Result> RegisterUserAsync(User user);
+        Task<Result> RegisterUserAsync(UserEntity user);
 
-        Task<Result> RegisterUserAsync(User user, string password);
+        Task<Result> RegisterUserAsync(UserEntity user, string password);
 
-        Task<User?> GetUserAsync(Guid id);
+        Task<UserEntity?> GetUserAsync(Guid id);
 
-        Task<User?> GetUserByEmailAsync(string email);
+        Task<UserEntity?> GetUserByEmailAsync(string email);
 
-        Task<List<User>> GetAllUsersAsync();
+        Task<List<UserEntity>> GetAllUsersAsync();
 
-        Task<Result> AddUserExternalLoginAsync(User user, UserLoginInfo loginInfo);
+        Task<Result> AddUserExternalLoginAsync(UserEntity user, UserLoginInfo loginInfo);
 
-        Task<List<UserLoginInfo>> GetUserLoginsAsync(User user);
+        Task<List<UserLoginInfo>> GetUserLoginsAsync(UserEntity user);
 
-        Task<bool> CheckUserPasswordAsync(User user, string userPassword);
+        Task<bool> CheckUserPasswordAsync(UserEntity user, string userPassword);
     }
 }

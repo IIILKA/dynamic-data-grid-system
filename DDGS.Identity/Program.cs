@@ -1,7 +1,7 @@
 using DDGS.Identity.Auth.Configuration;
-using DDGS.Infrastructure.Configuration;
 using DDGS.Identity.Configuration;
 using Mapster;
+using DDGS.Infrastructure.PostgresDb;
 
 var builder = WebApplication.CreateBuilder(args);
 

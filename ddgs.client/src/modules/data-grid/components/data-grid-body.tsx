@@ -1,42 +1,38 @@
 import { Table } from '@mantine/core';
-import DaraGridBodyMenu, { DaraGridBodyMenuRef } from './data-grid-body-menu.tsx';
+import { useMemo } from 'react';
+import useDataGridBody from '../hooks/data-grid-body-hook.ts';
+import DataGridModel from '../models/data-grid-model.ts';
+import NormalizedDataGridRowModels from '../models/normalized-data-grid-row-models.ts';
+import DaraGridBodyMenu from './data-grid-body-menu.tsx';
 import DadaGridBodyRow from './data-grid-body-row.tsx';
-import { useMemo, useRef } from 'react';
-import { useClickOutside } from '@mantine/hooks';
-import TableEntity from '../../seed-data/table-entity.ts';
-import { selectCell } from '../data-grid-slice.ts';
-import { useAppDispatch } from '../../../app/hooks.ts';
 
-interface DataGridBodyProps<T extends TableEntity> {
-  sortedIds: string[];
-  dataGridRows: { [key: string]: T };
-}
+type DataGridBodyProps = {
+  dataGrid: DataGridModel;
+  normalizedDataGridRows: NormalizedDataGridRowModels;
+};
 
-export default function DataGridBody<T extends TableEntity>({
-  sortedIds,
-  dataGridRows
-}: DataGridBodyProps<T>) {
-  const dispatch = useAppDispatch();
-
-  const tableRef = useClickOutside(() => dispatch(selectCell(null)), ['click']);
-
-  const menuRef = useRef<DaraGridBodyMenuRef | null>(null);
+export default function DataGridBody({ dataGrid, normalizedDataGridRows }: DataGridBodyProps) {
+  const { tableRef, menuRef, handleContextMenu, sortedColumnNames } = useDataGridBody({ dataGrid });
 
   const rows = useMemo(
-    () => sortedIds.map((rowId) => <DadaGridBodyRow key={rowId} rowData={dataGridRows[rowId]} />),
-    [dataGridRows, sortedIds]
+    () =>
+      normalizedDataGridRows.ids.map((rowId) => (
+        <DadaGridBodyRow
+          key={rowId}
+          dataGrid={dataGrid}
+          dataGridRow={normalizedDataGridRows.entities[rowId]}
+          sortedColumnNames={sortedColumnNames}
+        />
+      )),
+    [normalizedDataGridRows] // eslint-disable-line
   );
 
   return (
-    <DaraGridBodyMenu ref={menuRef} disableAddNewItemButtons={sortedIds.some((id) => id === '')}>
-      <Table.Tbody
-        ref={tableRef}
-        onContextMenu={(e) => {
-          e.preventDefault();
-          const offsetX = e.pageX + 5;
-          const offsetY = e.pageY;
-          menuRef.current!.setMenu({ isOpened: true, offsetX, offsetY });
-        }}>
+    <DaraGridBodyMenu
+      ref={menuRef}
+      dataGrid={dataGrid}
+      normalizedDataGridRows={normalizedDataGridRows}>
+      <Table.Tbody ref={tableRef} onContextMenu={handleContextMenu}>
         {rows}
       </Table.Tbody>
     </DaraGridBodyMenu>

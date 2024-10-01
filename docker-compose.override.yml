@@ -6,7 +6,7 @@ services:
       ASPNETCORE_ENVIRONMENT: ${ENVIRONMENT_NAME}
       ASPNETCORE_HTTPS_PORTS: ${API_HTTPS_INTERNAL_PORT}
       AUTO_MIGRATION_ENABLED: ${AUTO_MIGRATION_ENABLED}
-      MONGODB_URL: mongodb://defaultuser:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:${MONGO_EXTERNAL_PORT}/ddgs/?authSource=${MONGO_INITDB_DATABASE}
+      MONGODB_URL: mongodb://defaultuser:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:${MONGO_EXTERNAL_PORT}/ddgs/?authSource=${MONGO_INITDB_DATABASE}&replicaSet=rs0
       MONGODB_NAME: ${MONGO_INITDB_DATABASE}
       POSTGRESDB_URL: Host=ddgs.postrgres.db;Port=${POSTGRES_EXTERNAL_PORT};Database=${POSTGRES_DB_NAME};Username=${POSTGRES_SUPER_USER_NAME};Password=${POSTGRES_SUPER_USER_PASSWORD}
       CLIENT_URL: https://localhost:${CLIENT_HTTPS_EXTERNAL_PORT}
@@ -67,8 +67,14 @@ services:
     ports:
       - "${MONGO_EXTERNAL_PORT}:27017"
     volumes:
-      - ddgs-mongodb-volume:/data/db
+      - ddgs-mongodb_data:/data/db
       - ./DDGS.Infrastructure/Seed/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./DDGS.MongoDb/mongodb-keyfile.yml:/data/keyfile/mongodb-keyfile.yml
+    entrypoint: >
+        /bin/bash -c "
+        chmod 400 /data/keyfile/mongodb-keyfile.yml &&
+        chown mongodb:mongodb /data/keyfile/mongodb-keyfile.yml &&
+        exec docker-entrypoint.sh mongod --replSet rs0 --bind_ip_all --port 27017 --keyFile /data/keyfile/mongodb-keyfile.yml --sslMode disabled"
     networks:
       - ddgs-network
 

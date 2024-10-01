@@ -1,25 +1,21 @@
 import { Table } from '@mantine/core';
-import { nameOf } from '../../../utils/name-of-helper.ts';
-import TableEntity from '../../seed-data/table-entity.ts';
+import { useDataGridHead } from '../hooks/data-grid-head-hook.ts';
+import DataGridModel from '../models/data-grid-model.ts';
+import DataGridHeadCell from './data-grid-head-cell.tsx';
 
-interface DataGridHeadProps {
-  propNames: string[];
-}
+type DataGridHeadProps = {
+  dataGrid: DataGridModel;
+};
 
-export default function DataGridHead<T extends TableEntity>({ propNames }: DataGridHeadProps) {
-  function getHeadColName(fieldName: string): string {
-    const tmpStr = fieldName.replace(/([A-Z])/g, ' $1');
-    return tmpStr.charAt(0).toUpperCase() + tmpStr.slice(1);
-  }
+export default function DataGridHead({ dataGrid }: DataGridHeadProps) {
+  const { sortedCells } = useDataGridHead({ dataGrid });
 
   return (
     <Table.Thead>
-      <Table.Tr>
-        {propNames
-          .filter((propName) => propName !== nameOf<T>('id') && propName !== nameOf<T>('index'))
-          .map((propName) => (
-            <Table.Th key={propName}>{getHeadColName(propName)}</Table.Th>
-          ))}
+      <Table.Tr bg={'var(--mantine-color-default-hover)'}>
+        {sortedCells.map((column) => (
+          <DataGridHeadCell key={column.name} dataGrid={dataGrid} dataGridColumn={column} />
+        ))}
       </Table.Tr>
     </Table.Thead>
   );
